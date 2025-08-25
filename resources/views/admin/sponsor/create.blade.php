@@ -63,14 +63,9 @@
                                         </thead>
                                         <tbody>
                                           <tr>
-                                            <td>Desktop & Tablet</td>
+                                            <td>Desktop, Tablet & Mobile</td>
                                             <td><strong>300 x 150 px</strong></td>
                                             <td>Landscape (lebar lebih panjang) — cocok untuk logo umum</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Mobile</td>
-                                            <td><strong>200 x 100 px</strong></td>
-                                            <td>Ukuran lebih kecil untuk performa dan responsive view</td>
                                           </tr>
                                           <tr>
                                             <td>Format disarankan</td>

@@ -52,14 +52,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>Desktop & Tablet</td>
+                                            <td>Desktop, Tablet & Mobile</td>
                                             <td><strong>1200 x 600 px</strong></td>
                                             <td>Tampilan utama halaman, sebaiknya landscape</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Mobile</td>
-                                            <td><strong>800 x 400 px</strong></td>
-                                            <td>Ukuran lebih ringan & cepat dimuat</td>
                                         </tr>
                                         <tr>
                                             <td>Format disarankan</td>

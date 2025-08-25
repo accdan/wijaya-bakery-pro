@@ -43,7 +43,7 @@
                                             <th>No</th>
                                             <th>Nama Menu</th>
                                             <th>Kategori</th>
-                                            <th>Deskripsi</th>
+                                            {{-- <th>Deskripsi</th> --}}
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -53,7 +53,7 @@
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $menu->nama_menu }}</td>
                                                 <td>{{ $menu->kategori->nama_kategori ?? '-' }}</td>
-                                                <td>{{ Str::limit($menu->deskripsi_menu, 50) }}</td>
+                                                {{-- <td>{{ Str::limit($menu->deskripsi_menu, 50) }}</td> --}}
                                                 <td class="text-center">
                                                     <a href="{{ route('admin.menu.show', $menu->id) }}" class="btn btn-info btn-sm">
                                                         <i class="fas fa-eye"></i> Detail

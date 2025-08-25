@@ -58,7 +58,7 @@ class PromoController extends Controller
         $request->validate([
             'nama_promo'       => 'required|string|max:255',
             'deskripsi_promo'  => 'nullable|string',
-            'gambar_promo'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar_promo'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:20480',
             'status'           => 'required|boolean',
         ]);
     

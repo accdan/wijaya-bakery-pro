@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('menu', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('nama_menu');
-            $table->text('deskripsi_menu');
-            $table->text('prosedur');
+            $table->text('deskripsi_menu')->nullable();
+            $table->text('prosedur')->nullable();
             $table->string('gambar_menu');
             $table->string('kategori_id');
             $table->foreign('kategori_id')->references('id')->on('kategori')->onDelete('cascade');

@@ -108,8 +108,6 @@
     .whatsapp-float:hover {
       transform: scale(1.1);
     }
-
-    /* Scroll target padding (biar gak ketutup navbar) */
     section[id] {
       scroll-margin-top: 100px;
     }
@@ -132,40 +130,20 @@
       75%  { transform: rotateY(-5deg); }
       100% { transform: rotateY(0); }
     }
+    .text-custom {
+    color: var(--dark-brown);
+    }
+    .about-box {
+      background-color: var(--cream);
+      border-radius: 10px;
+      border: 2px dashed var(--brown);
+    }
+    .border-custom {
+      border: 4px solid var(--brown);
+    }
   </style>
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background-color: #3B3B1A; padding: 1rem 0;">
-  <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-      <img src="{{ asset('image/logo1.png') }}" alt="Wijaya Bakery Logo" width="50" height="50" class="me-2">
-      <span style="color: #E7EFC7; font-size: 1.5rem;">Wijaya <span style="color: #AEC8A4">Bakery</span></span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav gap-3">
-        <li class="nav-item">
-          <a class="nav-link active" href="#hero" style="color: #E7EFC7; font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1rem;">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#about" style="color: #E7EFC7; font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1rem;">Tentang</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#menu" style="color: #E7EFC7; font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1rem;">Menu</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#contact" style="color: #E7EFC7; font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1rem;">Kontak</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
 
 <!-- Hero -->
 @php
@@ -185,17 +163,30 @@
 <!-- About Section -->
 <section id="about" class="about-us py-5">
   <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-6">
-        <img src="{{ asset('images/bakery1.jpeg') }}" alt="Our Bakery" class="img-fluid rounded shadow" style="border: 5px solid #8A784E; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+    <div class="row align-items-center justify-content-center">
+      
+      <!-- Gambar di kiri -->
+      <div class="col-md-5 mb-4 mb-md-0 text-center">
+        <img src="{{ asset('images/bakery1.jpeg') }}" 
+             alt="Wijaya Bakery" 
+             class="img-fluid rounded shadow border-custom"
+             style="width: 300px; height: 320px; object-fit: cover;">
       </div>
-      <div class="col-md-6 text-center text-md-start">
-        <h2 class="section-title" style="color: #3B3B1A;">Tentang Wijaya Bakery</h2>
-        <div class="mb-4" style="background-color: #E7EFC7; padding: 2rem; border-radius: 10px; border: 2px dashed #8A784E;">
-          {!! $data->about_deskripsi ?? '<p>Sejak 1990, Wijaya Bakery telah menghadirkan roti dan kue berkualitas tinggi dengan resep turun temurun. Kami menggunakan bahan-bahan pilihan dan dipanggang dengan penuh cinta untuk memberikan pengalaman rasa yang tak terlupakan.</p>' !!}
+      
+      <!-- Deskripsi di kanan -->
+      <div class="col-md-7 text-center text-md-start">
+        <h2 class="section-title text-custom">Tentang Wijaya Bakery</h2>
+        <div class="about-box p-4 mb-4">
+          {!! $data->about_deskripsi ?? '
+            <p>
+              Sejak 1990, Wijaya Bakery telah menghadirkan roti dan kue berkualitas tinggi 
+              dengan resep turun temurun. Kami menggunakan bahan-bahan pilihan dan dipanggang 
+              dengan penuh cinta untuk memberikan pengalaman rasa yang tak terlupakan.
+            </p>' 
+          !!}
         </div>
-        <a href="#" class="btn" style="background-color: #8A784E; color: white; border: none; padding: 0.75rem 1.5rem; font-weight: 600;">Lihat Selengkapnya</a>
       </div>
+
     </div>
   </div>
 </section>
@@ -261,65 +252,62 @@
 @endif
 
 
-<!-- Kontak -->
+<<!-- Hubungi Kami (Sosial Media) -->
 <section id="contact" class="py-5" style="background-color: var(--sage);">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center">
         <h2 class="section-title">Hubungi Kami</h2>
-        <p class="lead mb-5">Punya pertanyaan atau pesanan khusus? Kami siap membantu!</p>
+        <p class="lead mb-5">Terhubung dengan Wijaya Bakery lewat sosial media atau pesan makanan langsung di platform favoritmu!</p>
       </div>
     </div>
     
-    <div class="row">
-      <div class="col-md-6 mb-4">
-        <div class="card h-100 border-0 shadow" style="background-color: var(--cream); border-radius: 15px;">
+    <div class="row justify-content-center">
+      <!-- Instagram -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow text-center" style="background-color: var(--cream); border-radius: 15px;">
           <div class="card-body p-4">
-            <h4 class="mb-4" style="color: var(--dark-brown);">Informasi Kontak</h4>
-            <ul class="list-unstyled">
-              <li class="mb-3">
-                <i class="bi bi-geo-alt-fill me-2" style="color: var(--brown);"></i>
-                Jl. Roti Manis No.12, Malang
-              </li>
-              <li class="mb-3">
-                <i class="bi bi-telephone-fill me-2" style="color: var(--brown);"></i>
-                (0341) 123-456
-              </li>
-              <li class="mb-3">
-                <i class="bi bi-envelope-fill me-2" style="color: var(--brown);"></i>
-                info@wijayabakery.com
-              </li>
-              <li class="mb-3">
-                <i class="bi bi-clock-fill me-2" style="color: var(--brown);"></i>
-                Buka setiap hari 08:00 - 20:00
-              </li>
-            </ul>
+            <i class="bi bi-instagram" style="font-size: 2.5rem; color: #E4405F;"></i>
+            <h5 class="mt-3 mb-2" style="color: var(--dark-brown);">Instagram</h5>
+            <p class="mb-3">@wijayabakery</p>
+            <a href="https://instagram.com/wijayabakery" target="_blank" class="btn w-100" style="background-color: var(--brown); color: white;">
+              Kunjungi
+            </a>
           </div>
         </div>
       </div>
-      
-      <div class="col-md-6 mb-4">
-        <div class="card h-100 border-0 shadow" style="background-color: var(--cream); border-radius: 15px;">
+
+      <!-- GoFood -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow text-center" style="background-color: var(--cream); border-radius: 15px;">
           <div class="card-body p-4">
-            <h4 class="mb-4" style="color: var(--dark-brown);">Kirim Pesan</h4>
-            <form>
-              <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Nama Anda" style="border-color: var(--brown);">
-              </div>
-              <div class="mb-3">
-                <input type="email" class="form-control" placeholder="Email Anda" style="border-color: var(--brown);">
-              </div>
-              <div class="mb-3">
-                <textarea class="form-control" rows="4" placeholder="Pesan Anda" style="border-color: var(--brown);"></textarea>
-              </div>
-              <button type="submit" class="btn w-100" style="background-color: var(--brown); color: white;">Kirim Pesan</button>
-            </form>
+            <i class="bi bi-bag-fill" style="font-size: 2.5rem; color: #D0021B;"></i>
+            <h5 class="mt-3 mb-2" style="color: var(--dark-brown);">GoFood</h5>
+            <p class="mb-3">Pesan via GoFood</p>
+            <a href="https://gofood.co.id/wijayabakery" target="_blank" class="btn w-100" style="background-color: var(--brown); color: white;">
+              Pesan Sekarang
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ShopeeFood -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow text-center" style="background-color: var(--cream); border-radius: 15px;">
+          <div class="card-body p-4">
+            <i class="bi bi-shop" style="font-size: 2.5rem; color: #FF5722;"></i>
+            <h5 class="mt-3 mb-2" style="color: var(--dark-brown);">ShopeeFood</h5>
+            <p class="mb-3">Pesan via ShopeeFood</p>
+            <a href="https://shopee.co.id/shopeefood-wijayabakery" target="_blank" class="btn w-100" style="background-color: var(--brown); color: white;">
+              Pesan Sekarang
+            </a>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
 
 <!-- Sponsor List -->
 @if($sponsors->count())

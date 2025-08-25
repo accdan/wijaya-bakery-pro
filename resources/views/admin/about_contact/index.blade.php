@@ -41,13 +41,6 @@
                             {{-- ABOUT SECTION --}}
                             <div class="col-md-6">
                                 <h5><i class="fas fa-info-circle"></i> Tentang Kami</h5>
-                                @if($data->about_picture)
-                                    <img src="{{ $data->getAboutPictureUrl() }}" class="img-fluid rounded mb-2" width="100" alt="Gambar About">
-                                @endif
-                                <div class="form-group">
-                                    <label for="about_picture">Gambar About</label>
-                                    <input type="file" name="about_picture" class="form-control-file">
-                                </div>
                                 <div class="form-group">
                                     <label for="about_deskripsi">Deskripsi Tentang Kami</label>
                                     <div id="aboutEditor" style="height: 200px;">{!! old('about_deskripsi', $data->about_deskripsi) !!}</div>
@@ -55,22 +48,15 @@
                                 </div>
                             </div>
 
-                            {{-- CONTACT SECTION --}}
+                            {{-- CONTACT SECTION
                             <div class="col-md-6">
                                 <h5><i class="fas fa-phone"></i> Kontak</h5>
-                                @if($data->contact_picture)
-                                    <img src="{{ $data->getContactPictureUrl() }}" class="img-fluid rounded mb-2" width="100" alt="Gambar Contact">
-                                @endif
-                                <div class="form-group">
-                                    <label for="contact_picture">Gambar Contact</label>
-                                    <input type="file" name="contact_picture" class="form-control-file">
-                                </div>
                                 <div class="form-group">
                                     <label for="contact_deskripsi">Deskripsi Kontak</label>
                                     <div id="contactEditor" style="height: 200px;">{!! old('contact_deskripsi', $data->contact_deskripsi) !!}</div>
                                     <input type="hidden" name="contact_deskripsi" id="contact_deskripsi">
                                 </div>
-                            </div>
+                            </div> --}}
 
                         </div>
                         <div class="card-footer text-right">

@@ -61,21 +61,21 @@
                                         </select>
                                         @error('kategori_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
-
+{{-- 
                                     <div class="form-group">
                                         <label for="deskripsi_menu">Deskripsi</label>
                                         <textarea name="deskripsi_menu" rows="3" class="form-control @error('deskripsi_menu') is-invalid @enderror" required>{{ old('deskripsi_menu', $menu->deskripsi_menu) }}</textarea>
                                         @error('deskripsi_menu')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <!-- Kanan -->
-                                <div class="col-md-6 text-center">
+                                {{-- <div class="col-md-6 text-center">
                                     <div class="form-group">
                                         <label for="prosedur">Prosedur</label>
                                         <textarea name="prosedur" rows="5" class="form-control @error('prosedur') is-invalid @enderror" required>{{ old('prosedur', $menu->prosedur) }}</textarea>
                                         @error('prosedur')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                    </div>
+                                    </div> --}}
 
                                     <div class="form-group">
                                         <label for="gambar_menu">Gambar Menu</label>

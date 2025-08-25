@@ -69,14 +69,14 @@
                                                 <th>Nama Menu</th>
                                                 <td>{{ $menu->nama_menu }}</td>
                                             </tr>
-                                            <tr>
+                                            {{-- <tr>
                                                 <th>Deskripsi</th>
                                                 <td>{{ $menu->deskripsi_menu }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Prosedur</th>
                                                 <td>{{ $menu->prosedur }}</td>
-                                            </tr>
+                                            </tr> --}}
                                             <tr>
                                                 <th>Kategori</th>
                                                 <td>{{ $menu->kategori->nama_kategori ?? '-' }}</td>

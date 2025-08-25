@@ -70,12 +70,18 @@
                                                 <a href="{{ route('admin.promo.edit', $promo->id) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
-                                                <button class="btn btn-danger btn-sm delete-promo-btn"
+                                                {{-- <button class="btn btn-danger btn-sm delete-promo-btn"
                                                         data-toggle="modal"
                                                         data-target="#deletePromoModal"
                                                         data-promo-id="{{ $promo->id }}">
                                                     <i class="fas fa-trash"></i> Hapus
-                                                </button>
+                                                </button> --}}
+                                                <button class="btn btn-danger btn-sm delete-promo-btn"
+                                                    data-toggle="modal"
+                                                    data-target="#deletePromoModal"
+                                                    data-url="{{ route('admin.promo.destroy', $promo->id) }}">
+                                                <i class="fas fa-trash"></i> Hapus
+                                            </button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -138,11 +144,15 @@
             responsive: true
         });
 
+        // $('.delete-promo-btn').click(function () {
+        //     let promoId = $(this).data('promo-id');
+        //     let deleteUrl = "{{ url('admin/promo') }}/" + promoId;
+        //     $('#deletePromoForm').attr('action', deleteUrl);
+        // });
         $('.delete-promo-btn').click(function () {
-            let promoId = $(this).data('promo-id');
-            let deleteUrl = "{{ url('admin/promo') }}/" + promoId;
-            $('#deletePromoForm').attr('action', deleteUrl);
-        });
+        let deleteUrl = $(this).data('url');
+        $('#deletePromoForm').attr('action', deleteUrl);
+    });
 
         @if (session('success') || session('error'))
             $('#toastNotification').toast({

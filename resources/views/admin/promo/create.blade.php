@@ -70,15 +70,11 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                        <td>Desktop & Tablet</td>
+                                        <td>Desktop, Tablet & Mobile</td>
                                         <td><strong>800 x 400 px</strong></td>
                                         <td>Format landscape, cocok untuk tampilan carousel</td>
                                         </tr>
                                         <tr>
-                                        <td>Mobile</td>
-                                        <td><strong>600 x 300 px</strong></td>
-                                        <td>Ukuran lebih ringan, cepat dimuat di perangkat mobile</td>
-                                        </tr>
                                         <tr>
                                         <td>Format disarankan</td>
                                         <td><code>.jpg</code> / <code>.webp</code></td>

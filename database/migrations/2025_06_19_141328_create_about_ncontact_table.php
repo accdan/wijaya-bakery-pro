@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('about_ncontact', function (Blueprint $table) {
             $table->id();
             $table->longText('about_deskripsi')->nullable();
-            $table->string('about_picture')->nullable();
             $table->longText('contact_deskripsi')->nullable();
-            $table->string('contact_picture')->nullable();
             $table->timestamps();
         });
     }

@@ -16,14 +16,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
-// Route::get('/homepage', [HomepageController::class, 'index']);
-// Route::get('/home', [HomeController::class, 'index']);
-// Route::get('/login-user', [AuthController::class, 'showUserLoginForm'])->name('login-user');
-// Route::post('/login-user', [AuthController::class, 'userLogin']);
-// Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-// Route::post('/register', [AuthController::class, 'register']);
-// Route::get('/auth-google-redirect', [AuthController::class, 'googleRedirect']);
-// Route::get('/auth-google-callback', [AuthController::class, 'googleCallback']);
 Route::get('/login-admin', [AuthController::class, 'showAdminLoginForm'])->name('login-admin');
 Route::post('/login-admin', [AuthController::class, 'adminLogin'])->name('login-admin.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -42,14 +34,22 @@ Route::name('admin.')->middleware('admin')->group(function () {
     Route::resource('about_contact',AboutContactController::class);
 });
 
- Route::name('users')->middleware('users')->group(function () {
-//    Route::get('/homepage', [DashboardUserController::class, 'homepage'])->name('users.homepage.user');
-//     Route::get('/dashboard-user', [DashboardUserController::class, 'index'])->name('users.dashboard.user');
-//     Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.show');
+// Route::get('/homepage', [HomepageController::class, 'index']);
+// Route::get('/home', [HomeController::class, 'index']);
+// Route::get('/login-user', [AuthController::class, 'showUserLoginForm'])->name('login-user');
+// Route::post('/login-user', [AuthController::class, 'userLogin']);
+// Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::get('/auth-google-redirect', [AuthController::class, 'googleRedirect']);
+// Route::get('/auth-google-callback', [AuthController::class, 'googleCallback']);
+Route::name('users')->middleware('users')->group(function () {
+    //    Route::get('/homepage', [DashboardUserController::class, 'homepage'])->name('users.homepage.user');
+    //     Route::get('/dashboard-user', [DashboardUserController::class, 'index'])->name('users.dashboard.user');
+    //     Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.show');
 //     Route::get('/menu/{id}/detail', [MenuController::class, 'detail'])->name('menu.detail');
 //     Route::get('/kategori-list', [DashboardUserController::class, 'kategoriList'])->name('user.kategori-list');
 //     Route::get('/kategori/{id}', [DashboardUserController::class, 'menuByKategori'])->name('user.menu-by-kategori');
- });
+});
 
 // Route::get('/test-translate', function () {
 //     return view('test-translate');
