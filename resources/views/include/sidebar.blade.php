@@ -68,7 +68,7 @@
                         <li class="nav-item">
                             <a href="{{ url('about_contact') }}" class="nav-link {{ request()->is('about_contact') ? 'active-custom-sub' : '' }}">
                                 <i class="fas fa-info-circle nav-icon"></i>
-                                <p>About & Contact</p>
+                                <p>About</p>
                             </a>
                         </li>
                     </ul>
