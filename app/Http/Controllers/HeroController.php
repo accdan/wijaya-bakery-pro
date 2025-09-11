@@ -22,7 +22,7 @@ class HeroController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'gambar' => 'required|image|mimes:jpg,jpeg,png,webp|max:3072',
+            'gambar' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
             'status' => 'required|boolean',
         ]);
 
@@ -51,7 +51,7 @@ class HeroController extends Controller
         $hero = Hero::findOrFail($id);
 
         $request->validate([
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'status' => 'required|boolean',
         ]);
 

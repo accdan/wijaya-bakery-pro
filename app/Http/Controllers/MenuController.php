@@ -126,4 +126,5 @@ class MenuController extends Controller
         $menu = Menu::findOrFail($id);
         return view('user.detail-menu', compact('menu'));
     }
+    
 }
