@@ -98,11 +98,4 @@ public function destroy($id){
     //     return redirect()->route('admin.hero.index')->with('success', 'Hero berhasil dihapus.');
     // }
 
-    public function showHeroImage()
-    {
-        $hero = Hero::where('status', 1)->latest()->first();
-        return $hero && $hero->gambar
-            ? asset('uploads/hero/' . $hero->gambar)
-            : asset('images/hero-bg1.jpeg');
-    }
 }

@@ -14,18 +14,23 @@
         }
         .menu-img {
             width: 100%;
-            max-width: 180px;
+            max-width: 220px;
             height: auto;
             object-fit: cover;
             border: 3px solid #dee2e6;
             border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .table th {
             background-color: #f8f9fa;
+            width: 30%;
+        }
+        .badge-category {
+            font-size: 0.9rem;
         }
         @media (max-width: 768px) {
-            .card {
-                margin: 0 10px;
+            .card-body {
+                padding: 1rem;
             }
         }
     </style>
@@ -48,46 +53,40 @@
 
             <section class="content">
                 <div class="container-fluid d-flex justify-content-center">
-                    <div class="card shadow-lg w-100" style="max-width: 800px;">
+                    <div class="card shadow-lg w-100" style="max-width: 850px;">
                         <div class="card-header bg-warning">
                             <h3 class="card-title mb-0 text-white"><i class="fas fa-utensils"></i> Informasi Menu</h3>
                         </div>
                         <div class="card-body">
-                            <div class="row justify-content-center">
+                            <div class="row">
+                                <!-- Gambar Menu -->
                                 <div class="col-12 col-md-4 text-center mb-3">
                                     <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : asset('image/default-food.png') }}"
-     class="menu-img img-fluid rounded" alt="Foto Menu">
+                                        class="menu-img img-fluid rounded" alt="Foto Menu" title="{{ $menu->nama_menu }}">
                                 </div>
+
+                                <!-- Informasi Menu -->
                                 <div class="col-12 col-md-8">
                                     <div class="table-responsive">
                                         <table class="table table-bordered table-striped">
                                             <tr>
-                                                <th>ID Menu</th>
-                                                <td>{{ $menu->id }}</td>
-                                            </tr>
-                                            <tr>
                                                 <th>Nama Menu</th>
                                                 <td>{{ $menu->nama_menu }}</td>
                                             </tr>
-                                            {{-- <tr>
-                                                <th>Deskripsi</th>
-                                                <td>{{ $menu->deskripsi_menu }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Prosedur</th>
-                                                <td>{{ $menu->prosedur }}</td>
-                                            </tr> --}}
                                             <tr>
                                                 <th>Kategori</th>
-                                                <td>{{ $menu->kategori->nama_kategori ?? '-' }}</td>
-                                            </tr>
-                                            {{-- <tr>
-                                                <th>Foto Menu</th>
-                                                <td class="text-center">
-                                                    <img src="{{ $menu->gambar_menu ? asset('public/' . $menu->gambar_menu) : asset('uploads/menu') }}"
-                                                         class="menu-img img-fluid rounded" alt="Foto Menu">
+                                                <td>
+                                                    @if($menu->kategori)
+                                                        <span class="badge badge-primary badge-category">{{ $menu->kategori->nama_kategori }}</span>
+                                                    @else
+                                                        -
+                                                    @endif
                                                 </td>
-                                            </tr> --}}
+                                            </tr>
+                                            <tr>
+                                                <th>Deskripsi</th>
+                                                <td>{{ $menu->deskripsi_menu ?? '-' }}</td>
+                                            </tr>
                                             <tr>
                                                 <th>Dibuat pada</th>
                                                 <td>{{ $menu->created_at->translatedFormat('d F Y H:i') }}</td>
@@ -96,7 +95,6 @@
                                                 <th>Terakhir diubah</th>
                                                 <td>{{ $menu->updated_at->translatedFormat('d F Y H:i') }}</td>
                                             </tr>
-
                                         </table>
                                     </div>
                                 </div>

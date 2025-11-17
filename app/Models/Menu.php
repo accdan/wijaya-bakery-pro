@@ -17,9 +17,12 @@ class Menu extends Model
         'nama_menu',
         'deskripsi_menu',
         'prosedur',
+        'harga',
+        'stok',
         'gambar_menu',
         'kategori_id',
     ];
+
 
     protected static function booted()
     {
@@ -41,6 +44,8 @@ class Menu extends Model
             'nama_menu'      => $data['nama_menu'],
             'deskripsi_menu' => $data['deskripsi_menu'],
             'prosedur'       => $data['prosedur'],
+            'harga'=> $data['harga'],
+            'stok'=> $data['stok'],
             'gambar_menu'    => $data['gambar_menu'] ?? null,
             'kategori_id'    => $data['kategori_id'],
         ]);
@@ -52,6 +57,8 @@ class Menu extends Model
             'nama_menu'      => $data['nama_menu'] ?? $this->nama_menu,
             'deskripsi_menu' => $data['deskripsi_menu'] ?? $this->deskripsi_menu,
             'prosedur'       => $data['prosedur'] ?? $this->prosedur,
+            'harga'=> $data['harga'] ?? $this->harga,
+            'stok'=> $data['stok'] ?? $this->stok,
             'gambar_menu'    => $data['gambar_menu'] ?? $this->gambar_menu,
             'kategori_id'    => $data['kategori_id'] ?? $this->kategori_id,
         ]);

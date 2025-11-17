@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Artisan;
 
 class Hero extends Model
 {
@@ -39,35 +38,5 @@ class Hero extends Model
         });
     }
 
-    // CREATE
-    public static function createHero($data)
-    {
-        return self::create([
-            'gambar' => $data['gambar'] ?? null,
-            'status' => $data['status'] ?? true,
-        ]);
-    }
 
-    // UPDATE
-    public function updateHero($data)
-    {
-        return $this->update([
-            'gambar' => $data['gambar'] ?? $this->gambar,
-            'status' => $data['status'] ?? $this->status,
-        ]);
-    }
-
-   
-    public function deleteHero()
-    {
-        return $this->delete();
-    }
-
-    public static function getActiveHeroImage()
-    {
-        $hero = self::where('status', 1)->first();
-        return $hero && $hero->gambar
-            ? asset('uploads/hero/' . $hero->gambar)
-            : asset('images/hero-bg1.jpeg');
-    }
 }

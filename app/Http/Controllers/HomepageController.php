@@ -7,6 +7,8 @@ use App\Models\Hero;
 use App\Models\Promo;
 use App\Models\Sponsor;
 use App\Models\AboutNContact;
+use App\Models\Pesanan;
+use Illuminate\Support\Facades\DB;
 
 class HomepageController extends Controller
 {
@@ -17,9 +19,20 @@ class HomepageController extends Controller
         $promos = Promo::where('status', 1)->get();
         $sponsors = Sponsor::all();
         $data = AboutNContact::first();
-    
-        return view('homepage', compact('menus', 'hero', 'promos', 'sponsors', 'data'));
+
+        // Top ordered menus this month
+        $topMenusThisMonth = DB::table('pesanan')
+            ->join('menu', 'pesanan.menu_id', '=', 'menu.id')
+            ->select('menu.nama_menu', 'menu.gambar_menu', DB::raw('SUM(pesanan.jumlah) as total_ordered'))
+            ->where('pesanan.created_at', '>=', now()->startOfMonth())
+            ->where('menu.stok', '>', 0)
+            ->groupBy('pesanan.menu_id', 'menu.nama_menu', 'menu.gambar_menu')
+            ->orderBy('total_ordered', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('homepage', compact('menus', 'hero', 'promos', 'sponsors', 'data', 'topMenusThisMonth'));
     }
-    
+
 
 }

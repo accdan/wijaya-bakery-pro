@@ -27,10 +27,20 @@ class MenuController extends Controller
             'kategori_id' => 'required|exists:kategori,id',
             'deskripsi_menu' => 'nullable|string',
             'prosedur' => 'nullable|string',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer',
             'gambar_menu' => 'nullable|image|mimes:jpg,jpeg,png|max:10192',
         ]);
 
-        $data = $request->only(['nama_menu', 'deskripsi_menu', 'prosedur', 'kategori_id']);
+        $data = $request->only([
+            'nama_menu',
+            'deskripsi_menu',
+            'prosedur',
+            'kategori_id',
+            'harga',
+            'stok'
+        ]);
+
 
         if ($request->hasFile('gambar_menu')) {
             $file = $request->file('gambar_menu');
@@ -63,12 +73,16 @@ class MenuController extends Controller
             'kategori_id' => 'required|exists:kategori,id',
             'deskripsi_menu' => 'nullable|string',
             'prosedur' => 'nullable|string',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer',
             'gambar_menu' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
     
         $menu->nama_menu = $request->nama_menu;
         $menu->kategori_id = $request->kategori_id;
         $menu->deskripsi_menu = $request->deskripsi_menu;
+        $menu->harga = $request->harga;
+        $menu->stok = $request->stok;
         $menu->prosedur = $request->prosedur;
     
         // Cek jika ada input hasil crop dari cropper
@@ -121,10 +135,5 @@ class MenuController extends Controller
 
         return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil dihapus.');
     }
-    public function detail($id)
-    {
-        $menu = Menu::findOrFail($id);
-        return view('user.detail-menu', compact('menu'));
-    }
-    
+
 }

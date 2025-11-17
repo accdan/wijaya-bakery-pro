@@ -53,26 +53,59 @@
                                     </div>
                                 </div>
 
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="kategori_id"><i class="fas fa-folder"></i> Kategori</label>
+                                    <select class="form-control @error('kategori_id') is-invalid @enderror"
+                                            name="kategori_id" required>
+                                        <option value="">-- Pilih Kategori --</option>
+                                        @foreach($kategoris as $kategori)
+                                            <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
+                                                {{ $kategori->nama_kategori }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('kategori_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            </div>
+
+                            <!-- ➤ Tambah Harga dan Stok -->
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="kategori_id"><i class="fas fa-folder"></i> Kategori</label>
-                                        <select class="form-control @error('kategori_id') is-invalid @enderror"
-                                                name="kategori_id" required>
-                                            <option value="">-- Pilih Kategori --</option>
-                                            @foreach($kategoris as $kategori)
-                                                <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
-                                                    {{ $kategori->nama_kategori }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('kategori_id')
+                                        <label for="harga"><i class="fas fa-money-bill"></i> Harga</label>
+                                        <input type="number" 
+                                            class="form-control @error('harga') is-invalid @enderror"
+                                            name="harga" 
+                                            value="{{ old('harga') }}" 
+                                            min="0"
+                                            required>
+                                        @error('harga')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="stok"><i class="fas fa-box"></i> Stok</label>
+                                        <input type="number" 
+                                            class="form-control @error('stok') is-invalid @enderror"
+                                            name="stok" 
+                                            value="{{ old('stok') }}" 
+                                            min="0"
+                                            required>
+                                        @error('stok')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- <div class="form-group">
+                            <div class="form-group">
                                 <label for="deskripsi_menu"><i class="fas fa-info-circle"></i> Deskripsi</label>
                                 <textarea class="form-control @error('deskripsi_menu') is-invalid @enderror"
                                           name="deskripsi_menu" rows="3" required>{{ old('deskripsi_menu') }}</textarea>
@@ -81,7 +114,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label for="prosedur"><i class="fas fa-list-alt"></i> Prosedur</label>
                                 <textarea class="form-control @error('prosedur') is-invalid @enderror"
                                           name="prosedur" rows="5" required>{{ old('prosedur') }}</textarea>

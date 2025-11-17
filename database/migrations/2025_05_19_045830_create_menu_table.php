@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text('deskripsi_menu')->nullable();
             $table->text('prosedur')->nullable();
             $table->string('gambar_menu');
+            $table->decimal('harga', 12, 2);
+            $table->integer('stok')->default(0);
             $table->string('kategori_id');
             $table->foreign('kategori_id')->references('id')->on('kategori')->onDelete('cascade');
             $table->timestamps();

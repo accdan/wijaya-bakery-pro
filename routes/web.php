@@ -11,16 +11,15 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\PromoController;
+use App\Http\Controllers\PesananController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+Route::post('/pesanan/store', [PesananController::class, 'storeFromUser'])->name('pesanan.store.fromuser');
 Route::get('/login-admin', [AuthController::class, 'showAdminLoginForm'])->name('login-admin');
 Route::post('/login-admin', [AuthController::class, 'adminLogin'])->name('login-admin.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/menu', [MenuController::class, 'page'])->name('user.menu');
+
 Route::name('admin.')->middleware('admin')->group(function () {
     Route::get('/dashboard-admin', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::resource('role', RoleController::class);
@@ -32,7 +31,5 @@ Route::name('admin.')->middleware('admin')->group(function () {
     Route::resource('kategori', KategoriController::class);
     Route::resource('hero', HeroController::class);
     Route::resource('about_contact',AboutContactController::class);
-});
-
-Route::name('users')->middleware('users')->group(function () {
+    Route::resource('pesanan', PesananController::class);
 });
