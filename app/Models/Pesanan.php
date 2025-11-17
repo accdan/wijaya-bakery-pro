@@ -25,10 +25,7 @@ class Pesanan extends Model
         'catatan',
     ];
 
-    protected $casts = [
-        'harga_satuan' => 'decimal:2',
-        'total_harga' => 'decimal:2',
-    ];
+
 
     protected static function booted()
     {
