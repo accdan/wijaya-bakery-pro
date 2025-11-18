@@ -9,12 +9,44 @@ use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pesanans = Pesanan::with('menu')->orderBy('created_at', 'desc')->get()
-            ->groupBy(function($item) {
-                return $item->nama_pemesan . '|' . $item->no_hp . '|' . $item->created_at->format('Y-m-d H:i');
+        $query = Pesanan::with('menu');
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_pemesan', 'LIKE', '%' . $search . '%')
+                  ->orWhere('no_hp', 'LIKE', '%' . $search . '%')
+                  ->orWhereHas('menu', function($menuQuery) use ($search) {
+                      $menuQuery->where('nama_menu', 'LIKE', '%' . $search . '%');
+                  });
             });
+        }
+
+        // Date range filter
+        if ($request->filled('tanggal_mulai') && $request->filled('tanggal_akhir')) {
+            $query->whereDate('created_at', '>=', $request->tanggal_mulai)
+                  ->whereDate('created_at', '<=', $request->tanggal_akhir);
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+
+        // Valid sort columns
+        $validSortColumns = ['created_at', 'nama_pemesan', 'total_harga'];
+        if (in_array($sortBy, $validSortColumns)) {
+            $query->orderBy($sortBy, $sortDirection);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $pesanans = $query->get()->groupBy(function($item) {
+            return $item->nama_pemesan . '|' . $item->no_hp . '|' . $item->created_at->format('Y-m-d H:i');
+        });
+
         return view('admin.pesanan.index', compact('pesanans'));
     }
 
@@ -174,7 +206,7 @@ class PesananController extends Controller
         $waMessage .= "*Total: Rp " . number_format($total_pesanan, 0, ',', '.') . "*";
 
         // Redirect to WhatsApp URL
-        $waNumber = '6283112116135';
+        $waNumber = '6285853849466';
         $waUrl = "https://wa.me/{$waNumber}?text=" . urlencode($waMessage);
 
         if ($request->ajax()) {

@@ -23,9 +23,10 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('username', $request->username)->first();
-        // dd($user);
-        if (!$user || $user->role_id !== '6ef8fcb8-7bd8-4279-b26b-b06b20b78043') {
+        $user = User::where('username', $request->username)->with('role')->first();
+
+        // Check if user exists, has admin role, and role is active
+        if (!$user || !$user->role || $user->role->role_name !== 'admin' || !$user->role->role_status) {
             return back()->with('error', 'Username tidak ditemukan atau bukan admin.')
                         ->withInput($request->only('username'));
         }
@@ -38,14 +39,15 @@ class AuthController extends Controller
         Auth::guard('admin')->login($user);
         $request->session()->regenerate();
 
-        // dd(Auth::guard('admin')->user());
-
-        return redirect('/dashboard-admin');
+        return redirect('/dashboard-admin')->with('success', 'Login admin berhasil!');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Logout from all guards
+        Auth::guard('web')->logout();
+        Auth::guard('admin')->logout();
+        Auth::guard('users')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

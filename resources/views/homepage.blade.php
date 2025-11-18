@@ -391,6 +391,66 @@
       font-weight: 600;
       color: var(--brown);
       margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .menu-actions {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(139, 111, 71, 0.1);
+    }
+
+    .btn-add-cart {
+      background-color: var(--brown);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-add-cart:hover {
+      background-color: var(--dark-brown);
+      transform: translateY(-1px);
+    }
+
+    .btn-order-wa {
+      background-color: #25d366;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-order-wa:hover {
+      background-color: #1fb855;
+      transform: translateY(-1px);
+    }
+
+    .stock-info {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 0.25rem;
+    }
+
+    .quantity-selector {
+      display: none;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(139, 111, 71, 0.05);
+      border-radius: 4px;
+    }
+
+    .quantity-selector.show {
+      display: block;
     }
 
     /* Order Section */
@@ -797,6 +857,67 @@
 </head>
 
 <body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #8b5e3c;">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="{{ asset('image/logo1.png') }}" alt="Wijaya Bakery" width="35" height="35" class="me-2">
+        <span class="fw-bold">Wijaya Bakery</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="#about">Tentang</a></li>
+          <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
+          <li class="nav-item"><a class="nav-link" href="#promo">Promo</a></li>
+        </ul>
+        <ul class="navbar-nav">
+          @auth
+            <!-- Cart Button -->
+            <li class="nav-item me-2">
+              <a href="{{ route('cart.index') }}" class="btn btn-outline-light position-relative">
+                <i class="bi bi-cart"></i>
+                @if(Auth::user()->cartCount() > 0)
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ Auth::user()->cartCount() }}
+                  </span>
+                @endif
+              </a>
+            </li>
+            <!-- User Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item">Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          @else
+            <li class="nav-item">
+              <a class="btn btn-outline-light me-2" href="{{ route('user.login.form') }}">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-light" href="{{ route('user.register.form') }}">
+                <i class="bi bi-person-plus me-1"></i>Daftar
+              </a>
+            </li>
+          @endauth
+        </ul>
+      </div>
+    </div>
+  </nav>
 
   <!-- WhatsApp button -->
   <a href="https://wa.me/6282236047539" target="_blank" class="whatsapp-float">
@@ -890,9 +1011,69 @@
               <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}" alt="{{ $menu->nama_menu }}" class="menu-image">
             </div>
             <div class="menu-content">
-              <h3 class="menu-name">{{ $menu->nama_menu }}</h3>
+              <h3 class="menu-name">
+                {{ $menu->nama_menu }}
+                @php
+                  $menuPromos = \App\Models\Promo::where('status', true)
+                    ->where('is_discount_active', true)
+                    ->where(function($query) use ($menu) {
+                      $query->whereNull('menu_id')->orWhere('menu_id', $menu->id);
+                    })
+                    ->where('discount_value', '>', 0)
+                    ->get();
+                  $bestPromo = $menuPromos->first();
+                @endphp
+                @if($bestPromo)
+                  <span class="badge bg-danger ms-1" style="font-size: 0.7em;">
+                    <i class="fas fa-percentage me-1"></i>
+                    @if($bestPromo->discount_type == 'percentage')
+                      {{ $bestPromo->discount_value }}%
+                    @else
+                      Rp {{ number_format($bestPromo->discount_value, 0, ',', '.') }}
+                    @endif
+                  </span>
+                @endif
+              </h3>
               <p class="menu-description">{{ Str::limit($menu->deskripsi_menu, 80) }}</p>
-              <div class="menu-price">@if($menu->stok > 0)Rp {{ number_format($menu->harga, 0, ',', '.') }}@else Stok Kosong @endif</div>
+              <div class="menu-price">
+                @if($menu->stok > 0)
+                  Rp {{ number_format($menu->harga, 0, ',', '.') }}
+                  @if($bestPromo && $bestPromo->discount_type == 'percentage' && $bestPromo->min_quantity <= 1)
+                    <small class="text-success ms-2">
+                      Diskon {{ $bestPromo->discount_value }}%
+                    </small>
+                  @endif
+                @else
+                  <span>Stok Kosong</span>
+                @endif
+              </div>
+
+              <div class="menu-actions">
+                @if($menu->stok > 0)
+                  @auth
+                    <!-- Add to Cart Button -->
+                    <button type="button" class="btn btn-add-cart" onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}')">
+                      <i class="bi bi-cart-plus me-1"></i>Tambah ke Keranjang
+                    </button>
+                  @else
+                    <!-- Login required -->
+                    <a href="{{ route('user.login.form') }}" class="btn btn-add-cart">
+                      <i class="bi bi-box-arrow-in-right me-1"></i>Login untuk Pesan
+                    </a>
+                  @endauth
+                  <div class="stock-info">Stok: {{ $menu->stok }}</div>
+                @else
+                  <!-- WhatsApp direct -->
+                  @php
+                    $waMessage = "Halo, saya ingin memesan menu: {$menu->nama_menu}. Mohon konfirmasi ketersediaan.";
+                    $waUrl = "https://wa.me/6283112116135?text=" . urlencode($waMessage);
+                  @endphp
+                  <a href="{{ $waUrl }}" target="_blank" class="btn btn-order-wa">
+                    <i class="bi bi-whatsapp me-1"></i>Pesan via WhatsApp
+                  </a>
+                  <div class="stock-info">Stok habis</div>
+                @endif
+              </div>
             </div>
           </div>
         @endforeach
@@ -926,97 +1107,55 @@
   </section>
   @endif
 
-  <!-- Order Section -->
-  <section id="order" class="order-section">
-    <div class="container">
-      <h2 class="section-title">Pesan Sekarang</h2>
-      <p class="section-subtitle">Isi form di bawah untuk memesan via WhatsApp</p>
 
 
-
-      <div class="order-container">
-        <form id="orderForm" method="POST" action="{{ route('pesanan.store.fromuser') }}" onsubmit="handleOrderSubmit(event)">
-          @csrf
-          <div class="mb-3">
-            <label for="nama_pemesan" class="form-label">Nama Lengkap</label>
-            <input type="text" name="nama_pemesan" class="form-control" id="nama_pemesan" placeholder="Masukkan nama Anda" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="no_hp" class="form-label">Nomor Telepon</label>
-            <input type="tel" name="no_hp" class="form-control" id="no_hp" placeholder="08xxxxxxxxxx" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Pilih Menu</label>
-            <div id="menuItems">
-              <div class="menu-item-row" data-index="0">
-                <div class="row g-2 align-items-end">
-                  <div class="col-md-5">
-                    <select class="form-select menu-select" required onchange="updateMenuId(this); updatePrice(this);">
-                      <option value="">Pilih Menu</option>
-                      @foreach($menus as $menu)
-                        @if($menu->stok > 0)
-                          <option value="{{ $menu->id }}|{{ $menu->harga }}">{{ $menu->nama_menu }} - Rp {{ number_format($menu->harga, 0, ',', '.') }}</option>
-                        @else
-                          <option disabled>{{ $menu->nama_menu }} - Stok Kosong</option>
-                        @endif
-                      @endforeach
-                    </select>
-                    <input type="hidden" name="menu[0][menu_id]" class="menu-id-hidden">
-                  </div>
-                  <div class="col-md-3">
-                    <input type="number" name="menu[0][jumlah]" class="form-control quantity-input" placeholder="Jumlah" min="1" value="1" required onchange="updateItemPrice(this)">
-                  </div>
-                  <div class="col-md-3">
-                    <input type="text" class="form-control item-price" placeholder="Rp 0" readonly>
-                    <input type="hidden" name="menu[0][harga_satuan]" class="harga-satuan">
-                  </div>
-                  <div class="col-md-1">
-                    <button type="button" class="btn btn-remove-menu w-100" onclick="removeMenuItem(this)" style="display:none;">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="btn btn-add-menu mt-3" onclick="addMenuItem()">
-              <i class="bi bi-plus-circle me-2"></i>Tambah Menu
-            </button>
-          </div>
-
-          <div class="total-section">
-            <div class="total-label">Total Pembayaran</div>
-            <div class="total-price" id="totalPrice">Rp 0</div>
-          </div>
-
-          <button type="submit" class="btn btn-submit-order">
-            <i class="bi bi-whatsapp"></i>
-            Submit Pemesanan
-          </button>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  {{-- <!-- Promo Section -->
+  <!-- Promo Section -->
   <section id="promo" class="promo-section">
     <div class="container">
       <h2 class="section-title">Promo Spesial</h2>
       <p class="section-subtitle">Penawaran terbaik untuk Anda</p>
-      
+
       <div class="row g-4 justify-content-center">
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          <div class="promo-card">
-            <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600" alt="Promo" class="w-100">
-            <div class="p-3 text-center">
-              <h6 class="mb-0">Diskon 20% Akhir Pekan</h6>
+        @php
+          $activePromos = \App\Models\Promo::where('status', true)->latest()->limit(6)->get();
+        @endphp
+
+        @if($activePromos->count() > 0)
+          @foreach($activePromos as $promo)
+            <div class="col-sm-6 col-md-4 col-lg-3">
+              <div class="promo-card">
+                @if($promo->gambar_promo)
+                  <img src="{{ asset('uploads/promo/' . $promo->gambar_promo) }}" alt="{{ $promo->nama_promo }}" class="w-100">
+                @else
+                  <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600" alt="Promo" class="w-100">
+                @endif
+                <div class="p-3 text-center">
+                  <h6 class="mb-2">{{ $promo->nama_promo }}</h6>
+                  @if($promo->is_discount_active && $promo->discount_value > 0)
+                    <div class="badge bg-danger mb-2">
+                      <i class="fas fa-percentage me-1"></i>
+                      @if($promo->discount_type == 'percentage')
+                        Diskon {{ $promo->discount_value }}%
+                      @else
+                        Diskon Rp {{ number_format($promo->discount_value, 0, ',', '.') }}
+                      @endif
+                    </div>
+                  @endif
+                  <p class="small text-muted mb-0">{!! Str::limit($promo->deskripsi_promo, 100) !!}</p>
+                </div>
+              </div>
             </div>
+          @endforeach
+        @else
+          <div class="col-12 text-center py-5">
+            <i class="fas fa-tags text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+            <h4 class="mt-3 text-muted">Belum ada promo aktif</h4>
+            <p class="text-muted">Tunggu promo menarik selanjutnya!</p>
           </div>
-        </div>
+        @endif
       </div>
     </div>
-  </section> --}}
+  </section>
 
   <!-- Contact Section -->
   <section id="contact" class="contact-section">
@@ -1132,6 +1271,57 @@
 
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  <!-- Add to Cart Modal -->
+  <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #8b5e3c; color: white;">
+          <h5 class="modal-title" id="addToCartModalLabel">Tambah ke Keranjang</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="addToCartForm">
+          @csrf
+          <div class="modal-body">
+            <div class="text-center mb-3">
+              <img id="modalMenuImage" src="" alt="" class="img-fluid rounded mb-2" style="width: 100px; height: 100px; object-fit: cover;">
+              <h5 id="modalMenuName"></h5>
+              <p id="modalMenuPrice" class="text-primary fw-bold"></p>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Jumlah Pesanan</label>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <button type="button" class="btn btn-outline-secondary w-100" onclick="changeQuantityModal(-1)">-</button>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control text-center" id="modalQuantity" name="quantity" value="1" min="1" max="10">
+                </div>
+                <div class="col-4">
+                  <button type="button" class="btn btn-outline-secondary w-100" onclick="changeQuantityModal(1)">+</button>
+                </div>
+              </div>
+              <div class="form-text">
+                <small>Stok tersedia: <span id="modalStock"></span></small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Total Harga</label>
+              <p class="fw-bold text-primary" id="modalTotal"></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn" style="background-color: #8b5e3c; color: white;">
+              <i class="bi bi-cart-plus me-1"></i>Tambah ke Keranjang
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1327,6 +1517,130 @@
         firstQuantity.addEventListener('input', function() { updateItemPrice(this); });
       }
     });
+
+    // Function to show add to cart modal
+    function showAddToCartModal(menuId, menuName, menuPrice, maxStock) {
+      const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
+
+      // Find menu image
+      const menuCards = document.querySelectorAll('.menu-card');
+      let menuImage = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600';
+      for (let card of menuCards) {
+        const cardName = card.querySelector('.menu-name')?.textContent;
+        if (cardName === menuName) {
+          const img = card.querySelector('.menu-image');
+          if (img) {
+            menuImage = img.src;
+          }
+          break;
+        }
+      }
+
+      // Set modal content
+      document.getElementById('modalMenuImage').src = menuImage;
+      document.getElementById('modalMenuName').textContent = menuName;
+      document.getElementById('modalMenuPrice').textContent = 'Rp ' + parseInt(menuPrice).toLocaleString('id-ID');
+      document.getElementById('modalStock').textContent = maxStock;
+      document.getElementById('modalQuantity').max = maxStock;
+      document.getElementById('modalQuantity').value = 1;
+      updateModalTotal();
+
+      // Set up form submission
+      const form = document.getElementById('addToCartForm');
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        addToCart(menuId);
+      };
+
+      modal.show();
+    }
+
+    // Function to change modal quantity
+    function changeQuantityModal(change) {
+      const input = document.getElementById('modalQuantity');
+      const newValue = parseInt(input.value) + change;
+
+      if (newValue >= 1 && newValue <= parseInt(input.max)) {
+        input.value = newValue;
+        updateModalTotal();
+      }
+    }
+
+    // Function to update modal total
+    function updateModalTotal() {
+      const quantity = parseInt(document.getElementById('modalQuantity').value);
+      const priceMatch = document.getElementById('modalMenuPrice').textContent.match(/[\d.,]+/);
+      if (priceMatch) {
+        const price = parseInt(priceMatch[0].replace(/[.,]/g, ''));
+        const total = quantity * price;
+        document.getElementById('modalTotal').textContent = 'Rp ' + total.toLocaleString('id-ID');
+      }
+    }
+
+    // Function to add item to cart
+    async function addToCart(menuId) {
+      const quantity = parseInt(document.getElementById('modalQuantity').value);
+
+      try {
+        const response = await fetch('{{ route("cart.add", ":menuId") }}'.replace(':menuId', menuId), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ quantity: quantity })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Close modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('addToCartModal'));
+          modal.hide();
+
+          // Show success message
+          showToast('Item berhasil ditambahkan ke keranjang!', 'success');
+
+          // Update cart count in navbar (you might need to reload or update this dynamically)
+          // For now, we'll refresh the page to show updated cart count
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast(data.message || 'Terjadi kesalahan', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Terjadi kesalahan saat menambahkan ke keranjang', 'error');
+      }
+    }
+
+    // Function to show toast notifications
+    function showToast(message, type = 'info') {
+      // Create toast element
+      const toastHTML = `
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 position-fixed top-0 end-0 m-3" role="alert">
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+              ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', toastHTML);
+
+      // Show toast
+      const toastElement = document.querySelector('.toast:last-child');
+      const toast = new bootstrap.Toast(toastElement);
+      toast.show();
+
+      // Remove toast after it's hidden
+      toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+      });
+    }
   </script>
 
 </body>

@@ -21,6 +21,11 @@ class User extends Authenticatable
         'username',
         'email',
         'no_telepon',
+        'province',
+        'regency',
+        'street',
+        'hamlet',
+        'address_notes',
         'password',
         'profile_picture',
         'role_id',
@@ -58,5 +63,15 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return strtolower($this->role->role_name) === 'admin';
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'user_id');
+    }
+
+    public function cartCount()
+    {
+        return $this->carts()->sum('quantity');
     }
 }

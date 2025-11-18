@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $totalPeran     = Role::count();
         $totalUser      = User::count();
@@ -24,7 +24,15 @@ class DashboardController extends Controller
         $totalSponsor   = Sponsor::count();
         $lowStockMenus  = Menu::where('stok', '<', 20)->orderBy('stok')->get();
 
-        // Sales data for the last 30 days
+        // Get year and date range from request or use defaults
+        $year = $request->get('year', now()->year);
+        $startMonth = $request->get('start_month', 1);
+        $endMonth = $request->get('end_month', 12);
+
+        // Monthly profit data for the selected year and range
+        $monthlyProfitData = $this->getMonthlyProfitData($year, $startMonth, $endMonth);
+
+        // Sales data for the last 30 days (existing feature)
         $salesData = DB::table('pesanan')
             ->select(DB::raw('DATE(created_at) as date, SUM(total_harga) as total'))
             ->where('created_at', '>=', now()->subDays(30))
@@ -32,7 +40,7 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
 
-        // Top ordered menus this month
+        // Top ordered menus this month (existing feature)
         $topMenusThisMonth = DB::table('pesanan')
             ->join('menu', 'pesanan.menu_id', '=', 'menu.id')
             ->select('menu.nama_menu', DB::raw('SUM(pesanan.jumlah) as total_ordered'))
@@ -42,12 +50,12 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        // Revenue calculations
+        // Revenue calculations (existing features)
         $revenueMonth = Pesanan::where('created_at', '>=', now()->startOfMonth())->sum('total_harga');
         $revenueYear = Pesanan::where('created_at', '>=', now()->startOfYear())->sum('total_harga');
         $revenueTotal = Pesanan::sum('total_harga');
 
-        // Order counts
+        // Order counts (existing features)
         $ordersMonth = Pesanan::where('created_at', '>=', now()->startOfMonth())->count();
         $ordersYear = Pesanan::where('created_at', '>=', now()->startOfYear())->count();
         $ordersTotal = Pesanan::count();
@@ -56,7 +64,30 @@ class DashboardController extends Controller
             'totalPeran', 'totalUser', 'totalKategori', 'totalMenu', 'totalPromo', 'totalSponsor',
             'lowStockMenus', 'salesData', 'topMenusThisMonth',
             'revenueMonth', 'revenueYear', 'revenueTotal',
-            'ordersMonth', 'ordersYear', 'ordersTotal'
+            'ordersMonth', 'ordersYear', 'ordersTotal',
+            'monthlyProfitData', 'year', 'startMonth', 'endMonth'
         ));
+    }
+
+    /**
+     * Get monthly profit data for a given year and month range
+     */
+    private function getMonthlyProfitData($year, $startMonth, $endMonth)
+    {
+        $monthlyData = [];
+
+        for ($month = $startMonth; $month <= $endMonth; $month++) {
+            $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+            $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+
+            $monthlyData[$month] = [
+                'month' => $month,
+                'month_name' => \Carbon\Carbon::create($year, $month, 1)->format('M'),
+                'revenue' => Pesanan::whereBetween('created_at', [$startDate, $endDate])->sum('total_harga'),
+                'orders' => Pesanan::whereBetween('created_at', [$startDate, $endDate])->count(),
+            ];
+        }
+
+        return $monthlyData;
     }
 }

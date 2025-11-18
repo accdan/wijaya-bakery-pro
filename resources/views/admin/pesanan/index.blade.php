@@ -28,6 +28,73 @@
 
             <section class="content">
                 <div class="container-fluid">
+                    <!-- Search and Filter Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Pencarian dan Filter</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="GET" action="{{ route('admin.pesanan.index') }}" class="mb-4">
+                                <div class="row">
+                                    <!-- Search Input -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="search">Cari Pesanan:</label>
+                                            <input type="text" name="search" id="search" class="form-control"
+                                                   placeholder="Cari nama pemesan, nomor HP, atau menu..."
+                                                   value="{{ request('search') }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Range -->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="tanggal_mulai">Tanggal Mulai:</label>
+                                            <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
+                                                   value="{{ request('tanggal_mulai') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="tanggal_akhir">Tanggal Akhir:</label>
+                                            <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
+                                                   value="{{ request('tanggal_akhir') }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Sort By -->
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="sort_by">Urutkan Berdasarkan:</label>
+                                            <select name="sort_by" id="sort_by" class="form-control">
+                                                <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Tanggal Pesan</option>
+                                                <option value="nama_pemesan" {{ request('sort_by') == 'nama_pemesan' ? 'selected' : '' }}>Nama Pemesan</option>
+                                                <option value="total_harga" {{ request('sort_by') == 'total_harga' ? 'selected' : '' }}>Total Harga</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Cari
+                                        </button>
+                                        <a href="{{ route('admin.pesanan.index') }}" class="btn btn-secondary ml-2">
+                                            <i class="fas fa-times"></i> Reset
+                                        </a>
+                                        @if(request()->hasAny(['search', 'tanggal_mulai', 'tanggal_akhir']))
+                                            <small class="text-muted ml-3">
+                                                Menampilkan hasil filter: {{ $pesanans->count() }} pesanan
+                                            </small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Orders List Card -->
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title">Daftar Pesanan</h3>
@@ -45,7 +112,10 @@
                                             <th>No HP</th>
                                             <th>Menu</th>
                                             <th>Jumlah</th>
+                                            <th>Harga Satuan</th>
                                             <th>Subtotal</th>
+                                            <th>Diskon</th>
+                                            <th>Total Akhir</th>
                                             <th>Detail</th>
                                         </tr>
                                     </thead>
@@ -57,29 +127,64 @@
                                                 $nama = $info[0];
                                                 $noHp = $info[1];
                                                 $waktu = $info[2];
-                                                $total = $group->sum('total_harga');
+                                                $totalAsli = $group->sum('total_harga');
+                                                $totalDiscount = $group->sum('discount_amount');
+                                                $totalFinal = $group->sum('final_price');
                                                 $counter++;
                                             @endphp
                                             <tr class="table-primary">
                                                 <td>{{ $counter }}</td>
                                                 <td><strong>{{ $nama }}</strong></td>
                                                 <td>{{ $noHp }}</td>
-                                                <td colspan="3" class="text-center">
+                                                <td colspan="5" class="text-center">
                                                     <strong>Waktu Pesan: {{ $waktu }}</strong><br>
-                                                    <small class="text-muted">Total Pesanan: Rp {{ number_format($total, 0, ',', '.') }}</small>
+                                                    @if($totalDiscount > 0)
+                                                        <small class="text-muted">
+                                                            Total Asli: Rp {{ number_format($totalAsli, 0, ',', '.') }} |
+                                                            Diskon: Rp {{ number_format($totalDiscount, 0, ',', '.') }} |
+                                                            Total Akhir: Rp {{ number_format($totalFinal, 0, ',', '.') }}
+                                                        </small>
+                                                    @else
+                                                        <small class="text-muted">Total Pesanan: Rp {{ number_format($totalAsli, 0, ',', '.') }}</small>
+                                                    @endif
                                                 </td>
                                                 <td class="text-center">
                                                     {{-- Group actions if needed --}}
                                                 </td>
                                             </tr>
                                             @foreach($group as $pesanan)
-                                                <tr>
+                                                <tr {{ $pesanan->discount_amount > 0 ? 'class="table-warning"' : '' }}>
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td>{{ $pesanan->menu->nama_menu ?? 'Menu tidak tersedia' }}</td>
+                                                    <td>
+                                                        {{ $pesanan->menu->nama_menu ?? 'Menu tidak tersedia' }}
+                                                        @if($pesanan->promo)
+                                                            <br><small class="text-primary"><i class="fas fa-tag me-1"></i>{{ $pesanan->promo->nama_promo }}</small>
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $pesanan->jumlah }}</td>
+                                                    <td>Rp {{ number_format($pesanan->harga_satuan, 0, ',', '.') }}</td>
                                                     <td>Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                                    <td>
+                                                        @if($pesanan->discount_amount > 0)
+                                                            <span class="text-danger">
+                                                                <i class="fas fa-arrow-down me-1"></i>
+                                                                -Rp {{ number_format($pesanan->discount_amount, 0, ',', '.') }}<br>
+                                                                <small class="text-muted">{{ ucfirst($pesanan->discount_type) }}</small>
+                                                            </span>
+                                                        @else
+                                                            <span class="text-muted">Tidak ada diskon</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <strong {{ $pesanan->discount_amount > 0 ? 'class="text-success font-weight-bold"' : '' }}>
+                                                            Rp {{ number_format($pesanan->final_price, 0, ',', '.') }}
+                                                            @if($pesanan->discount_amount > 0)
+                                                                <i class="fas fa-check-circle text-success ms-1" title="Sudah diskon"></i>
+                                                            @endif
+                                                        </strong>
+                                                    </td>
                                                     <td class="text-center">
                                                         <a href="{{ route('admin.pesanan.show', $pesanan->id) }}" class="btn btn-info btn-sm">
                                                             <i class="fas fa-eye"></i> Detail
@@ -139,11 +244,14 @@
             $("#pesananTable").DataTable({
                 "paging": true,
                 "lengthChange": false,
-                "searching": true,
-                "ordering": true,
+                "searching": false,  // Disable client-side search since we have server-side search
+                "ordering": false,   // Disable DataTables ordering since we have server-side sorting
                 "info": true,
                 "autoWidth": false,
-                "responsive": true
+                "responsive": true,
+                "language": {
+                    "emptyTable": "Tidak ada data pesanan yang sesuai dengan filter"
+                }
             });
 
             $('.delete-pesanan-btn').click(function () {
@@ -158,6 +266,16 @@
                     autohide: true
                 }).toast('show');
             @endif
+
+            // Set default date values if not set
+            if (!document.getElementById('tanggal_mulai').value) {
+                let today = new Date();
+                let thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(today.getDate() - 30);
+
+                document.getElementById('tanggal_mulai').value = thirtyDaysAgo.toISOString().split('T')[0];
+                document.getElementById('tanggal_akhir').value = today.toISOString().split('T')[0];
+            }
         });
     </script>
 </body>

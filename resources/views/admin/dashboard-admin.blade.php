@@ -124,7 +124,165 @@
                     </div>
 
 
-                    <!-- Row for Sales Analytics -->
+                    <!-- Row for Flexible Monthly Profit Chart -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-line"></i> Grafik Keuntungan Bulanan
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Date Range Filters -->
+                                    <form method="GET" class="row g-3 mb-4">
+                                        <div class="col-md-3">
+                                            <label for="year" class="form-label">Tahun</label>
+                                            <select class="form-control" id="year" name="year">
+                                                @for($y = now()->year - 2; $y <= now()->year + 1; $y++)
+                                                    <option value="{{ $y }}" @if($y == $year) selected @endif>{{ $y }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="start_month" class="form-label">Dari Bulan</label>
+                                            <select class="form-control" id="start_month" name="start_month">
+                                                @for($m = 1; $m <= 12; $m++)
+                                                    <option value="{{ $m }}" @if($m == $startMonth) selected @endif>
+                                                        {{ \Carbon\Carbon::create()->month($m)->format('M') }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="end_month" class="form-label">Sampai Bulan</label>
+                                            <select class="form-control" id="end_month" name="end_month">
+                                                @for($m = 1; $m <= 12; $m++)
+                                                    <option value="{{ $m }}" @if($m == $endMonth) selected @endif>
+                                                        {{ \Carbon\Carbon::create()->month($m)->format('M') }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary me-2">
+                                                <i class="fas fa-search"></i> Filter
+                                            </button>
+                                            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
+                                                <i class="fas fa-undo"></i> Reset
+                                            </a>
+                                        </div>
+                                    </form>
+
+                                    <!-- Monthly Profit Chart -->
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <canvas id="monthlyProfitChart" height="100"></canvas>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <!-- Profit Summary -->
+                                            <div class="card border-info">
+                                                <div class="card-header bg-info text-white">
+                                                    <h6 class="card-title mb-0">
+                                                        <i class="fas fa-info-circle"></i> Ringkasan Periode
+                                                    </h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    @php
+                                                        $totalPeriodRevenue = 0;
+                                                        $totalPeriodOrders = 0;
+                                                        $avgMonthlyRevenue = 0;
+
+                                                        if ($monthlyProfitData) {
+                                                            foreach ($monthlyProfitData as $monthData) {
+                                                                $totalPeriodRevenue += $monthData['revenue'];
+                                                                $totalPeriodOrders += $monthData['orders'];
+                                                            }
+                                                            $monthCount = count($monthlyProfitData);
+                                                            $avgMonthlyRevenue = $monthCount > 0 ? $totalPeriodRevenue / $monthCount : 0;
+                                                        }
+                                                    @endphp
+
+                                                    <div class="mb-2">
+                                                        <strong>Total Pendapatan:</strong><br>
+                                                        <span class="text-success h5">Rp {{ number_format($totalPeriodRevenue, 0, ',', '.') }}</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>Total Pesanan:</strong><br>
+                                                        <span class="text-primary h6">{{ $totalPeriodOrders }} pesanan</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>Rata-rata Bulanan:</strong><br>
+                                                        <span class="text-info">Rp {{ number_format($avgMonthlyRevenue, 0, ',', '.') }}</span>
+                                                    </div>
+                                                    <div class="mb-0">
+                                                        <strong>Jumlah Bulan:</strong><br>
+                                                        <span class="text-secondary">{{ count($monthlyProfitData ?? []) }} bulan</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Monthly Details Table -->
+                                            <div class="card mt-3">
+                                                <div class="card-header">
+                                                    <h6 class="card-title mb-0">
+                                                        <i class="fas fa-table"></i> Detail Bulanan
+                                                    </h6>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                                        <table class="table table-sm mb-0">
+                                                            <thead class="bg-light">
+                                                                <tr>
+                                                                    <th class="p-2">Bulan</th>
+                                                                    <th class="p-2">Pendapatan</th>
+                                                                    <th class="p-2">Pesanan</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if($monthlyProfitData)
+                                                                    @foreach($monthlyProfitData as $monthData)
+                                                                        <tr>
+                                                                            <td class="p-2">{{ $monthData['month_name'] }} {{ $year }}</td>
+                                                                            <td class="p-2">
+                                                                                @if($monthData['revenue'] > 0)
+                                                                                    <span class="text-success">Rp {{ number_format($monthData['revenue'], 0, ',', '.') }}</span>
+                                                                                @else
+                                                                                    <small class="text-muted">-</small>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td class="p-2">
+                                                                                @if($monthData['orders'] > 0)
+                                                                                    {{ $monthData['orders'] }}
+                                                                                @else
+                                                                                    <small class="text-muted">-</small>
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @else
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-center text-muted p-3">Tidak ada data</td>
+                                                                    </tr>
+                                                                @endif
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row for Original Sales Data & Top Menus -->
                     <div class="row">
                         <div class="col-lg-8">
                             <div class="card">
@@ -313,9 +471,114 @@
     <script src="{{ asset('resources/js/ToastScript.js') }}"></script>
 
     <script>
-        // Chart.js Sales Graph
+        // Charts
         document.addEventListener('DOMContentLoaded', function () {
-            // Sales Chart
+            // Monthly Profit Chart
+            const monthlyProfitData = @json($monthlyProfitData ?: []);
+            const profitLabels = Object.values(monthlyProfitData).map(item => item.month_name + ' ' + {{ $year }});
+            const profitValues = Object.values(monthlyProfitData).map(item => item.revenue);
+            const ordersValues = Object.values(monthlyProfitData).map(item => item.orders);
+
+            // Monthly Profit Chart
+            const profitCtx = document.getElementById('monthlyProfitChart');
+            if (profitCtx) {
+                const profitCtx2D = profitCtx.getContext('2d');
+                new Chart(profitCtx2D, {
+                    type: 'bar',
+                    data: {
+                        labels: profitLabels,
+                        datasets: [
+                            {
+                                label: 'Pendapatan (Rp)',
+                                data: profitValues,
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y',
+                            },
+                            {
+                                label: 'Jumlah Pesanan',
+                                data: ordersValues,
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y1',
+                                type: 'line',
+                                tension: 0.4,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Bulan'
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Pendapatan (Rp)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + value.toLocaleString('id-ID');
+                                    }
+                                },
+                                grid: {
+                                    drawOnChartArea: true,
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah Pesanan'
+                                },
+                                grid: {
+                                    drawOnChartArea: false,
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Grafik Keuntungan Tahun {{ $year }}`
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.datasetIndex === 0) {
+                                            label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                        } else {
+                                            label += context.parsed.y + ' pesanan';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Sales Chart (30 days)
             const salesData = @json($salesData ? $salesData->pluck('total', 'date')->toArray() : []);
             const salesLabels = Object.keys(salesData);
             const salesValues = Object.values(salesData);

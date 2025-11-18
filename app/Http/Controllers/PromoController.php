@@ -25,11 +25,24 @@ class PromoController extends Controller
         $request->validate([
             'nama_promo'       => 'required|string|max:255',
             'deskripsi_promo'  => 'nullable|string',
-            'gambar_promo'     => 'required|image|mimes:jpg,jpeg,png,webp|max:2048', // WAJIB SAAT TAMBAH
+            'gambar_promo'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status'           => 'required|boolean',
+            'menu_id'          => 'nullable|exists:menu,id',
+            'min_quantity'     => 'required|integer|min:1',
+            'discount_type'    => 'required|in:fixed,percentage',
+            'discount_value'   => 'required|numeric|min:0',
+            'is_discount_active' => 'boolean',
         ]);
 
-        $data = $request->only(['nama_promo', 'deskripsi_promo', 'status']);
+        // Additional validation for percentage discount
+        if ($request->discount_type === 'percentage' && $request->discount_value > 100) {
+            return back()->withErrors(['discount_value' => 'Persentase diskon tidak boleh lebih dari 100%'])->withInput();
+        }
+
+        $data = $request->only([
+            'nama_promo', 'deskripsi_promo', 'status', 'menu_id',
+            'min_quantity', 'discount_type', 'discount_value', 'is_discount_active'
+        ]);
 
         if ($request->hasFile('gambar_promo')) {
             $file = $request->file('gambar_promo');
@@ -38,9 +51,7 @@ class PromoController extends Controller
             $data['gambar_promo'] = $filename;
         }
 
-        $promo = new Promo($data);
-        $promo->id = (string) Str::uuid();
-        $promo->save();
+        Promo::create($data);
 
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil ditambahkan!');
     }
@@ -54,48 +65,60 @@ class PromoController extends Controller
     public function update(Request $request, $id)
     {
         $promo = Promo::findOrFail($id);
-    
+
         $request->validate([
             'nama_promo'       => 'required|string|max:255',
             'deskripsi_promo'  => 'nullable|string',
             'gambar_promo'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:20480',
             'status'           => 'required|boolean',
+            'menu_id'          => 'nullable|exists:menu,id',
+            'min_quantity'     => 'required|integer|min:1',
+            'discount_type'    => 'required|in:fixed,percentage',
+            'discount_value'   => 'required|numeric|min:0',
+            'is_discount_active' => 'boolean',
         ]);
-    
-        $data = $request->only(['nama_promo', 'deskripsi_promo', 'status']);
-    
-        // Jika ada hasil crop dari cropper
+
+        // Additional validation for percentage discount
+        if ($request->discount_type === 'percentage' && $request->discount_value > 100) {
+            return back()->withErrors(['discount_value' => 'Persentase diskon tidak boleh lebih dari 100%'])->withInput();
+        }
+
+        $data = $request->only([
+            'nama_promo', 'deskripsi_promo', 'status', 'menu_id',
+            'min_quantity', 'discount_type', 'discount_value', 'is_discount_active'
+        ]);
+
+        // Handle image upload (existing code)
         if ($request->filled('cropped_gambar_promo')) {
             $imageData = $request->input('cropped_gambar_promo');
             $imageData = str_replace('data:image/png;base64,', '', $imageData);
             $imageData = str_replace(' ', '+', $imageData);
             $imageName = time() . '_promo.png';
-    
+
             $savePath = public_path('uploads/promo/' . $imageName);
-    
-            // Hapus gambar lama
+
+            // Delete old image
             if ($promo->gambar_promo && file_exists(public_path('uploads/promo/' . $promo->gambar_promo))) {
                 unlink(public_path('uploads/promo/' . $promo->gambar_promo));
             }
-    
-            // Simpan hasil crop
+
+            // Save cropped image
             file_put_contents($savePath, base64_decode($imageData));
             $data['gambar_promo'] = $imageName;
         }
-        // Jika tidak ada crop tapi ada file yang diupload biasa
         elseif ($request->hasFile('gambar_promo')) {
             if ($promo->gambar_promo && file_exists(public_path('uploads/promo/' . $promo->gambar_promo))) {
                 unlink(public_path('uploads/promo/' . $promo->gambar_promo));
             }
-    
+
             $file = $request->file('gambar_promo');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/promo'), $filename);
             $data['gambar_promo'] = $filename;
         }
-    
+
         $promo->update($data);
-    
+
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil diperbarui!');
     }
     
