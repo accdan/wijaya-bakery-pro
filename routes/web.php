@@ -16,6 +16,12 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserAuthController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+Route::get('/promotions', [PromoController::class, 'frontendIndex'])->name('promotions.index');
+Route::get('/promo/{id}', [PromoController::class, 'frontendShow'])->name('promo.view');
+Route::post('/promo/{promoId}/add-to-cart/{menuId}', [PromoController::class, 'addToCartFromPromo'])->name('promo.add.to.cart');
+
+// User Profile Order Details
+Route::middleware(['auth'])->get('/profile/orders/{timestamp}', [UserAuthController::class, 'orderDetail'])->name('user.order.detail');
 Route::post('/pesanan/store', [PesananController::class, 'storeFromUser'])->name('pesanan.store.fromuser');
 
 // User Authentication Routes
@@ -44,10 +50,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/add/{menuId}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::patch('/cart/update/{cartId}', [CartController::class, 'updateCart'])->name('cart.update');
     Route::delete('/cart/remove/{cartId}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::delete('/cart/remove-multiple', [CartController::class, 'removeMultipleFromCart'])->name('cart.remove.multiple');
 
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/profile', [UserAuthController::class, 'profile'])->name('user.profile');
     Route::patch('/profile/address', [UserAuthController::class, 'updateAddress'])->name('user.profile.update.address');
+
+    // Indonesian Regions API
+    Route::get('/api/regencies/{provinceId}', [UserAuthController::class, 'getRegencies'])->name('api.regencies');
+    Route::get('/api/districts/{regencyId}', [UserAuthController::class, 'getDistricts'])->name('api.districts');
+    Route::get('/api/villages/{districtId}', [UserAuthController::class, 'getVillages'])->name('api.villages');
 });
 
 
@@ -58,6 +70,7 @@ Route::name('admin.')->middleware('admin')->group(function () {
     Route::resource('promo', PromoController::class);
     Route::resource('user', UserController::class);
     Route::resource('menu', MenuController::class);
+
     Route::resource('sponsor', SponsorController::class);
     Route::resource('kategori', KategoriController::class);
     Route::resource('hero', HeroController::class);

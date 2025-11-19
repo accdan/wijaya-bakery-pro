@@ -22,29 +22,59 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        $menu = Menu::findOrFail($menuId);
+        try {
+            $menu = Menu::findOrFail($menuId);
 
-        // Check stock
-        $existingCart = Cart::where('user_id', Auth::user()->id)->where('menu_id', $menuId)->first();
+            // Check stock
+            $existingCart = Cart::where('user_id', Auth::user()->id)->where('menu_id', $menuId)->first();
 
-        if ($existingCart) {
-            $newQuantity = $existingCart->quantity + $request->quantity;
-            if ($newQuantity > $menu->stok) {
-                return back()->with('error', 'Jumlah total melebihi stok yang tersedia');
+            if ($existingCart) {
+                $newQuantity = $existingCart->quantity + $request->quantity;
+                if ($newQuantity > $menu->stok) {
+                    if ($request->expectsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Jumlah total melebihi stok yang tersedia. Stok tersedia: ' . $menu->stok
+                        ], 400);
+                    }
+                    return back()->with('error', 'Jumlah total melebihi stok yang tersedia');
+                }
+                $existingCart->update(['quantity' => $newQuantity]);
+            } else {
+                if ($request->quantity > $menu->stok) {
+                    if ($request->expectsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Jumlah melebihi stok yang tersedia. Stok tersedia: ' . $menu->stok
+                        ], 400);
+                    }
+                    return back()->with('error', 'Jumlah melebihi stok yang tersedia');
+                }
+                Cart::create([
+                    'user_id' => Auth::user()->id,
+                    'menu_id' => $menuId,
+                    'quantity' => $request->quantity
+                ]);
             }
-            $existingCart->update(['quantity' => $newQuantity]);
-        } else {
-            if ($request->quantity > $menu->stok) {
-                return back()->with('error', 'Jumlah melebihi stok yang tersedia');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item berhasil ditambahkan ke keranjang!'
+                ]);
             }
-            Cart::create([
-                'user_id' => Auth::user()->id,
-                'menu_id' => $menuId,
-                'quantity' => $request->quantity
-            ]);
+
+            return back()->with('success', 'Menu berhasil ditambahkan ke keranjang');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menambahkan ke keranjang'
+                ], 500);
+            }
+            return back()->with('error', 'Terjadi kesalahan sistem');
         }
-
-        return back()->with('success', 'Menu berhasil ditambahkan ke keranjang');
     }
 
     public function updateCart(Request $request, $cartId)
@@ -70,6 +100,50 @@ class CartController extends Controller
         $cart->delete();
 
         return back()->with('success', 'Menu berhasil dihapus dari keranjang');
+    }
+
+    public function removeMultipleFromCart(Request $request)
+    {
+        $request->validate([
+            'cart_ids' => 'required|array|min:1',
+            'cart_ids.*' => 'required|integer|exists:carts,id'
+        ]);
+
+        $cartIds = $request->cart_ids;
+        $userId = Auth::user()->id;
+
+        // Verify all carts belong to current user for security
+        $cartsToDelete = Cart::where('user_id', $userId)
+            ->whereIn('id', $cartIds)
+            ->get();
+
+        if ($cartsToDelete->isEmpty()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item keranjang tidak ditemukan'
+                ], 404);
+            }
+            return back()->with('error', 'Item keranjang tidak ditemukan');
+        }
+
+        // Perform bulk deletion
+        Cart::where('user_id', $userId)->whereIn('id', $cartIds)->delete();
+
+        $deletedCount = $cartsToDelete->count();
+        $message = $deletedCount > 1
+            ? "{$deletedCount} item berhasil dihapus dari keranjang"
+            : "Item berhasil dihapus dari keranjang";
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'deleted_count' => $deletedCount
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 
 
@@ -105,17 +179,8 @@ class CartController extends Controller
         // Get active discounts
         $activeDiscounts = \App\Models\Promo::activeDiscounts()->with('menu')->get();
 
-        // Generate time-based greeting
-        $hour = now()->hour;
-        if ($hour >= 5 && $hour < 12) {
-            $greeting = "Selamat Pagi 🌄";
-        } elseif ($hour >= 12 && $hour < 15) {
-            $greeting = "Selamat Siang ☀️";
-        } elseif ($hour >= 15 && $hour < 18) {
-            $greeting = "Selamat Sore 🌇";
-        } else {
-            $greeting = "Selamat Malam 🌙";
-        }
+        // Enhanced time-based greeting with improved logic
+        $greeting = $this->getTimeBasedGreeting();
 
         // Build user address information
         $user = Auth::user();
@@ -272,5 +337,31 @@ class CartController extends Controller
         $waUrl = "https://wa.me/{$waNumber}?text=" . urlencode($waMessage);
 
         return redirect($waUrl);
+    }
+
+    /**
+     * Generate time-based greeting in Indonesian
+     */
+    private function getTimeBasedGreeting()
+    {
+        $currentHour = now()->hour; // Uses Carbon now() with proper timezone support
+
+        // More precise time ranges for Indonesian cultural norms
+        if ($currentHour >= 4 && $currentHour < 11) {
+            // Morning: 04:00 - 10:59
+            return "Selamat Pagi 🌅";
+        } elseif ($currentHour >= 11 && $currentHour < 15) {
+            // Noon: 11:00 - 14:59
+            return "Selamat Siang ☀️";
+        } elseif ($currentHour >= 15 && $currentHour < 18) {
+            // Afternoon/Early Evening: 15:00 - 17:59
+            return "Selamat Sore 🌇";
+        } elseif ($currentHour >= 0 && $currentHour < 4) {
+            // Late night: 00:00 - 03:59 (after midnight)
+            return "Selamat Malam 🌙";
+        } else {
+            // Evening/Late night: 18:00 - 23:59
+            return "Selamat Malam 🌙";
+        }
     }
 }

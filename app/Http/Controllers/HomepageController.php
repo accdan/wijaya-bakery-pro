@@ -14,7 +14,7 @@ class HomepageController extends Controller
 {
     public function index()
     {
-        $menus = Menu::latest()->paginate(10); // tampil 8 menu per halaman
+        $menus = Menu::latest()->paginate(15); // tampil 15 menu per halaman untuk memperlihatkan lebih banyak menu
         $hero = Hero::where('status', 1)->latest()->first();
         $promos = Promo::where('status', 1)->get();
         $sponsors = Sponsor::all();

@@ -41,7 +41,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
                     @auth
                         <li class="nav-item me-2">
                             <a href="{{ route('cart.index') }}" class="btn btn-outline-light position-relative">
@@ -174,7 +173,7 @@
                                     @endif
 
                                     <h5 class="mb-3">Alamat Pengiriman</h5>
-                                    <form method="POST" action="{{ route('user.profile.update.address') }}">
+                                    <form method="POST" action="{{ route('user.profile.update.address') }}" id="addressForm">
                                         @csrf
                                         @method('PATCH')
 
@@ -182,8 +181,18 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label fw-bold">Provinsi</label>
-                                                    <input type="text" class="form-control" name="province" placeholder="Contoh: Jawa Timur"
-                                                           value="{{ old('province', $user->province) }}">
+                                                    <select class="form-select" name="province" id="provinceSelect">
+                                                        <option value="">Pilih Provinsi</option>
+                                                        @php
+                                                            $regionService = new \App\Services\IndonesiaRegionService();
+                                                            $provinces = $regionService->getProvinces();
+                                                        @endphp
+                                                        @foreach($provinces as $province)
+                                                            <option value="{{ $province['id'] }}" data-name="{{ $province['name'] }}" {{ old('province', $user->province) == $province['name'] ? 'selected' : '' }}>
+                                                                {{ $province['name'] }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                     @error('province')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
@@ -192,8 +201,9 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label fw-bold">Kabupaten/Kota</label>
-                                                    <input type="text" class="form-control" name="regency" placeholder="Contoh: Kabupaten Malang"
-                                                           value="{{ old('regency', $user->regency) }}">
+                                                    <select class="form-select" name="regency" id="regencySelect">
+                                                        <option value="">Pilih Kabupaten/Kota</option>
+                                                    </select>
                                                     @error('regency')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
@@ -204,22 +214,19 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label fw-bold">Jalan</label>
-                                                    <input type="text" class="form-control" name="street" placeholder="Contoh: Jl. Sudirman No. 123"
-                                                           value="{{ old('street', $user->street) }}">
-                                                    @error('street')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
+                                                    <label class="form-label fw-bold">Kecamatan</label>
+                                                    <select class="form-select" name="district" id="districtSelect">
+                                                        <option value="">Pilih Kecamatan</option>
+                                                    </select>
+                                                    <input type="hidden" name="street" id="streetHidden">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label fw-bold">Dusun/Kampung</label>
-                                                    <input type="text" class="form-control" name="hamlet" placeholder="Contoh: Dusun Krasakan"
-                                                           value="{{ old('hamlet', $user->hamlet) }}">
-                                                    @error('hamlet')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
+                                                    <label class="form-label fw-bold">Kelurahan/Desa</label>
+                                                    <select class="form-select" name="hamlet" id="villageSelect">
+                                                        <option value="">Pilih Kelurahan/Desa</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -288,58 +295,150 @@
                                             @php
                                                 $firstItem = $orderItems->first();
                                                 $orderDate = \Carbon\Carbon::parse($timestamp);
+                                                $totalOrderPrice = $orderItems->sum('total_harga');
+                                                $totalDiscount = $orderItems->sum(fn($item) => $item->discount_amount ?? 0);
+                                                $finalPrice = $orderItems->sum(fn($item) => $item->final_price ?? $item->total_harga);
+                                                $hasDiscount = $totalDiscount > 0;
                                             @endphp
-                                            <div class="card mb-3">
-                                                <div class="card-header d-flex justify-content-between align-items-center">
-                                                    <h6 class="mb-0">
+                                            <div class="card mb-3 order-card" style="cursor: pointer;" onclick="window.location.href='{{ route('user.order.detail', $timestamp) }}'">
+                                                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                                                    <h6 class="mb-0 text-primary">
                                                         <i class="bi bi-calendar me-2"></i>
                                                         Pesanan {{ $orderDate->format('d M Y, H:i') }}
                                                     </h6>
-                                                    <span class="badge bg-success">
-                                                        <i class="bi bi-check-circle me-1"></i>Selesai
-                                                    </span>
+                                                    <div class="d-flex gap-2">
+                                                        @if($hasDiscount)
+                                                            <span class="badge bg-danger">
+                                                                <i class="bi bi-tag-fill me-1"></i>Diskon Applied
+                                                            </span>
+                                                        @endif
+                                                        <span class="badge bg-success">
+                                                            <i class="bi bi-check-circle me-1"></i>Selesai
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <div class="card-body">
-                                                    @php
-                                                        $totalOrderPrice = 0;
-                                                    @endphp
-                                                    @foreach($orderItems as $item)
-                                                        <div class="row align-items-center mb-2 pb-2 border-bottom">
-                                                            <div class="col-md-2">
-                                                                @if($item->menu)
-                                                                    <img src="{{ asset('uploads/menu/' . $item->menu->gambar_menu) }}"
-                                                                         alt="{{ $item->menu->nama_menu }}"
-                                                                         class="img-fluid rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <!-- Order Summary -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-8">
+                                                            <div class="d-flex align-items-center mb-2">
+                                                                <strong class="me-3">{{ $orderItems->count() }} item{{ $orderItems->count() > 1 ? 's' : '' }}</strong>
+                                                                @if($hasDiscount)
+                                                                    <small class="text-success">
+                                                                        <i class="bi bi-arrow-down-circle me-1"></i>
+                                                                        Hemat Rp {{ number_format($totalDiscount, 0, ',', '.') }}
+                                                                    </small>
                                                                 @endif
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <h6 class="mb-0">{{ $item->menu->nama_menu ?? 'Menu tidak ditemukan' }}</h6>
-                                                                <small class="text-muted">{{ $item->menu->deskripsi_menu ? Str::limit($item->menu->deskripsi_menu, 50) : '' }}</small>
+                                                        </div>
+                                                        <div class="col-md-4 text-end">
+                                                            @if($hasDiscount)
+                                                                <div class="text-muted small">
+                                                                    <s>Rp {{ number_format($totalOrderPrice, 0, ',', '.') }}</s>
+                                                                </div>
+                                                                <div class="h4 mb-0 text-primary">
+                                                                    <strong>Rp {{ number_format($finalPrice, 0, ',', '.') }}</strong>
+                                                                </div>
+                                                            @else
+                                                                <div class="h4 mb-0 text-primary">
+                                                                    <strong>Rp {{ number_format($totalOrderPrice, 0, ',', '.') }}</strong>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Order Items Preview -->
+                                                    @foreach($orderItems->take(3) as $item)
+                                                        <div class="row align-items-center mb-2 pb-2 {{ $loop->last ? '' : 'border-bottom' }} small">
+                                                            <div class="col-auto">
+                                                                @if($item->menu && $item->menu->gambar_menu)
+                                                                    <img src="{{ asset('uploads/menu/' . $item->menu->gambar_menu) }}"
+                                                                         alt="{{ $item->menu->nama_menu }}"
+                                                                         class="img-fluid rounded" style="width: 35px; height: 35px; object-fit: cover;">
+                                                                @else
+                                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                                                         style="width: 35px; height: 35px;">
+                                                                        <i class="bi bi-image text-muted" style="font-size: 10px;"></i>
+                                                                    </div>
+                                                                @endif
                                                             </div>
-                                                            <div class="col-md-2 text-center">
-                                                                <span class="badge bg-secondary">{{ $item->jumlah }}x</span>
+                                                            <div class="col">
+                                                                <span class="fw-medium">
+                                                                    {{ $item->menu->nama_menu ?? 'Menu tidak ditemukan' }}
+                                                                    @if($item->discount_amount && $item->discount_amount > 0)
+                                                                        <span class="badge bg-danger ms-1" style="font-size: 8px;">
+                                                                            <i class="bi bi-tag-fill"></i>
+                                                                        </span>
+                                                                    @endif
+                                                                </span>
+                                                                <small class="text-muted d-block">
+                                                                    {{ $item->jumlah }}x @ Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}
+                                                                </small>
                                                             </div>
-                                                            <div class="col-md-2 text-end">
-                                                                <strong>Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong>
+                                                            <div class="col-auto text-end">
+                                                                <small class="fw-bold">
+                                                                    Rp {{ number_format($item->total_harga, 0, ',', '.') }}
+                                                                </small>
                                                             </div>
                                                         </div>
-                                                        @php
-                                                            $totalOrderPrice += $item->total_harga;
-                                                        @endphp
                                                     @endforeach
-                                                    <div class="row mt-3">
-                                                        <div class="col-12 text-end">
-                                                            <strong class="text-primary">Total: Rp {{ number_format($totalOrderPrice, 0, ',', '.') }}</strong>
+
+                                                    @if($orderItems->count() > 3)
+                                                        <div class="text-center mt-2">
+                                                            <small class="text-muted">
+                                                                dan {{ $orderItems->count() - 3 }} item lainnya...
+                                                            </small>
                                                         </div>
+                                                    @endif
+
+                                                    <!-- Click to View Details -->
+                                                    <div class="text-center mt-3">
+                                                        <span class="text-primary small fw-medium">
+                                                            <i class="bi bi-eye me-1"></i>Klik untuk lihat detail lengkap
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
                                         @endforeach
+
+                                        <!-- Summary Stats -->
+                                        <div class="card bg-light border-0">
+                                            <div class="card-body text-center">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <h4 class="text-primary mb-1">{{ $orders->count() }}</h4>
+                                                        <small class="text-muted">Total Pesanan</small>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        @php
+                                                            $totalAllOrders = $orders->flatten()->sum('total_harga');
+                                                            $totalAllDiscounts = $orders->flatten()->sum(fn($item) => $item->discount_amount ?? 0);
+                                                        @endphp
+                                                        <h4 class="text-success mb-1">Rp {{ number_format($totalAllOrders - $totalAllDiscounts, 0, ',', '.') }}</h4>
+                                                        <small class="text-muted">Total Pembelanjaan</small>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        @php
+                                                            $discountOrders = collect($orders)->filter(function($orderItems) {
+                                                                return $orderItems->sum(fn($item) => $item->discount_amount ?? 0) > 0;
+                                                            })->count();
+                                                        @endphp
+                                                        <h4 class="text-warning mb-1">{{ $discountOrders }}</h4>
+                                                        <small class="text-muted">Pesanan Diskon</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @else
-                                        <div class="text-center py-4">
-                                            <i class="bi bi-receipt text-muted" style="font-size: 3rem;"></i>
-                                            <p class="text-muted mt-2">Belum ada riwayat pesanan</p>
-                                            <a href="/" class="btn btn-primary">Pesan Sekarang</a>
+                                        <div class="text-center py-5">
+                                            <div class="mb-4">
+                                                <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
+                                            </div>
+                                            <h5 class="mb-3">Belum Ada Riwayat Pesanan</h5>
+                                            <p class="text-muted mb-4">Mulai berbelanja untuk melihat riwayat pesanan Anda di sini.</p>
+                                            <a href="/" class="btn btn-primary">
+                                                <i class="bi bi-shop me-2"></i>Mulai Berbelanja
+                                            </a>
                                         </div>
                                     @endif
                                 </div>
@@ -359,6 +458,160 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Region API JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const provinceSelect = document.getElementById('provinceSelect');
+    const regencySelect = document.getElementById('regencySelect');
+    const districtSelect = document.getElementById('districtSelect');
+    const villageSelect = document.getElementById('villageSelect');
+
+    // User data for pre-population
+    const userData = {
+        province: '{{ $user->province }}',
+        regency: '{{ $user->regency }}',
+        district: '{{ $user->street }}',
+        village: '{{ $user->hamlet }}'
+    };
+
+    let selectedProvinceId = null;
+
+    // Province change handler
+    provinceSelect.addEventListener('change', function() {
+        const provinceId = this.value;
+        selectedProvinceId = provinceId;
+
+        resetOptions(regencySelect, 'Pilih Kabupaten/Kota');
+        resetOptions(districtSelect, 'Pilih Kecamatan');
+        resetOptions(villageSelect, 'Pilih Kelurahan/Desa');
+
+        if (provinceId) {
+            loadRegencies(provinceId);
+        }
+    });
+
+    // Regency change handler
+    regencySelect.addEventListener('change', function() {
+        const regencyName = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const regencyId = selectedOption ? selectedOption.getAttribute('data-id') : null;
+
+        resetOptions(districtSelect, 'Pilih Kecamatan');
+        resetOptions(villageSelect, 'Pilih Kelurahan/Desa');
+
+        if (regencyId) {
+            loadDistricts(regencyId);
+        }
+    });
+
+    // District change handler
+    districtSelect.addEventListener('change', function() {
+        const districtName = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const districtId = selectedOption ? selectedOption.getAttribute('data-id') : null;
+
+        resetOptions(villageSelect, 'Pilih Kelurahan/Desa');
+
+        if (districtId) {
+            loadVillages(districtId);
+        }
+    });
+
+    // Helper function to reset select options
+    function resetOptions(selectElement, defaultText) {
+        selectElement.innerHTML = `<option value="">${defaultText}</option>`;
+    }
+
+    // Load regencies for selected province
+    function loadRegencies(provinceId) {
+        fetch(`/api/regencies/${provinceId}`)
+            .then(response => response.json())
+            .then(data => {
+                resetOptions(regencySelect, 'Pilih Kabupaten/Kota');
+                data.forEach(regency => {
+                    const option = document.createElement('option');
+                    option.value = regency.name;
+                    option.textContent = regency.name;
+                    option.setAttribute('data-id', regency.id);
+                    // Pre-select if it matches user data
+                    if (userData.regency === regency.name) {
+                        option.selected = true;
+                    }
+                    regencySelect.appendChild(option);
+                });
+
+                // If user has regency data, trigger change to load districts
+                if (userData.regency) {
+                    setTimeout(() => {
+                        regencySelect.dispatchEvent(new Event('change'));
+                    }, 100);
+                }
+            })
+            .catch(error => console.error('Error loading regencies:', error));
+    }
+
+    // Load districts for selected regency
+    function loadDistricts(regencyId) {
+        fetch(`/api/districts/${regencyId}`)
+            .then(response => response.json())
+            .then(data => {
+                resetOptions(districtSelect, 'Pilih Kecamatan');
+                data.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.name;
+                    option.textContent = district.name;
+                    option.setAttribute('data-id', district.id);
+                    // Pre-select if it matches user data
+                    if (userData.district === district.name) {
+                        option.selected = true;
+                    }
+                    districtSelect.appendChild(option);
+                });
+
+                // If user has district data, trigger change to load villages
+                if (userData.district) {
+                    setTimeout(() => {
+                        districtSelect.dispatchEvent(new Event('change'));
+                    }, 100);
+                }
+            })
+            .catch(error => console.error('Error loading districts:', error));
+    }
+
+    // Load villages for selected district
+    function loadVillages(districtId) {
+        fetch(`/api/villages/${districtId}`)
+            .then(response => response.json())
+            .then(data => {
+                resetOptions(villageSelect, 'Pilih Kelurahan/Desa');
+                data.forEach(village => {
+                    const option = document.createElement('option');
+                    option.value = village.name;
+                    option.textContent = village.name;
+                    // Villages don't need IDs since they're the final level
+                    if (userData.village === village.name) {
+                        option.selected = true;
+                    }
+                    villageSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading villages:', error));
+    }
+
+    // Pre-load user's existing data on page load
+    if (userData.province) {
+        // Find the province ID by name and select it
+        const matchingOption = Array.from(provinceSelect.options).find(option =>
+            option.textContent === userData.province
+        );
+        if (matchingOption) {
+            matchingOption.selected = true;
+            provinceSelect.dispatchEvent(new Event('change'));
+        }
+    }
+});
+</script>
 
 </body>
 </html>

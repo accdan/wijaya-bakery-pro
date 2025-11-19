@@ -162,7 +162,7 @@ class UserAuthController extends Controller
         $request->validate([
             'province' => 'nullable|string|max:255',
             'regency' => 'nullable|string|max:255',
-            'street' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
             'hamlet' => 'nullable|string|max:255',
             'address_notes' => 'nullable|string|max:500',
         ]);
@@ -170,15 +170,94 @@ class UserAuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        // Get province name from API if province ID is provided
+        $provinceName = $request->province;
+        if (is_numeric($request->province)) {
+            try {
+                $regionService = new \App\Services\IndonesiaRegionService();
+                $provinces = $regionService->getProvinces();
+                $provinceData = collect($provinces)->firstWhere('id', $request->province);
+                $provinceName = $provinceData ? $provinceData['name'] : $request->province;
+            } catch (\Exception $e) {
+                $provinceName = $request->province;
+            }
+        }
+
         $user->update([
-            'province' => $request->province,
+            'province' => $provinceName,
             'regency' => $request->regency,
-            'street' => $request->street,
+            'street' => $request->district, // district field becomes street
             'hamlet' => $request->hamlet,
             'address_notes' => $request->address_notes,
         ]);
 
         return redirect()->route('user.profile')->with('success', 'Alamat berhasil diperbarui!');
+    }
+
+    // Indonesian Regions API Methods
+    public function getRegencies($provinceId)
+    {
+        $regionService = new \App\Services\IndonesiaRegionService();
+        $regencies = $regionService->getRegencies($provinceId);
+
+        return response()->json($regencies);
+    }
+
+    public function getDistricts($regencyId)
+    {
+        $regionService = new \App\Services\IndonesiaRegionService();
+        $districts = $regionService->getDistricts($regencyId);
+
+        return response()->json($districts);
+    }
+
+    public function getVillages($districtId)
+    {
+        $regionService = new \App\Services\IndonesiaRegionService();
+        $villages = $regionService->getVillages($districtId);
+
+        return response()->json($villages);
+    }
+
+    /**
+     * Display detailed view of a specific order
+     */
+    public function orderDetail($timestamp)
+    {
+        // Validate that the user owns this order
+        $user = Auth::user();
+
+        // Get order items for this timestamp, belonging to the authenticated user
+        $orderItems = \App\Models\Pesanan::where('nama_pemesan', $user->name)
+            ->where('no_hp', $user->no_telepon)
+            ->where('created_at', 'LIKE', $timestamp . '%')
+            ->with(['menu', 'promo'])
+            ->get();
+
+        if ($orderItems->isEmpty()) {
+            return redirect()->route('user.profile')->with('error', 'Order tidak ditemukan');
+        }
+
+        // Parse timestamp for display
+        $orderDate = \Carbon\Carbon::parse($timestamp);
+
+        // Calculate totals including discounts
+        $subtotal = $orderItems->sum('total_harga');
+        $discountTotal = $orderItems->sum(function($item) {
+            return $item->discount_amount ?? 0;
+        });
+        $finalTotal = $orderItems->sum(function($item) {
+            return $item->final_price ?? $item->total_harga;
+        });
+
+        return view('user.order-detail', compact(
+            'orderItems',
+            'orderDate',
+            'timestamp',
+            'subtotal',
+            'discountTotal',
+            'finalTotal'
+        ));
     }
 
     // Password Reset Methods (Simplified for Local Development)

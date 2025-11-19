@@ -282,17 +282,108 @@
                         </div>
                     </div>
 
-                    <!-- Row for Original Sales Data & Top Menus -->
+                    <!-- Row for Daily Sales Data & Top Menus -->
                     <div class="row">
                         <div class="col-lg-8">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <i class="fas fa-chart-line"></i> Grafik Penjualan 30 Hari Terakhir
+                                        <i class="fas fa-chart-line"></i> Grafik Penjualan Bulan Terpilih
                                     </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="salesChart" height="80"></canvas>
+                                    <!-- Date Range Filters -->
+                                    <form method="GET" class="row g-3 mb-4" action="{{ route('admin.dashboard') }}">
+                                        @php
+                                            // Preserve other parameters
+                                            $queryParams = request()->except(['sales_year', 'sales_month']);
+                                            $queryString = http_build_query($queryParams);
+                                        @endphp
+                                        <input type="hidden" name="year" value="{{ $year }}">
+                                        <input type="hidden" name="start_month" value="{{ $startMonth }}">
+                                        <input type="hidden" name="end_month" value="{{ $endMonth }}">
+
+                                        <div class="col-md-4">
+                                            <label for="sales_year" class="form-label">Tahun</label>
+                                            <select class="form-control" id="sales_year" name="sales_year">
+                                                @for($y = now()->year - 2; $y <= now()->year + 1; $y++)
+                                                    <option value="{{ $y }}" @if($y == $salesYear) selected @endif>{{ $y }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="sales_month" class="form-label">Bulan</label>
+                                            <select class="form-control" id="sales_month" name="sales_month">
+                                                @for($m = 1; $m <= 12; $m++)
+                                                    <option value="{{ $m }}" @if($m == $salesMonth) selected @endif>
+                                                        {{ \Carbon\Carbon::createFromFormat('m', str_pad($m, 2, '0', STR_PAD_LEFT))->format('M') }} ({{ $m }})
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary me-2">
+                                                <i class="fas fa-search"></i> Filter
+                                            </button>
+                                            <a href="{{ route('admin.dashboard', $queryParams) }}" class="btn btn-secondary">
+                                                <i class="fas fa-undo"></i> Reset
+                                            </a>
+                                        </div>
+                                    </form>
+
+                                    <canvas id="dailySalesChart" height="80"></canvas>
+
+                                    <!-- Daily Sales Summary Table -->
+                                    <div class="mt-4">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-table"></i> Ringkasan Penjualan Harian - {{ \Carbon\Carbon::createFromFormat('m', str_pad($salesMonth, 2, '0', STR_PAD_LEFT))->format('M') }} {{ $salesYear }}
+                                        </h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="bg-light">
+                                                    <tr>
+                                                        <th style="width: 80px;">Tanggal</th>
+                                                        <th>Pendapatan</th>
+                                                        <th>Jumlah Pesanan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if($dailySalesData)
+                                                        @foreach($dailySalesData as $data)
+                                                            <tr>
+                                                                <td class="text-center">{{ $data['day'] }}</td>
+                                                                <td class="text-end">
+                                                                    @if($data['total'] > 0)
+                                                                        <span class="text-success">
+                                                                            Rp {{ number_format($data['total'], 0, ',', '.') }}
+                                                                        </span>
+                                                                    @else
+                                                                        <small class="text-muted">-</small>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if($data['orders'] > 0)
+                                                                        {{ $data['orders'] }}
+                                                                    @else
+                                                                        <small class="text-muted">-</small>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr>
+                                                            <td colspan="3" class="text-center text-muted p-3">Tidak ada data</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -578,48 +669,70 @@
                 });
             }
 
-            // Sales Chart (30 days)
-            const salesData = @json($salesData ? $salesData->pluck('total', 'date')->toArray() : []);
-            const salesLabels = Object.keys(salesData);
-            const salesValues = Object.values(salesData);
+            // Daily Sales Chart (selected month)
+            const dailySalesData = @json($dailySalesData ?: []);
+            const dailySalesLabels = Object.values(dailySalesData).map(item => item.day);
+            const dailySalesValues = Object.values(dailySalesData).map(item => item.total);
 
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: salesLabels,
-                    datasets: [{
-                        label: 'Total Penjualan Per Hari',
-                        data: salesValues,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return 'Rp ' + value.toLocaleString('id-ID');
+            const dailyCtx = document.getElementById('dailySalesChart');
+            if (dailyCtx) {
+                const dailyCtx2D = dailyCtx.getContext('2d');
+                new Chart(dailyCtx2D, {
+                    type: 'line',
+                    data: {
+                        labels: dailySalesLabels,
+                        datasets: [{
+                            label: 'Penjualan Harian (Rp)',
+                            data: dailySalesValues,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Tanggal'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Pendapatan (Rp)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + value.toLocaleString('id-ID');
+                                    }
                                 }
                             }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Grafik Penjualan Harian - {{ \Carbon\Carbon::createFromFormat('m', str_pad($salesMonth, 2, '0', STR_PAD_LEFT))->format('M') }} {{ $salesYear }}`
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = 'Penjualan: Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                        const data = Object.values(dailySalesData)[context.dataIndex];
+                                        if (data && data.orders > 0) {
+                                            label += '\nJumlah Pesanan: ' + data.orders;
+                                        }
+                                        return label;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // Profit Calculator
             function calculateProfit() {

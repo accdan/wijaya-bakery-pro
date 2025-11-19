@@ -131,7 +131,7 @@
 
             $('.delete-menu-btn').click(function () {
                 let menuId = $(this).data('menu-id');
-                let deleteUrl = "{{ url('menu') }}/" + menuId;
+                let deleteUrl = "{{ route('admin.menu.index') }}/" + menuId;
                 $('#deleteForm').attr('action', deleteUrl);
             });
 

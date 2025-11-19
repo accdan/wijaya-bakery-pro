@@ -125,9 +125,14 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">Item Keranjang ({{ $carts->sum('quantity') }} item)</h5>
                                             @if($carts->count() > 1)
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <input type="checkbox" id="selectAll" class="form-check-input">
-                                                    <label for="selectAll" class="text-white mb-0 small">Pilih Semua</label>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <input type="checkbox" id="selectAll" class="form-check-input">
+                                                        <label for="selectAll" class="text-white mb-0 small">Pilih Semua</label>
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-light btn-sm" id="deleteSelectedBtn" disabled style="border-color: #dc3545; color: #dc3545;">
+                                                        <i class="bi bi-trash me-1"></i>Hapus Terpilih
+                                                    </button>
                                                 </div>
                                             @endif
                                         </div>
@@ -434,6 +439,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectAll.indeterminate = someChecked && !allChecked;
             }
             updateSummary();
+            if (typeof updateDeleteButton === 'function') {
+                updateDeleteButton();
+            }
         });
     });
 
@@ -511,6 +519,177 @@ function showNotification(message, type = 'success') {
         notification.remove();
     }, 3000);
 }
+
+// Update delete button state based on selected items
+function updateDeleteButton() {
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+    const selectedItems = document.querySelectorAll('.cart-checkbox:checked');
+
+    if (selectedItems.length > 0) {
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = `Hapus Terpilih (${selectedItems.length})`;
+    } else {
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Hapus Terpilih';
+    }
+}
+
+// Call updateDeleteButton when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    updateDeleteButton();
+});
+
+// Sequential deletion of selected items
+async function deleteSelectedItems() {
+    const selectedCheckboxes = document.querySelectorAll('.cart-checkbox:checked');
+    const selectedItems = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+    if (selectedItems.length === 0) {
+        showNotification('Pilih setidaknya satu item untuk dihapus', 'warning');
+        return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = confirm(`Apakah Anda yakin ingin menghapus ${selectedItems.length} item terpilih?`);
+    if (!confirmed) return;
+
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+    const originalText = deleteBtn.textContent;
+
+    // Initialize progress tracking
+    let totalItems = selectedItems.length;
+    let deletedCount = 0;
+    let failedCount = 0;
+
+    // Disable the button and show loading state
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Menghapus... (0/' + totalItems + ')';
+
+    try {
+        // Process deletions sequentially
+        for (let i = 0; i < selectedItems.length; i++) {
+            const cartId = selectedItems[i];
+            const cartItemElement = document.querySelector(`.cart-item[data-cart-id="${cartId}"]`);
+
+            try {
+                // Highlight the item being deleted
+                if (cartItemElement) {
+                    cartItemElement.style.backgroundColor = '#fff3cd';
+                    cartItemElement.style.borderLeft = '4px solid #ffc107';
+                }
+
+                // Send delete request
+                const response = await fetch(`{{ route('cart.remove', ':cartId') }}`.replace(':cartId', cartId), {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content') })
+                });
+
+                if (response.ok) {
+                    deletedCount++;
+
+                    // Fade out and remove the element
+                    if (cartItemElement) {
+                        cartItemElement.style.transition = 'all 0.5s ease';
+                        cartItemElement.style.opacity = '0';
+                        setTimeout(() => {
+                            cartItemElement.remove();
+
+                            // Update UI counters
+                            const remainingItems = totalItems - deletedCount - failedCount;
+                            deleteBtn.innerHTML = `<i class="bi bi-hourglass-split me-1"></i>Menghapus... (${deletedCount}/${totalItems})`;
+
+                            // Check if all items processed
+                            if (deletedCount + failedCount === totalItems) {
+                                finishDeletion(deletedCount, failedCount);
+                            }
+                        }, 500);
+                    }
+                } else {
+                    failedCount++;
+
+                    // Remove highlight from failed item
+                    if (cartItemElement) {
+                        cartItemElement.style.backgroundColor = '';
+                        cartItemElement.style.borderLeft = '';
+                    }
+
+                    console.error(`Failed to delete item ${cartId}: ${response.status}`);
+                }
+
+            } catch (error) {
+                failedCount++;
+                console.error(`Error deleting item ${cartId}:`, error);
+
+                // Remove highlight from failed item
+                if (cartItemElement) {
+                    cartItemElement.style.backgroundColor = '';
+                    cartItemElement.style.borderLeft = '';
+                }
+            }
+
+            // Add small delay between deletions for better UX
+            if (i < selectedItems.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        }
+
+    } catch (error) {
+        console.error('Error during batch deletion:', error);
+        showNotification('Terjadi kesalahan saat menghapus item', 'error');
+        deleteBtn.innerHTML = originalText;
+        deleteBtn.disabled = false;
+        return;
+    }
+}
+
+// Finish the deletion process
+function finishDeletion(deletedCount, failedCount) {
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+
+    // Update button state
+    deleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Hapus Terpilih';
+    deleteBtn.disabled = true;
+
+    // Update checkboxes and select all
+    const selectAllCheckbox = document.getElementById('selectAll');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    }
+
+    // Update summary and UI
+    updateSummary();
+
+    // Show final notification
+    if (failedCount === 0) {
+        showNotification(`${deletedCount} item berhasil dihapus dari keranjang`, 'success');
+    } else if (deletedCount > 0) {
+        showNotification(`${deletedCount} item berhasil dihapus, ${failedCount} item gagal dihapus`, 'warning');
+    } else {
+        showNotification('Gagal menghapus item. Silakan coba lagi', 'error');
+    }
+
+    // Refresh page if all items were deleted to update the empty cart state
+    const remainingItems = document.querySelectorAll('.cart-item').length;
+    if (remainingItems === 0) {
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    }
+}
+
+// Attach event listener to delete button
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', deleteSelectedItems);
+    }
+});
 
 // Make showNotification available globally
 window.showNotification = showNotification;

@@ -32,6 +32,13 @@ class DashboardController extends Controller
         // Monthly profit data for the selected year and range
         $monthlyProfitData = $this->getMonthlyProfitData($year, $startMonth, $endMonth);
 
+        // Get parameters for daily sales chart (selected month)
+        $salesYear = $request->get('sales_year', now()->year);
+        $salesMonth = $request->get('sales_month', now()->month);
+
+        // Daily sales data for the selected month
+        $dailySalesData = $this->getDailySalesData($salesYear, $salesMonth);
+
         // Sales data for the last 30 days (existing feature)
         $salesData = DB::table('pesanan')
             ->select(DB::raw('DATE(created_at) as date, SUM(total_harga) as total'))
@@ -65,7 +72,8 @@ class DashboardController extends Controller
             'lowStockMenus', 'salesData', 'topMenusThisMonth',
             'revenueMonth', 'revenueYear', 'revenueTotal',
             'ordersMonth', 'ordersYear', 'ordersTotal',
-            'monthlyProfitData', 'year', 'startMonth', 'endMonth'
+            'monthlyProfitData', 'year', 'startMonth', 'endMonth',
+            'dailySalesData', 'salesYear', 'salesMonth'
         ));
     }
 
@@ -89,5 +97,45 @@ class DashboardController extends Controller
         }
 
         return $monthlyData;
+    }
+
+    /**
+     * Get daily sales data for a given year and month
+     */
+    private function getDailySalesData($year, $month)
+    {
+        $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+
+        $dailyData = DB::table('pesanan')
+            ->select(DB::raw('DATE(created_at) as date, SUM(total_harga) as total, COUNT(*) as orders'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        // Fill missing dates with zero values
+        $daysInMonth = $startDate->daysInMonth;
+        $filledData = [];
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = sprintf('%04d-%02d-%02d', $year, $month, $day);
+            $filledData[$date] = isset($dailyData[$date])
+                ? [
+                    'date' => $date,
+                    'total' => (float)$dailyData[$date]->total,
+                    'orders' => (int)$dailyData[$date]->orders,
+                    'day' => $day
+                ]
+                : [
+                    'date' => $date,
+                    'total' => 0,
+                    'orders' => 0,
+                    'day' => $day
+                ];
+        }
+
+        return $filledData;
     }
 }

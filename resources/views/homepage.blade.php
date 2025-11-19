@@ -331,11 +331,32 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
+      cursor: pointer;
+      position: relative;
+      border: 2px solid transparent;
     }
 
     .menu-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-color: rgba(139, 111, 71, 0.3);
+    }
+
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(139, 111, 71, 0.05), rgba(213, 182, 150, 0.05));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .menu-card:hover::before {
+      opacity: 1;
     }
 
     .menu-image-container {
@@ -437,7 +458,7 @@
     .stock-info {
       font-size: 0.8rem;
       color: var(--text-secondary);
-      text-align: center;
+      text-align: left;
       margin-top: 0.25rem;
     }
 
@@ -753,6 +774,152 @@
       color: white;
     }
 
+    /* Enhanced Navbar */
+    .navbar {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(253, 250, 247, 0.95)) !important;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(139, 111, 71, 0.1);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      padding: 0.5rem 0;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--brown) !important;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      transform: translateY(-1px);
+      color: var(--dark-brown) !important;
+    }
+
+    .navbar-brand img {
+      filter: brightness(1.1) contrast(1.2);
+      transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover img {
+      transform: scale(1.05);
+    }
+
+    .navbar-nav .nav-link {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 1rem;
+      color: var(--brown) !important;
+      padding: 0.5rem 1.2rem !important;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .navbar-nav .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(139, 111, 71, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .navbar-nav .nav-link:hover::before {
+      left: 100%;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: var(--dark-brown) !important;
+      background-color: rgba(139, 111, 71, 0.05) !important;
+      transform: translateY(-2px);
+    }
+
+    .navbar-toggler {
+      border: 2px solid rgba(139, 111, 71, 0.3) !important;
+      border-radius: 8px !important;
+      padding: 0.4rem 0.6rem !important;
+      background: rgba(255, 255, 255, 0.8) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .navbar-toggler:hover {
+      background: rgba(139, 111, 71, 0.1) !important;
+      border-color: var(--brown) !important;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(139, 111, 71, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+    }
+
+    .btn-outline-light {
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-color: var(--brown) !important;
+      color: var(--brown) !important;
+      border-radius: 8px !important;
+      padding: 0.5rem 1rem !important;
+      font-weight: 600 !important;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-outline-light:hover {
+      background: var(--brown) !important;
+      color: white !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(139, 111, 71, 0.3) !important;
+    }
+
+    .btn-light {
+      background: linear-gradient(135deg, var(--brown), var(--dark-brown)) !important;
+      border: none !important;
+      color: white !important;
+      border-radius: 8px !important;
+      padding: 0.5rem 1rem !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-light:hover {
+      background: linear-gradient(135deg, var(--dark-brown), #4a3f35) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4) !important;
+      color: white !important;
+    }
+
+    .dropdown-menu {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(139, 111, 71, 0.2) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+      margin-top: 0.5rem !important;
+    }
+
+    .dropdown-item {
+      color: var(--brown) !important;
+      font-weight: 500 !important;
+      padding: 0.5rem 1rem !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(139, 111, 71, 0.1) !important;
+      color: var(--dark-brown) !important;
+      transform: translateX(4px) !important;
+    }
+
+    .badge {
+      background: linear-gradient(135deg, #dc3545, #c82333) !important;
+      font-weight: 600 !important;
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .hero h1 {
@@ -939,57 +1106,22 @@
       </div>
     </div>
   </section>
-<!-- About Section -->
-<section id="about" class="about-section">
+<!-- About Section - Simplified -->
+<section id="about" class="py-5" style="background-color: var(--cream);">
     <div class="container">
-        <div class="row align-items-center g-5">
+        <div class="row align-items-center">
             <div class="col-lg-6">
-                <div class="about-content-card">
-                    <div class="section-badge">About Us</div>
-                    <h2 class="section-title-about">Tradisi Rasa Sejak 1990</h2>
-                    <p class="about-subtitle">Mewarisi resep turun-temurun dengan bahan berkualitas tinggi</p>
-                    <div class="about-description">
-                        {!! $data->about_deskripsi ?? '<p>Didirikan sejak tahun 1990, Wijaya Bakery telah menjadi bagian dari cerita rasa yang tak terlupakan. Kami menggabungkan resep tradisional dengan sentuhan modern untuk memberikan pengalaman kuliner yang luar biasa.</p>' !!}
-                    </div>
-                    <div class="about-features">
-                        <div class="feature-item">
-                            <i class="fas fa-award text-primary"></i>
-                            <div class="feature-text">
-                                <strong>33+</strong>
-                                <span>Tahun Pengalaman</span>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-heart text-danger"></i>
-                            <div class="feature-text">
-                                <strong>10K+</strong>
-                                <span>Pelanggan Puas</span>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-utensils text-warning"></i>
-                            <div class="feature-text">
-                                <strong>50+</strong>
-                                <span>Variasi Menu</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <img src="{{ asset('images/bakery1.jpeg') }}" alt="Wijaya Bakery" class="img-fluid rounded fade-in-left" style="box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
             </div>
-
             <div class="col-lg-6">
-                <div class="about-image-container">
-                    <img src="{{ asset('images/bakery1.jpeg') }}"
-                         alt="Wijaya Bakery"
-                         class="about-main-image">
-                    <div class="about-image-overlay">
-                        <img src="{{ asset('images/bakery2.jpeg') }}"
-                             alt="Fresh Bakery"
-                             class="about-small-image">
-                    </div>
-                    <div class="floating-element">
-                        <i class="fas fa-star"></i>
-                    </div>
+                <div class="ps-lg-4 mt-4 mt-lg-0">
+                    <h2 class="mb-3" style="color: var(--text-primary); font-weight: 600;">Tentang Wijaya Bakery</h2>
+                    <p class="lead mb-3" style="color: var(--text-secondary);">
+                        {!! $data->about_deskripsi ?? 'Didiri kami telah lebih dari 30 tahun melayani masyarakat dengan produk roti dan kue berkualitas tinggi. Kami menggunakan bahan-bahan alami dan resep turun temurun untuk memberikan pengalaman rasa terbaik kepada pelanggan.' !!}
+                    </p>
+                    <p class="mb-4" style="color: var(--text-secondary); line-height: 1.7;">
+                        Dari pagi hingga malam, jenis bakery ini siap memanjakan lidah Anda dengan berbagai macam roti dan kue segar setiap hari. Dedikasi kami dalam menciptakan produk yang enak dan berkualitas telah membuat bakery ini menjadi pilihan favorit masyarakat setempat.
+                    </p>
                 </div>
             </div>
         </div>
@@ -1006,7 +1138,7 @@
       <div class="menu-grid">
         @foreach($menus as $menu)
           <!-- Menu Item -->
-          <div class="menu-card">
+          <div class="menu-card" @if($menu->stok > 0 && auth()->check()) onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}')" @endif>
             <div class="menu-image-container">
               <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}" alt="{{ $menu->nama_menu }}" class="menu-image">
             </div>
@@ -1014,22 +1146,21 @@
               <h3 class="menu-name">
                 {{ $menu->nama_menu }}
                 @php
-                  $menuPromos = \App\Models\Promo::where('status', true)
-                    ->where('is_discount_active', true)
-                    ->where(function($query) use ($menu) {
-                      $query->whereNull('menu_id')->orWhere('menu_id', $menu->id);
-                    })
-                    ->where('discount_value', '>', 0)
-                    ->get();
-                  $bestPromo = $menuPromos->first();
+                  // Use the enhanced Menu model to get best promo
+                  $bestPromo = $menu->getBestPromotion(1); // Check for minimum 1 quantity
                 @endphp
                 @if($bestPromo)
+                  @php
+                    $promoDisplay = $menu->getPromotionDisplay(1);
+                  @endphp
                   <span class="badge bg-danger ms-1" style="font-size: 0.7em;">
                     <i class="fas fa-percentage me-1"></i>
-                    @if($bestPromo->discount_type == 'percentage')
-                      {{ $bestPromo->discount_value }}%
+                    @if($bestPromo->discount_type == 'percentage' && $promoDisplay)
+                      {{ $promoDisplay['discount_text'] }}
+                    @elseif($bestPromo->discount_type == 'fixed' && $promoDisplay)
+                      {{ $promoDisplay['discount_text'] }}
                     @else
-                      Rp {{ number_format($bestPromo->discount_value, 0, ',', '.') }}
+                      Promo!
                     @endif
                   </span>
                 @endif
@@ -1048,20 +1179,15 @@
                 @endif
               </div>
 
-              <div class="menu-actions">
+              <div class="menu-actions d-none d-lg-block">
                 @if($menu->stok > 0)
                   @auth
-                    <!-- Add to Cart Button -->
-                    <button type="button" class="btn btn-add-cart" onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}')">
-                      <i class="bi bi-cart-plus me-1"></i>Tambah ke Keranjang
-                    </button>
+                    <div class="stock-info">Tersedia {{ $menu->stok }}</div>
                   @else
-                    <!-- Login required -->
-                    <a href="{{ route('user.login.form') }}" class="btn btn-add-cart">
-                      <i class="bi bi-box-arrow-in-right me-1"></i>Login untuk Pesan
-                    </a>
+                    <div class="text-center mb-2">
+                      <small class="text-muted">Login untuk pesan</small>
+                    </div>
                   @endauth
-                  <div class="stock-info">Stok: {{ $menu->stok }}</div>
                 @else
                   <!-- WhatsApp direct -->
                   @php
@@ -1081,27 +1207,42 @@
     </div>
   </section>
 
-  <!-- Popular Menu Section -->
+  <!-- Popular Menu Section - Minimalist Horizontal -->
   @if($topMenusThisMonth->count() > 0)
-  <section id="popular" class="menu-section" style="background-color: var(--sage);">
+  <section id="popular" class="py-5" style="background-color: var(--warm-white);">
     <div class="container">
-      <h2 class="section-title">Menu Terlaris Bulan Ini</h2>
-      <p class="section-subtitle">Menu favorit pelanggan bulan ini</p>
-
-      <div class="menu-grid">
-        @foreach($topMenusThisMonth as $menu)
-          <!-- Popular Menu Item -->
-          <div class="menu-card">
-            <div class="menu-image-container">
-              <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}" alt="{{ $menu->nama_menu }}" class="menu-image">
+      <div class="row align-items-center">
+        <div class="col-lg-4">
+          <h3 class="mb-0" style="color: var(--text-primary); font-weight: 600; font-size: 1.8rem;">Menu Terlaris Bulan Ini</h3>
+          <p class="text-muted mb-0 mt-2" style="font-size: 1rem;">Dipilih oleh banyak pelanggan</p>
+        </div>
+        <div class="col-lg-8">
+          <div class="d-flex gap-3 overflow-x-auto pb-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+            <style>
+              .overflow-x-auto::-webkit-scrollbar { display: none; }
+            </style>
+            @foreach($topMenusThisMonth->take(5) as $menu)
+            <div class="flex-shrink-0" style="width: 200px;">
+              <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="row g-0 align-items-center">
+                  <div class="col-5">
+                    <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400' }}" class="img-fluid" style="border-radius: 12px 0 0 12px; height: 80px; object-fit: cover;">
+                  </div>
+                  <div class="col-7">
+                    <div class="card-body p-3">
+                      <h6 class="card-title mb-1" style="font-size: 0.9rem; font-weight: 600; line-height: 1.2;">{{ $menu->nama_menu }}</h6>
+                      <div class="d-flex align-items-center text-warning" style="font-size: 0.8rem;">
+                        <i class="fas fa-star me-1"></i>
+                        <span>{{ $menu->total_ordered }} terjual</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="menu-content">
-              <h3 class="menu-name">{{ $menu->nama_menu }}</h3>
-              <p class="menu-description">Terlaris bulan ini</p>
-              <div class="menu-price"><i class="fas fa-star text-warning"></i> {{ $menu->total_ordered }} porsi terjual</div>
-            </div>
+            @endforeach
           </div>
-        @endforeach
+        </div>
       </div>
     </div>
   </section>
@@ -1109,52 +1250,97 @@
 
 
 
-  <!-- Promo Section -->
-  <section id="promo" class="promo-section">
+  <!-- Promo Section - Simple Highlights -->
+  <section id="promo" class="py-5" style="background: linear-gradient(45deg, #FF6B6B, #FF8E53); color: white; position: relative; overflow: hidden;">
     <div class="container">
-      <h2 class="section-title">Promo Spesial</h2>
-      <p class="section-subtitle">Penawaran terbaik untuk Anda</p>
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="position-relative" style="z-index: 2;">
+            <h2 class="display-4 fw-bold mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Promo Spesial</h2>
+            <p class="lead mb-4" style="opacity: 0.9;">Penawaran khusus untuk hari ini!</p>
 
-      <div class="row g-4 justify-content-center">
-        @php
-          $activePromos = \App\Models\Promo::where('status', true)->latest()->limit(6)->get();
-        @endphp
+            @php
+              $featuredPromo = \App\Models\Promo::where('status', true)->where('is_discount_active', true)->latest()->first();
+            @endphp
 
-        @if($activePromos->count() > 0)
-          @foreach($activePromos as $promo)
-            <div class="col-sm-6 col-md-4 col-lg-3">
-              <div class="promo-card">
-                @if($promo->gambar_promo)
-                  <img src="{{ asset('uploads/promo/' . $promo->gambar_promo) }}" alt="{{ $promo->nama_promo }}" class="w-100">
-                @else
-                  <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600" alt="Promo" class="w-100">
-                @endif
-                <div class="p-3 text-center">
-                  <h6 class="mb-2">{{ $promo->nama_promo }}</h6>
-                  @if($promo->is_discount_active && $promo->discount_value > 0)
-                    <div class="badge bg-danger mb-2">
-                      <i class="fas fa-percentage me-1"></i>
-                      @if($promo->discount_type == 'percentage')
-                        Diskon {{ $promo->discount_value }}%
-                      @else
-                        Diskon Rp {{ number_format($promo->discount_value, 0, ',', '.') }}
-                      @endif
-                    </div>
-                  @endif
-                  <p class="small text-muted mb-0">{!! Str::limit($promo->deskripsi_promo, 100) !!}</p>
+            @if($featuredPromo)
+              <div class="bg-white text-dark p-4 rounded-3 shadow-lg mb-4" style="border-left: 5px solid #FF6B6B;">
+                <div class="d-flex align-items-start">
+                  <div class="flex-shrink-0 me-3">
+                    @if($featuredPromo->gambar_promo)
+                      <img src="{{ asset('uploads/promo/' . $featuredPromo->gambar_promo) }}" alt="{{ $featuredPromo->nama_promo }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                    @else
+                      <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fas fa-percentage fa-lg"></i>
+                      </div>
+                    @endif
+                  </div>
+                  <div class="flex-grow-1">
+                    <h4 class="mb-1">{{ $featuredPromo->nama_promo }}</h4>
+                    @if($featuredPromo->is_discount_active && $featuredPromo->discount_value > 0)
+                      <div class="badge bg-danger mb-2" style="font-size: 0.9em;">
+                        <i class="fas fa-star me-1"></i>
+                        @if($featuredPromo->discount_type == 'percentage')
+                          Diskon {{ $featuredPromo->discount_value }}%
+                        @else
+                          Diskon Rp {{ number_format($featuredPromo->discount_value, 0, ',', '.') }}
+                        @endif
+                      </div>
+                    @endif
+                    <p class="mb-0" style="font-size: 0.9em; opacity: 0.8;">{!! Str::limit($featuredPromo->deskripsi_promo, 150) !!}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          @endforeach
-        @else
-          <div class="col-12 text-center py-5">
-            <i class="fas fa-tags text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
-            <h4 class="mt-3 text-muted">Belum ada promo aktif</h4>
-            <p class="text-muted">Tunggu promo menarik selanjutnya!</p>
+            @endif
+
+            <a href="#menu" class="btn btn-light btn-lg fw-bold px-4" style="border-radius: 30px;">
+              <i class="fas fa-arrow-down me-2"></i>Lihat Menu Lengkap
+            </a>
           </div>
-        @endif
+        </div>
+        <div class="col-lg-6">
+          <div class="position-relative">
+            <!-- Decorative elements -->
+            <div class="position-absolute" style="top: -50px; right: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+            <div class="position-absolute" style="bottom: -20px; left: -50px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+
+            <!-- Promo highlights -->
+            @php
+              $otherPromos = \App\Models\Promo::where('status', true)->where('is_discount_active', true)->latest()->skip(1)->take(3)->get();
+            @endphp
+
+            @if($otherPromos->count() > 0)
+              <div class="row g-3">
+                @foreach($otherPromos as $promo)
+                <div class="col-6">
+                  <div class="bg-white bg-opacity-25 backdrop-blur-sm text-white p-3 rounded-3 border border-white border-opacity-25 h-100">
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="fas fa-fire text-warning me-2"></i>
+                      <h6 class="mb-0 fw-bold">{{ $promo->nama_promo }}</h6>
+                    </div>
+                    <p class="small mb-2" style="opacity: 0.9;">{!! Str::limit($promo->deskripsi_promo, 50) !!}</p>
+                    @if($promo->discount_value > 0)
+                      <div class="badge bg-warning text-dark">
+                        @if($promo->discount_type == 'percentage')
+                          {{ $promo->discount_value }}% OFF
+                        @else
+                          Rp {{ number_format($promo->discount_value, 0, '.', '.') }}
+                        @endif
+                      </div>
+                    @endif
+                  </div>
+                </div>
+                @endforeach
+              </div>
+            @endif
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Background decoration -->
+    <div class="position-absolute" style="top: 0; right: 0; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; transform: translate(50%, -50%);"></div>
+    <div class="position-absolute" style="bottom: 0; left: 0; width: 200px; height: 200px; background: rgba(255,255,255,0.03); border-radius: 50%; transform: translate(-50%, 50%);"></div>
   </section>
 
   <!-- Contact Section -->
@@ -1272,53 +1458,60 @@
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <!-- Add to Cart Modal -->
+  <!-- Add to Cart Modal - Elegant Vertical Design -->
   <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header" style="background-color: #8b5e3c; color: white;">
-          <h5 class="modal-title" id="addToCartModalLabel">Tambah ke Keranjang</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form id="addToCartForm">
-          @csrf
-          <div class="modal-body">
-            <div class="text-center mb-3">
-              <img id="modalMenuImage" src="" alt="" class="img-fluid rounded mb-2" style="width: 100px; height: 100px; object-fit: cover;">
-              <h5 id="modalMenuName"></h5>
-              <p id="modalMenuPrice" class="text-primary fw-bold"></p>
-            </div>
+    <div class="modal-dialog" style="max-width: 320px; position: absolute; top: 50%; left: 20%; transform: translateY(-50%); margin: 0;">
+      <div class="modal-content" style="border-radius: 32px; border: none; height: auto; min-height: 480px;">
+        <div class="modal-body text-center p-5 d-flex flex-column" style="background: linear-gradient(135deg, #8b6f47, #d4b896); color: white; height: 100%; border-radius: 32px;">
+          <!-- Minimalist Image Container -->
+          <div class="mb-4 flex-shrink-0">
+            <img id="modalMenuImage" src="" alt="" class="rounded-circle mx-auto d-block" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.9); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+          </div>
 
+          <!-- Item Details -->
+          <div class="mb-4 flex-grow-1">
+            <h6 id="modalMenuName" class="fw-bold mb-3" style="font-size: 1.4rem; line-height: 1.3;"></h6>
             <div class="mb-3">
-              <label class="form-label">Jumlah Pesanan</label>
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <button type="button" class="btn btn-outline-secondary w-100" onclick="changeQuantityModal(-1)">-</button>
-                </div>
-                <div class="col-4">
-                  <input type="number" class="form-control text-center" id="modalQuantity" name="quantity" value="1" min="1" max="10">
-                </div>
-                <div class="col-4">
-                  <button type="button" class="btn btn-outline-secondary w-100" onclick="changeQuantityModal(1)">+</button>
-                </div>
-              </div>
-              <div class="form-text">
-                <small>Stok tersedia: <span id="modalStock"></span></small>
-              </div>
+              <div class="text-white-50 small mb-1">Harga Satuan</div>
+              <div id="modalMenuPrice" class="fw-semibold" style="font-size: 1.1rem;"></div>
             </div>
-
-            <div class="mb-3">
-              <label class="form-label">Total Harga</label>
-              <p class="fw-bold text-primary" id="modalTotal"></p>
+            <div class="mb-4">
+              <div class="text-white-50 small mb-1">Stok Tersedia</div>
+              <div id="modalStock" class="badge bg-white bg-opacity-25 text-white py-2 px-3 rounded-pill" style="font-size: 0.9rem;"></div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn" style="background-color: #8b5e3c; color: white;">
-              <i class="bi bi-cart-plus me-1"></i>Tambah ke Keranjang
+
+          <!-- Quantity Controls - Simplified -->
+          <form id="addToCartForm" class="flex-shrink-0 w-100">
+            @csrf
+            <div class="d-flex align-items-center justify-content-between mb-4 px-3">
+              <button type="button" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: none;" onclick="changeQuantityModal(-1)">
+                <i class="bi bi-dash fs-5"></i>
+              </button>
+
+              <div class="flex-grow-1 mx-3">
+                <div class="bg-white bg-opacity-25 rounded-pill d-flex align-items-center justify-content-center py-2 px-4">
+                  <span class="text-white fw-semibold fs-5" id="modalQuantity">1</span>
+                  <input type="hidden" name="quantity" id="modalQuantityInput" value="1" min="1">
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: none;" onclick="changeQuantityModal(1)">
+                <i class="bi bi-plus fs-5"></i>
+              </button>
+            </div>
+
+            <!-- Total and Add Button -->
+            <div class="mb-4">
+              <div class="text-white-50 small mb-1">Total Pembayaran</div>
+              <div id="modalTotal" class="fw-bold" style="font-size: 1.3rem;"></div>
+            </div>
+
+            <button type="submit" class="btn btn-outline-light w-100 py-3 rounded-pill" style="border-color: white; border-width: 2px; color: white; font-weight: 600; font-size: 1rem;">
+              <i class="bi bi-cart-plus-fill me-2"></i>Tambah ke Keranjang
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -1557,19 +1750,24 @@
 
     // Function to change modal quantity
     function changeQuantityModal(change) {
-      const input = document.getElementById('modalQuantity');
-      const newValue = parseInt(input.value) + change;
+      const quantitySpan = document.getElementById('modalQuantity');
+      const quantityInput = document.getElementById('modalQuantityInput');
+      const currentValue = parseInt(quantitySpan.textContent) || 1;
+      const maxStock = parseInt(document.getElementById('modalStock').textContent.replace(/\D/g, '')) || 999;
+      const newValue = currentValue + change;
 
-      if (newValue >= 1 && newValue <= parseInt(input.max)) {
-        input.value = newValue;
+      if (newValue >= 1 && newValue <= maxStock) {
+        quantitySpan.textContent = newValue;
+        quantityInput.value = newValue;
         updateModalTotal();
       }
     }
 
     // Function to update modal total
     function updateModalTotal() {
-      const quantity = parseInt(document.getElementById('modalQuantity').value);
-      const priceMatch = document.getElementById('modalMenuPrice').textContent.match(/[\d.,]+/);
+      const quantity = parseInt(document.getElementById('modalQuantity').textContent) || 1;
+      const priceText = document.getElementById('modalMenuPrice').textContent;
+      const priceMatch = priceText.match(/[\d.,]+/);
       if (priceMatch) {
         const price = parseInt(priceMatch[0].replace(/[.,]/g, ''));
         const total = quantity * price;
@@ -1618,13 +1816,12 @@
     function showToast(message, type = 'info') {
       // Create toast element
       const toastHTML = `
-        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 position-fixed top-0 end-0 m-3" role="alert">
-          <div class="d-flex">
-            <div class="toast-body">
-              <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        <div class="toast align-items-center text-white border-0 position-fixed top-50 start-50 translate-middle ${type === 'success' ? 'bg-success' : 'bg-danger'}" role="alert" style="z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+          <div class="d-flex p-3">
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-3 fs-4"></i>
+            <div class="toast-body fw-bold">
               ${message}
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
           </div>
         </div>
       `;
@@ -1633,13 +1830,12 @@
 
       // Show toast
       const toastElement = document.querySelector('.toast:last-child');
-      const toast = new bootstrap.Toast(toastElement);
-      toast.show();
+      toastElement.style.display = 'block';
 
-      // Remove toast after it's hidden
-      toastElement.addEventListener('hidden.bs.toast', () => {
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
         toastElement.remove();
-      });
+      }, 3000);
     }
   </script>
 
