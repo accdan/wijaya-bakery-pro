@@ -14,6 +14,110 @@ class MenuController extends Controller
         return view('admin.menu.index', compact('menus'));
     }
 
+    public function publicIndex(Request $request)
+    {
+        // Get query parameters
+        $search = $request->get('search');
+        $kategori = $request->get('kategori');
+        $sortBy = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        // Start query with relationships
+        $query = Menu::with('kategori');
+
+        // Apply search filter
+        if ($search) {
+            $query->where('nama_menu', 'like', '%' . $search . '%')
+                  ->orWhere('deskripsi_menu', 'like', '%' . $search . '%');
+        }
+
+        // Apply category filter
+        if ($kategori) {
+            $query->where('kategori_id', $kategori);
+        }
+
+        // Only show menus with stock > 0
+        $query->where('stok', '>', 0);
+
+        // Apply sorting
+        switch ($sortBy) {
+            case 'nama':
+                $query->orderBy('nama_menu', $sortDirection);
+                break;
+            case 'harga_asc':
+                $query->orderBy('harga', 'asc');
+                break;
+            case 'harga_desc':
+                $query->orderBy('harga', 'desc');
+                break;
+            case 'terbaru':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('nama_menu', 'asc');
+        }
+
+        // Paginate results
+        $menus = $query->paginate(12)->withQueryString();
+
+        // Get all categories for filter dropdown
+        $kategoris = Kategori::all();
+
+        return view('menu.index', compact('menus', 'kategoris', 'search', 'kategori', 'sortBy', 'sortDirection'));
+    }
+
+    public function allMenuIndex(Request $request)
+    {
+        // Get query parameters
+        $search = $request->get('search');
+        $kategori = $request->get('kategori');
+        $sortBy = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        // Start query with relationships
+        $query = Menu::with('kategori');
+
+        // Apply search filter
+        if ($search) {
+            $query->where('nama_menu', 'like', '%' . $search . '%')
+                  ->orWhere('deskripsi_menu', 'like', '%' . $search . '%');
+        }
+
+        // Apply category filter
+        if ($kategori) {
+            $query->where('kategori_id', $kategori);
+        }
+
+        // Only show menus with stock > 0
+        $query->where('stok', '>', 0);
+
+        // Apply sorting
+        switch ($sortBy) {
+            case 'nama':
+                $query->orderBy('nama_menu', $sortDirection);
+                break;
+            case 'harga_asc':
+                $query->orderBy('harga', 'asc');
+                break;
+            case 'harga_desc':
+                $query->orderBy('harga', 'desc');
+                break;
+            case 'terbaru':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('nama_menu', 'asc');
+        }
+
+        // Paginate results
+        $menus = $query->paginate(12)->withQueryString();
+
+        // Get all categories for filter dropdown
+        $kategoris = Kategori::all();
+
+        return view('all-menu.index', compact('menus', 'kategoris', 'search', 'kategori', 'sortBy', 'sortDirection'));
+    }
+
     public function create()
     {
         $kategoris = Kategori::all();

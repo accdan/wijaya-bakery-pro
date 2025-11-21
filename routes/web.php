@@ -16,6 +16,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserAuthController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+Route::get('/menu', [MenuController::class, 'publicIndex'])->name('menu.index');
+Route::get('/all-menu', [MenuController::class, 'allMenuIndex'])->name('all-menu.index');
 Route::get('/promotions', [PromoController::class, 'frontendIndex'])->name('promotions.index');
 Route::get('/promo/{id}', [PromoController::class, 'frontendShow'])->name('promo.view');
 Route::post('/promo/{promoId}/add-to-cart/{menuId}', [PromoController::class, 'addToCartFromPromo'])->name('promo.add.to.cart');
@@ -55,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/profile', [UserAuthController::class, 'profile'])->name('user.profile');
     Route::patch('/profile/address', [UserAuthController::class, 'updateAddress'])->name('user.profile.update.address');
+    Route::patch('/profile/phone', [UserAuthController::class, 'updatePhone'])->name('user.profile.update.phone');
 
     // Indonesian Regions API
     Route::get('/api/regencies/{provinceId}', [UserAuthController::class, 'getRegencies'])->name('api.regencies');

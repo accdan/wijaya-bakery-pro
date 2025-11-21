@@ -30,6 +30,11 @@ class Promo extends Model
         'max_discount_uses',
         'valid_until',
         'apply_to_cart_total',
+        'is_weekend_only',
+        'is_weekday_only',
+        'active_days',
+        'active_from',
+        'active_until',
     ];
 
     protected $casts = [
@@ -42,6 +47,11 @@ class Promo extends Model
         'status' => 'boolean',
         'apply_to_cart_total' => 'boolean',
         'valid_until' => 'datetime',
+        'is_weekend_only' => 'boolean',
+        'is_weekday_only' => 'boolean',
+        'active_days' => 'array', // JSON array of days
+        'active_from' => 'string', // Time only (HH:MM format)
+        'active_until' => 'string', // Time only (HH:MM format)
     ];
 
     public function menu()
@@ -65,7 +75,7 @@ class Promo extends Model
      */
     public function isApplicable($menuId, $quantity)
     {
-        if (!$this->is_discount_active || !$this->status) {
+        if (!$this->isActiveToday()) {
             return false;
         }
 
@@ -152,6 +162,54 @@ class Promo extends Model
     }
 
     /**
+     * Check if discount is active today based on day of week and time
+     */
+    public function isActiveToday()
+    {
+        // Basic checks
+        if (!$this->status || !$this->is_discount_active || $this->discount_value <= 0) {
+            return false;
+        }
+
+        // Check expiration date
+        if ($this->valid_until && now()->isAfter($this->valid_until)) {
+            return false;
+        }
+
+        // Weekend check: Saturday (6) and Sunday (7) in ISO weekday
+        $dayOfWeek = now()->dayOfWeekIso; // 1=Monday, 7=Sunday
+        $isWeekend = in_array($dayOfWeek, [6, 7]);
+        $isWeekday = in_array($dayOfWeek, [1, 2, 3, 4, 5]);
+
+        // Check weekend/weekday restrictions
+        if ($this->is_weekend_only && !$isWeekend) {
+            return false;
+        }
+
+        if ($this->is_weekday_only && !$isWeekday) {
+            return false;
+        }
+
+        // Check specific active days (if provided)
+        if ($this->active_days && !in_array($dayOfWeek, $this->active_days)) {
+            return false;
+        }
+
+        // Check time restrictions (if provided)
+        $currentTime = now()->format('H:i');
+
+        if ($this->active_from && $currentTime < $this->active_from) {
+            return false;
+        }
+
+        if ($this->active_until && $currentTime > $this->active_until) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Scope for active discounts
      */
     public function scopeActiveDiscounts($query)
@@ -159,6 +217,20 @@ class Promo extends Model
         return $query->where('status', true)
                     ->where('is_discount_active', true)
                     ->where('discount_value', '>', 0);
+    }
+
+    /**
+     * Scope for active discounts that considers today's date and time
+     */
+    public function scopeActiveDiscountsToday($query)
+    {
+        return $query->where('status', true)
+                    ->where('is_discount_active', true)
+                    ->where('discount_value', '>', 0)
+                    ->where(function($q) {
+                        $q->whereNull('valid_until')
+                          ->orWhere('valid_until', '>=', now());
+                    });
     }
 
     /**

@@ -13,7 +13,11 @@ class CartController extends Controller
     public function index()
     {
         $carts = Cart::with('menu')->where('user_id', Auth::user()->id)->get();
-        return view('cart.index', compact('carts'));
+
+        // Get saved order notes from session for persistence
+        $savedOrderNotes = session('cart_order_notes', '');
+
+        return view('cart.index', compact('carts', 'savedOrderNotes'));
     }
 
     public function addToCart(Request $request, $menuId)
@@ -80,13 +84,19 @@ class CartController extends Controller
     public function updateCart(Request $request, $cartId)
     {
         $request->validate([
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
+            'catatan_pesanan' => 'nullable|string|max:500'
         ]);
 
         $cart = Cart::where('id', $cartId)->where('user_id', Auth::user()->id)->firstOrFail();
 
         if ($request->quantity > $cart->menu->stok) {
             return back()->with('error', 'Jumlah melebihi stok yang tersedia');
+        }
+
+        // Save order notes to session for persistence
+        if ($request->has('catatan_pesanan')) {
+            session(['cart_order_notes' => $request->catatan_pesanan]);
         }
 
         $cart->update(['quantity' => $request->quantity]);
@@ -176,8 +186,8 @@ class CartController extends Controller
         $appliedDiscounts = [];
         $errors = [];
 
-        // Get active discounts
-        $activeDiscounts = \App\Models\Promo::activeDiscounts()->with('menu')->get();
+        // Get active discounts considering current date/time
+        $activeDiscounts = \App\Models\Promo::activeDiscountsToday()->with('menu')->get();
 
         // Enhanced time-based greeting with improved logic
         $greeting = $this->getTimeBasedGreeting();
@@ -312,8 +322,9 @@ class CartController extends Controller
                 $cart->menu->decrement('stok', $cart->quantity);
             }
 
-            // Clear cart
+            // Clear cart and session data
             Cart::where('user_id', Auth::user()->id)->delete();
+            session()->forget('cart_order_notes'); // Clear saved order notes after successful checkout
         });
 
         // Add order summary to WhatsApp message

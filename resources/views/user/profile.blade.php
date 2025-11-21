@@ -18,9 +18,6 @@
         body {
             background-color: #faf8f5;
         }
-        .navbar-custom {
-            background-color: var(--brown);
-        }
         .profile-card {
             border: none;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -28,52 +25,9 @@
     </style>
 </head>
 <body>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('image/logo1.png') }}" alt="Wijaya Bakery" width="35" height="35" class="me-2">
-                <span>Wijaya Bakery</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
-                    @auth
-                        <li class="nav-item me-2">
-                            <a href="{{ route('cart.index') }}" class="btn btn-outline-light position-relative">
-                                <i class="bi bi-cart"></i>
-                                @if(\App\Models\Cart::where('user_id', Auth::user()->id)->sum('quantity') > 0)
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {{ \App\Models\Cart::where('user_id', Auth::user()->id)->sum('quantity') }}
-                                    </span>
-                                @endif
-                                Keranjang
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('user.profile') }}"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                </form></li>
-                            </ul>
-                        </li>
-                    @else
-                        <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('user.login.form') }}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-light" href="{{ route('user.register.form') }}">Daftar</a></li>
-                    @endauth
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('components.navbar')
 
     <!-- Main Content with Tabs -->
     <div class="container-fluid py-5" style="background-color: #faf8f5; min-height: 100vh;">
@@ -85,6 +39,7 @@
                             <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>Dashboard Pengguna</h4>
                         </div>
                         <div class="card-body p-0">
+
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs" id="profileTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
@@ -117,6 +72,7 @@
 
                             <!-- Tab Content -->
                             <div class="tab-content p-4" id="profileTabsContent">
+
                                 <!-- Profile Tab -->
                                 <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                     @if(session('success'))
@@ -151,8 +107,28 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label fw-bold">No. Telepon</label>
-                                                <p class="form-control-plaintext">{{ $user->no_telepon ?: '-' }}</p>
+                                                <form method="POST" action="{{ route('user.profile.update.phone') }}" class="input-group" id="phoneForm">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <span class="input-group-text" id="phoneIcon">
+                                                        <i class="bi bi-telephone{{ $user->no_telepon ? '-fill text-success' : '' }}"></i>
+                                                    </span>
+                                                    <input type="tel" class="form-control"
+                                                           name="no_telepon"
+                                                           id="phoneInput"
+                                                           value="{{ old('no_telepon', $user->no_telepon) }}"
+                                                           placeholder="08xxxxxxxxxx"
+                                                           aria-label="Nomor Telepon"
+                                                           aria-describedby="phoneIcon phoneBtn">
+                                                    <button type="submit" class="btn" id="phoneBtn"
+                                                            style="background-color: #8b5e3c; color: white;"
+                                                            {{ !$user->no_telepon ? 'disabled' : '' }}>
+                                                        <i class="bi bi-{{ $user->no_telepon ? 'arrow-repeat' : 'telephone' }}"></i>
+                                                    </button>
+                                                </form>
+                                                @error('no_telepon')
+                                                    <small class="text-danger d-block">{{ $message }}</small>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -173,78 +149,95 @@
                                     @endif
 
                                     <h5 class="mb-3">Alamat Pengiriman</h5>
-                                    <form method="POST" action="{{ route('user.profile.update.address') }}" id="addressForm">
-                                        @csrf
-                                        @method('PATCH')
+                                    @php
+                                        $hasAddress = $user->province || $user->regency || $user->street || $user->hamlet;
+                                    @endphp
 
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Provinsi</label>
-                                                    <select class="form-select" name="province" id="provinceSelect">
-                                                        <option value="">Pilih Provinsi</option>
-                                                        @php
-                                                            $regionService = new \App\Services\IndonesiaRegionService();
-                                                            $provinces = $regionService->getProvinces();
-                                                        @endphp
-                                                        @foreach($provinces as $province)
-                                                            <option value="{{ $province['id'] }}" data-name="{{ $province['name'] }}" {{ old('province', $user->province) == $province['name'] ? 'selected' : '' }}>
-                                                                {{ $province['name'] }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('province')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
+                                    @if(!$hasAddress)
+                                        <!-- Show Address Form -->
+                                        <form method="POST" action="{{ route('user.profile.update.address') }}" id="addressForm">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Provinsi</label>
+                                                        <select class="form-select" name="province" id="provinceSelect">
+                                                            <option value="">Pilih Provinsi</option>
+                                                            @php
+                                                                $regionService = new \App\Services\IndonesiaRegionService();
+                                                                $provinces = $regionService->getProvinces();
+                                                            @endphp
+                                                            @foreach($provinces as $province)
+                                                                <option value="{{ $province['id'] }}" data-name="{{ $province['name'] }}" {{ old('province', $user->province) == $province['name'] ? 'selected' : '' }}>
+                                                                    {{ $province['name'] }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('province')
+                                                            <small class="text-danger">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kabupaten/Kota</label>
+                                                        <select class="form-select" name="regency" id="regencySelect">
+                                                            <option value="">Pilih Kabupaten/Kota</option>
+                                                        </select>
+                                                        @error('regency')
+                                                            <small class="text-danger">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Kabupaten/Kota</label>
-                                                    <select class="form-select" name="regency" id="regencySelect">
-                                                        <option value="">Pilih Kabupaten/Kota</option>
-                                                    </select>
-                                                    @error('regency')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kecamatan</label>
+                                                        <select class="form-select" name="district" id="districtSelect">
+                                                            <option value="">Pilih Kecamatan</option>
+                                                        </select>
+                                                        <input type="hidden" name="street" id="streetHidden">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kelurahan/Desa</label>
+                                                        <select class="form-select" name="hamlet" id="villageSelect">
+                                                            <option value="">Pilih Kelurahan/Desa</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Kecamatan</label>
-                                                    <select class="form-select" name="district" id="districtSelect">
-                                                        <option value="">Pilih Kecamatan</option>
-                                                    </select>
-                                                    <input type="hidden" name="street" id="streetHidden">
-                                                </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Catatan Tambahan (Opsional)</label>
+                                                <textarea class="form-control" name="address_notes" rows="3"
+                                                          placeholder="Contoh: Patokan rumah warna hijau, dekat Toko ABC, dll.">{{ old('address_notes', $user->address_notes) }}</textarea>
+                                                @error('address_notes')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Kelurahan/Desa</label>
-                                                    <select class="form-select" name="hamlet" id="villageSelect">
-                                                        <option value="">Pilih Kelurahan/Desa</option>
-                                                    </select>
-                                                </div>
+
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn" style="background-color: #8b5e3c; color: white;">
+                                                    <i class="bi bi-save me-2"></i>Update Alamat
+                                                </button>
+                                                <a href="{{ route('user.profile') }}" class="btn btn-secondary">
+                                                    <i class="bi bi-x me-2"></i>Batal
+                                                </a>
                                             </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">Catatan Tambahan (Opsional)</label>
-                                            <textarea class="form-control" name="address_notes" rows="3"
-                                                      placeholder="Contoh: Patokan rumah warna hijau, dekat Toko ABC, dll.">{{ old('address_notes', $user->address_notes) }}</textarea>
-                                            @error('address_notes')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-
-                                        <div class="mb-3">
-                                            @if($user->province || $user->regency || $user->street || $user->hamlet)
-                                                <div class="alert alert-info">
+                                        </form>
+                                    @else
+                                        <!-- Show Address Display -->
+                                        <div id="addressDisplay">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
                                                     <h6><i class="bi bi-geo-alt me-2"></i>Alamat Lengkap:</h6>
-                                                    <p class="mb-0">
+                                                    <p class="mb-2">
                                                         {{ $user->province ? 'Prov. ' . $user->province : '' }}
                                                         {{ $user->regency ? ', ' . $user->regency : '' }}
                                                         {{ $user->street ? ', ' . $user->street : '' }}
@@ -254,18 +247,90 @@
                                                         @endif
                                                     </p>
                                                 </div>
-                                            @endif
+                                                <button type="button" class="btn btn-outline-primary btn-sm" id="editAddressBtn" title="Edit Alamat">
+                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        <div class="d-flex gap-2">
-                                            <button type="submit" class="btn" style="background-color: #8b5e3c; color: white;">
-                                                <i class="bi bi-save me-2"></i>Update Alamat
-                                            </button>
-                                            <a href="{{ route('user.profile') }}" class="btn btn-secondary">
-                                                <i class="bi bi-x me-2"></i>Batal
-                                            </a>
-                                        </div>
-                                    </form>
+                                        <!-- Hidden Address Form -->
+                                        <form method="POST" action="{{ route('user.profile.update.address') }}" id="addressForm" style="display: none;">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Provinsi</label>
+                                                        <select class="form-select" name="province" id="provinceSelect">
+                                                            <option value="">Pilih Provinsi</option>
+                                                            @php
+                                                                $regionService = new \App\Services\IndonesiaRegionService();
+                                                                $provinces = $regionService->getProvinces();
+                                                            @endphp
+                                                            @foreach($provinces as $province)
+                                                                <option value="{{ $province['id'] }}" data-name="{{ $province['name'] }}" {{ old('province', $user->province) == $province['name'] ? 'selected' : '' }}>
+                                                                    {{ $province['name'] }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('province')
+                                                            <small class="text-danger">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kabupaten/Kota</label>
+                                                        <select class="form-select" name="regency" id="regencySelect">
+                                                            <option value="">Pilih Kabupaten/Kota</option>
+                                                        </select>
+                                                        @error('regency')
+                                                            <small class="text-danger">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kecamatan</label>
+                                                        <select class="form-select" name="district" id="districtSelect">
+                                                            <option value="">Pilih Kecamatan</option>
+                                                        </select>
+                                                        <input type="hidden" name="street" id="streetHidden">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kelurahan/Desa</label>
+                                                        <select class="form-select" name="hamlet" id="villageSelect">
+                                                            <option value="">Pilih Kelurahan/Desa</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Catatan Tambahan (Opsional)</label>
+                                                <textarea class="form-control" name="address_notes" rows="3"
+                                                          placeholder="Contoh: Patokan rumah warna hijau, dekat Toko ABC, dll.">{{ old('address_notes', $user->address_notes) }}</textarea>
+                                                @error('address_notes')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn" style="background-color: #8b5e3c; color: white;">
+                                                    <i class="bi bi-save me-2"></i>Update Alamat
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" id="cancelAddressBtn">
+                                                    <i class="bi bi-x me-2"></i>Batal
+                                                </button>
+                                            </div>
+                                        </form>
+                                    @endif
                                 </div>
 
                                 <!-- Cart Tab -->
@@ -458,6 +523,76 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Address Edit Toggle JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editAddressBtn = document.getElementById('editAddressBtn');
+    const cancelAddressBtn = document.getElementById('cancelAddressBtn');
+    const addressDisplay = document.getElementById('addressDisplay');
+    const addressForm = document.getElementById('addressForm');
+
+    if (editAddressBtn && cancelAddressBtn && addressDisplay && addressForm) {
+        // Show form when edit button is clicked
+        editAddressBtn.addEventListener('click', function() {
+            addressDisplay.style.display = 'none';
+            addressForm.style.display = 'block';
+
+            // Trigger region loading for existing data
+            const provinceSelect = document.getElementById('provinceSelect');
+            if (provinceSelect.value) {
+                provinceSelect.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Show display when cancel button is clicked
+        cancelAddressBtn.addEventListener('click', function() {
+            addressForm.style.display = 'none';
+            addressDisplay.style.display = 'block';
+        });
+    }
+});
+</script>
+
+<!-- Phone Input Handler JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneIcon = document.getElementById('phoneIcon');
+    const phoneBtn = document.getElementById('phoneBtn');
+
+    function updatePhoneUI() {
+        const hasValue = phoneInput.value.trim().length > 0;
+
+        // Update icon
+        const iconElement = phoneIcon.querySelector('i');
+        if (hasValue) {
+            iconElement.className = 'bi bi-telephone-fill text-success';
+        } else {
+            iconElement.className = 'bi bi-telephone';
+        }
+
+        // Update button
+        phoneBtn.disabled = !hasValue;
+        const btnIcon = phoneBtn.querySelector('i');
+        if (hasValue) {
+            btnIcon.className = 'bi bi-arrow-repeat';
+            phoneBtn.title = 'Update nomor telepon';
+        } else {
+            btnIcon.className = 'bi bi-telephone';
+            phoneBtn.title = 'Masukkan nomor telepon terlebih dahulu';
+        }
+    }
+
+    // Initial check
+    updatePhoneUI();
+
+    // Listen for input changes
+    phoneInput.addEventListener('input', updatePhoneUI);
+    phoneInput.addEventListener('change', updatePhoneUI);
+    phoneInput.addEventListener('keyup', updatePhoneUI);
+});
+</script>
 
 <!-- Region API JavaScript -->
 <script>

@@ -19,16 +19,13 @@
         body {
             background-color: #faf8f5;
         }
-        .cart-card {
+    .cart-card {
             border: none;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
-        .navbar-custom {
-            background-color: var(--brown);
-        }
         .btn-brown {
             background-color: var(--brown);
-            border-color: var(--brown);
+            border-color: var(--brown)
             color: white;
         }
         .btn-brown:hover {
@@ -36,60 +33,110 @@
             border-color: #6f4d32;
             color: white;
         }
+
+        /* Enhanced Mobile Styles for Cart */
+        .cart-item-row {
+            transition: all 0.2s ease;
+        }
+
+        .cart-item-row:hover {
+            background-color: rgba(139, 111, 71, 0.02);
+        }
+
+        .quantity-input-mobile {
+            width: 60px;
+            text-align: center;
+            border: 2px solid var(--brown);
+            border-radius: 6px;
+            margin: 0 0.5rem;
+        }
+
+        .btn-quantity-mobile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border: none;
+        }
+
+        .checkout-summary {
+            position: sticky;
+            top: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        .checkout-btn-mobile {
+            min-height: 48px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .discount-badge-mobile {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        /* Better touch targets for mobile */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
+            .btn, .btn-sm, .btn-lg {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            .form-control, .form-select {
+                font-size: 1rem;
+                min-height: 44px;
+                border-radius: 8px;
+            }
+
+            .cart-section-padding {
+                padding: 1rem 0;
+            }
+
+            .cart-item-mobile {
+                border-bottom: 1px solid rgba(139, 111, 71, 0.1);
+            }
+
+            .checkout-section-mobile {
+                background: var(--light-brown);
+                border-radius: 12px 12px 0 0;
+                padding: 1.5rem 1rem;
+                box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+            }
+
+            .checkout-btn-mobile {
+                width: 100%;
+                min-height: 50px;
+                font-size: 1rem;
+                border-radius: 10px;
+                background: #25d366;
+                border: none;
+                color: white;
+            }
+
+            .empty-cart-mobile {
+                text-align: center;
+                padding: 3rem 1rem;
             }
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('image/logo1.png') }}" alt="Wijaya Bakery" width="35" height="35" class="me-2">
-                <span>Wijaya Bakery</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
-                    @auth
-                        <li class="nav-item me-2">
-                            <a href="{{ route('cart.index') }}" class="btn btn-outline-light position-relative">
-                                <i class="bi bi-cart"></i>
-                                @if(Auth::user()->cartCount() > 0)
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {{ Auth::user()->cartCount() }}
-                                    </span>
-                                @endif
-                                Keranjang
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('user.profile') }}"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                </form></li>
-                            </ul>
-                        </li>
-                    @else
-                        <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('user.login.form') }}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-light" href="{{ route('user.register.form') }}">Daftar</a></li>
-                    @endauth
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('components.navbar')
 
             <div class="row">
                 <div class="col-12">
@@ -110,11 +157,11 @@
                     @endif
 
                     @if($carts->isEmpty())
-                        <div class="text-center py-5">
+                        <div class="text-center py-5 empty-cart-mobile">
                             <i class="bi bi-cart-x" style="font-size: 4rem; color: #d4b896;"></i>
                             <h3 class="mt-3" style="color: #8b5e3c;">Keranjang Kosong</h3>
                             <p class="text-muted">Belum ada item di keranjang Anda.</p>
-                            <a href="/" class="btn btn-primary" style="background-color: #8b5e3c; border-color: #8b5e3c;">Mulai Belanja</a>
+                            <a href="/" class="btn btn-primary empty-cart-btn">Mulai Belanja</a>
                         </div>
                     @else
                         <div class="row">
@@ -123,14 +170,14 @@
                                 <div class="card shadow-sm mb-4">
                                     <div class="card-header" style="background-color: #8b5e3c; color: white;">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">Item Keranjang ({{ $carts->sum('quantity') }} item)</h5>
+                                            <h5 class="mb-0">Item Keranjang ({{ $carts->count() }} item)</h5>
                                             @if($carts->count() > 1)
                                                 <div class="d-flex align-items-center gap-3">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <input type="checkbox" id="selectAll" class="form-check-input">
                                                         <label for="selectAll" class="text-white mb-0 small">Pilih Semua</label>
                                                     </div>
-                                                    <button type="button" class="btn btn-outline-light btn-sm" id="deleteSelectedBtn" disabled style="border-color: #dc3545; color: #dc3545;">
+                                                    <button type="button" class="btn btn-outline-light btn-sm" id="deleteSelectedBtn" disabled>
                                                         <i class="bi bi-trash me-1"></i>Hapus Terpilih
                                                     </button>
                                                 </div>
@@ -139,7 +186,7 @@
                                     </div>
                                     <div class="card-body">
                                         @php
-                                            $activeDiscounts = \App\Models\Promo::activeDiscounts()->with('menu')->get();
+                                            $activeDiscounts = \App\Models\Promo::activeDiscountsToday()->with('menu')->get();
                                         @endphp
                                         @foreach($carts as $cart)
                                         @php
@@ -156,9 +203,9 @@
                                             $finalItemPrice = ($cart->quantity * $cart->menu->harga) - $itemDiscount;
                                             $hasDiscount = $itemDiscount > 0;
                                         @endphp
-                                        <div class="row align-items-center mb-3 pb-3 border-bottom {{ $hasDiscount ? 'border-warning bg-light' : '' }} cart-item" data-cart-id="{{ $cart->id }}">
+                                        <div class="row align-items-center mb-3 pb-3 border-bottom {{ $hasDiscount ? 'border-warning bg-light' : '' }} cart-item cart-item-row" data-cart-id="{{ $cart->id }}">
                                             <div class="col-auto pe-3">
-                                                <input type="checkbox" class="form-check-input cart-checkbox" value="{{ $cart->id }}" style="margin-top: 0.25rem;">
+                                                <input type="checkbox" class="form-check-input cart-checkbox" value="{{ $cart->id }}">
                                             </div>
                                             <div class="col-md-2">
                                                 <img src="{{ $cart->menu->gambar_menu ? asset('uploads/menu/' . $cart->menu->gambar_menu) : asset('images/default-menu.png') }}"
@@ -180,22 +227,10 @@
                                                     @endif
                                                 </h6>
                                                 <small class="text-muted">{{ Str::limit($cart->menu->deskripsi_menu, 50) }}</small>
-                                                <div class="row mt-1">
-                                                    <div class="col-6">
-                                                        <small class="text-muted">Harga:</small>
-                                                        <p class="mb-0 text-primary"><s>Rp {{ number_format($cart->menu->harga, 0, ',', '.') }}</s></p>
-                                                    </div>
-                                                    @if($hasDiscount)
-                                                        <div class="col-6">
-                                                            <small class="text-muted">Harga Diskon:</small>
-                                                            <p class="mb-0 text-success"><strong>Rp {{ number_format($cart->menu->harga - ($applicablePromo->discount_type == 'percentage' ? $cart->menu->harga * $applicablePromo->discount_value / 100 : min($applicablePromo->discount_value / $cart->quantity, $cart->menu->harga)), 0, ',', '.') }}</strong></p>
-                                                        </div>
-                                                    @endif
-                                                </div>
                                                 @if($hasDiscount)
                                                     <div class="mt-1">
                                                         <small class="text-success">
-                                                            <i class="fas fa-tag me-1"></i>{{ $applicablePromo->nama_promo }} - {{ $applicablePromo->getDiscountDescription() }}
+                                                            <i class="fas fa-tag me-1"></i>{{ $applicablePromo->nama_promo }} - Hemat Rp {{ number_format($itemDiscount, 0, ',', '.') }}
                                                         </small>
                                                     </div>
                                                 @endif
@@ -206,7 +241,7 @@
                                                     @method('PATCH')
                                                     <div class="input-group input-group-sm">
                                                         <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(this, -1)">-</button>
-                                                        <input type="number" class="form-control text-center" name="quantity"
+                                                        <input type="number" name="quantity" class="form-control text-center quantity-input-mobile"
                                                                value="{{ $cart->quantity }}" min="1" max="{{ $cart->menu->stok }}"
                                                                onchange="this.form.submit()">
                                                         <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(this, 1)">+</button>
@@ -222,10 +257,6 @@
                                                         </small>
                                                         <br>
                                                         <strong class="text-success">Rp {{ number_format($finalItemPrice, 0, ',', '.') }}</strong>
-                                                        <br>
-                                                        <small class="text-success">
-                                                            <i class="fas fa-arrow-down me-1"></i>Hemat Rp {{ number_format($itemDiscount, 0, ',', '.') }}
-                                                        </small>
                                                     </div>
                                                 @else
                                                     <strong>Rp {{ number_format($cart->quantity * $cart->menu->harga, 0, ',', '.') }}</strong>
@@ -248,7 +279,7 @@
 
                             <!-- Cart Summary -->
                             <div class="col-lg-4">
-                                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                                <div class="card shadow-sm sticky-top checkout-summary">
                                     <div class="card-header" style="background-color: #8b5e3c; color: white;">
                                         <h5 class="mb-0">Ringkasan Pembelian</h5>
                                     </div>
@@ -258,37 +289,23 @@
                                                 return $cart->quantity * $cart->menu->harga;
                                             });
 
-                                            // Calculate discounts
-                                            $activeDiscounts = \App\Models\Promo::activeDiscounts()->with('menu')->get();
+                                            $activeDiscounts = \App\Models\Promo::activeDiscountsToday()->with('menu')->get();
                                             $totalDiscount = 0;
-                                            $appliedDiscounts = [];
 
                                             foreach($carts as $cart) {
-                                                $itemPrice = $cart->quantity * $cart->menu->harga;
-                                                $itemDiscount = 0;
-
                                                 foreach ($activeDiscounts as $discount) {
                                                     if ($discount->isApplicable($cart->menu->id, $cart->quantity)) {
-                                                        $itemDiscount = $discount->calculateDiscount($cart->menu->harga, $cart->quantity, $cart->menu->id);
-                                                        if ($itemDiscount > 0) {
-                                                            $appliedDiscounts[] = [
-                                                                'menu' => $cart->menu->nama_menu,
-                                                                'description' => $discount->getDiscountDescription(),
-                                                                'amount' => $itemDiscount
-                                                            ];
-                                                            break;
-                                                        }
+                                                        $totalDiscount += $discount->calculateDiscount($cart->menu->harga, $cart->quantity, $cart->menu->id);
+                                                        break;
                                                     }
                                                 }
-
-                                                $totalDiscount += $itemDiscount;
                                             }
 
                                             $finalTotal = $subtotal - $totalDiscount;
                                         @endphp
 
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>Subtotal (sebelum diskon):</span>
+                                            <span>Subtotal:</span>
                                             <strong>Rp {{ number_format($subtotal, 0, ',', '.') }}</strong>
                                         </div>
 
@@ -297,73 +314,18 @@
                                                 <span>Potongan Diskon:</span>
                                                 <strong>- Rp {{ number_format($totalDiscount, 0, ',', '.') }}</strong>
                                             </div>
-
-                                            <div class="alert alert-info alert-dismissible fade show p-2 mb-1" style="font-size: 0.85rem; background-color: rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.2); color: #0056b3;">
-                                                <i class="bi bi-lightbulb-fill me-1"></i>
-                                                <strong>Anda mendapatkan diskon! </strong>
-                                                Detail diskon per item dapat dilihat di bawah ini.
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert" style="font-size: 0.7rem;"></button>
-                                            </div>
-                                        @endif
-
-                                        @if($totalDiscount > 0)
-                                            <div class="mb-3">
-                                                <h6 class="text-muted mb-2">Detail Diskon per Item:</h6>
-                                                <div class="border rounded p-2" style="background-color: #f8f9fa;">
-                                                    @foreach($carts as $cart)
-                                                        @php
-                                                            $itemDiscount = 0;
-                                                            foreach ($activeDiscounts as $discount) {
-                                                                if ($discount->isApplicable($cart->menu->id, $cart->quantity)) {
-                                                                    $itemDiscount = $discount->calculateDiscount($cart->menu->harga, $cart->quantity);
-                                                                    break;
-                                                                }
-                                                            }
-                                                        @endphp
-                                                        @if($itemDiscount > 0)
-                                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                <small class="text-muted">{{ $cart->menu->nama_menu }} ({{ $cart->quantity }}x)</small>
-                                                                <small class="text-success"><i class="fas fa-arrow-down me-1"></i>-Rp {{ number_format($itemDiscount, 0, ',', '.') }}</small>
-                                                            </div>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                                <small class="text-muted">
-                                                    <i class="fas fa-info-circle me-1"></i>Diskon sudah termasuk dalam total pembayaran
-                                                </small>
+                                            <hr>
+                                            <div class="alert alert-success">
+                                                <strong>Anda hemat: Rp {{ number_format($totalDiscount, 0, ',', '.') }}!</strong>
                                             </div>
                                         @endif
 
                                         <hr class="border-primary">
 
                                         <div class="d-flex justify-content-between mb-3">
-                                            <span class="h5 mb-0" style="color: #8b5e3c;"><strong>Total Pembayaran:</strong></span>
+                                            <span class="h5 mb-0" style="color: #8b5e3c;"><strong>Total:</strong></span>
                                             <strong class="h5 mb-0" style="color: #8b5e3c;">Rp {{ number_format($finalTotal, 0, ',', '.') }}</strong>
                                         </div>
-
-                                        @if($totalDiscount > 0)
-                                            <div class="alert alert-success py-2 mb-3" style="font-size: 0.9rem;">
-                                                <i class="bi bi-check-circle-fill me-2"></i>
-                                                <strong>Anda hemat: Rp {{ number_format($totalDiscount, 0, ',', '.') }}!</strong>
-                                            </div>
-                                        @endif
-
-                                        @if(!empty($appliedDiscounts))
-                                            <div class="alert alert-success alert-dismissible">
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                                <h6><i class="bi bi-percent me-2"></i>Diskon yang Berlaku:</h6>
-                                                @foreach($appliedDiscounts as $discount)
-                                                    <div class="mb-1">
-                                                        <small class="text-success">
-                                                            <i class="bi bi-check-circle-fill me-1"></i>
-                                                            <strong>{{ $discount['menu'] }}:</strong> {{ $discount['description'] }}
-                                                        </small>
-                                                    </div>
-                                                @endforeach
-                                                <hr class="my-2">
-                                                <small><strong>Anda hemat: Rp {{ number_format($totalDiscount, 0, ',', '.') }}</strong></small>
-                                            </div>
-                                        @endif
 
                                         <form method="POST" action="{{ route('cart.checkout') }}">
                                             @csrf
@@ -371,25 +333,20 @@
 
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">
-                                                    <i class="bi bi-chat-dots me-2"></i>Catatan untuk Pembeli (Opsional)
+                                                    <i class="bi bi-chat-dots me-2"></i>Catatan (Opsional)
                                                 </label>
-                                                <textarea name="catatan_pesanan" class="form-control" rows="3"
-                                                          placeholder="Contoh: Mohon dikemas rapi, ada potongan khusus orang tua, dll.&#10;&#10;Saya ingin pesanan diantar ke alamat:&#10;- Prov. Jawa Timur&#10;- Kab. Malang&#10;- Jl. Sudirman No. 123&#10;- Dusun Krasakan&#10;&#10;Patokan: rumah warna hijau dekat tok ABC"
-                                                          maxlength="500"></textarea>
-                                                <small class="text-muted">
-                                                    <i class="bi bi-info-circle me-1"></i>
-                                                    Tuliskan pesan khusus atau alamat pengiriman alternatif. Alamat akan otomatis disertakan dari profil Anda.
-                                                </small>
+                        <textarea name="catatan_pesanan" class="form-control" rows="3"
+                                                          placeholder="Contoh: Mohon dikemas rapi, dll.">{{ $savedOrderNotes }}</textarea>
                                             </div>
 
-                                            <button type="submit" id="checkoutBtn" class="btn btn-success w-100 mb-2">
+                                            <button type="submit" id="checkoutBtn" class="btn btn-success w-100 checkout-btn-mobile">
                                                 <i class="bi bi-check-circle me-2"></i>Checkout & Pesan
-                                                <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                                                <span class="spinner-border spinner-border-sm ms-2 d-none"></span>
                                             </button>
                                         </form>
 
-                                        <small class="text-muted">
-                                            <i class="bi bi-info-circle me-1"></i>
+                                        <small class="text-muted mt-2">
+                                            <i class="bi bi-whatsapp me-1"></i>
                                             Pesanan akan dikirim ke WhatsApp untuk konfirmasi
                                         </small>
                                     </div>
@@ -399,23 +356,21 @@
                     @endif
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize checkboxes on page load (default select first item)
+    // Initialize checkboxes
     const checkboxes = document.querySelectorAll('.cart-checkbox');
     if (checkboxes.length > 0) {
-        checkboxes[0].checked = true; // Select first item by default
+        checkboxes[0].checked = true;
         updateSummary();
     }
 
-    // Handle "Select All" checkbox
+    // Handle select all
     const selectAllCheckbox = document.getElementById('selectAll');
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', function() {
@@ -424,66 +379,104 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkbox.checked = this.checked;
             });
             updateSummary();
+            updateDeleteButton();
         });
     }
 
     // Handle individual checkboxes
     document.querySelectorAll('.cart-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
-            const selectAll = document.getElementById('selectAll');
-            if (selectAll) {
-                const allChecked = document.querySelectorAll('.cart-checkbox:checked').length === document.querySelectorAll('.cart-checkbox').length;
-                const someChecked = document.querySelectorAll('.cart-checkbox:checked').length > 0;
-
-                selectAll.checked = allChecked;
-                selectAll.indeterminate = someChecked && !allChecked;
+            if (selectAllCheckbox) {
+                const allChecked = document.querySelectorAll('.cart-checkbox:checked').length === checkboxes.length;
+                selectAllCheckbox.checked = allChecked;
             }
             updateSummary();
-            if (typeof updateDeleteButton === 'function') {
-                updateDeleteButton();
-            }
+            updateDeleteButton();
         });
     });
 
-    // Update summary based on selected items
     function updateSummary() {
         const selectedItems = Array.from(document.querySelectorAll('.cart-checkbox:checked')).map(cb => cb.value);
         document.getElementById('selectedItems').value = selectedItems.join(',');
 
-        // Update button text
         const checkoutBtn = document.getElementById('checkoutBtn');
         if (selectedItems.length === 0) {
             checkoutBtn.disabled = true;
-            checkoutBtn.innerHTML = '<i class="bi bi-cart-x me-2"></i>Pilih Item Terlebih Dahulu';
+            checkoutBtn.innerHTML = '<i class="bi bi-cart-x me-2"></i>Pilih Item';
         } else {
             checkoutBtn.disabled = false;
             checkoutBtn.innerHTML = `<i class="bi bi-check-circle me-2"></i>Checkout ${selectedItems.length} Item`;
         }
     }
-});
 
-// Add form submission handler for checkout
-document.addEventListener('DOMContentLoaded', function() {
+    function updateDeleteButton() {
+        const deleteBtn = document.getElementById('deleteSelectedBtn');
+        const selectedItems = document.querySelectorAll('.cart-checkbox:checked');
+
+        if (selectedItems.length > 0) {
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = `Hapus Terpilih (${selectedItems.length})`;
+        } else {
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = 'Hapus Terpilih';
+        }
+    }
+
+    // Update all quantity forms to include current order notes
+    function updateQuantityFormsWithNotes() {
+        const orderNotesTextarea = document.querySelector('textarea[name="catatan_pesanan"]');
+        const quantityForms = document.querySelectorAll('form[action*="cart.update"]');
+
+        if (orderNotesTextarea && quantityForms.length > 0) {
+            const currentNotes = orderNotesTextarea.value;
+
+            quantityForms.forEach(form => {
+                // Remove existing hidden input if exists
+                const existingInput = form.querySelector('input[name="catatan_pesanan"]');
+                if (existingInput) {
+                    existingInput.remove();
+                }
+
+                // Add current order notes as hidden input
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'catatan_pesanan';
+                hiddenInput.value = currentNotes;
+                form.appendChild(hiddenInput);
+            });
+        }
+    }
+
+    // Update forms when quantity changes or notes change
+    const orderNotesTextarea = document.querySelector('textarea[name="catatan_pesanan"]');
+    if (orderNotesTextarea) {
+        orderNotesTextarea.addEventListener('input', function() {
+            // Add a small delay to avoid too frequent updates
+            setTimeout(updateQuantityFormsWithNotes, 100);
+        });
+
+        // Initial update
+        updateQuantityFormsWithNotes();
+    }
+
+    // Form submission handler
     const checkoutForm = document.querySelector('form[action*="checkout"]');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', function(e) {
             const selectedItems = document.getElementById('selectedItems').value;
             if (!selectedItems) {
                 e.preventDefault();
-                showNotification('Silakan pilih setidaknya satu item untuk checkout', 'warning');
+                alert('Pilih item untuk checkout');
                 return false;
             }
 
-            // Add loading state
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            const spinner = checkoutBtn.querySelector('.spinner-border');
-            const icon = checkoutBtn.querySelector('i');
-
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerHTML = 'Memproses Pesanan...';
-            if (spinner) spinner.classList.remove('d-none');
+            const btn = document.getElementById('checkoutBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Memproses...';
         });
     }
+
+    updateDeleteButton();
 });
 
 function changeQuantity(button, change) {
@@ -496,203 +489,55 @@ function changeQuantity(button, change) {
     }
 }
 
-// Simple notification popup for adding to cart
-function showNotification(message, type = 'success') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification-popup');
-    existingNotifications.forEach(notification => notification.remove());
-
-    // Create new notification
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${type} alert-dismissible fade show notification-popup position-fixed`;
-    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
-    notification.innerHTML = `
-        <i class="bi bi-check-circle-fill me-2"></i>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-
-    document.body.appendChild(notification);
-
-    // Auto dismiss after 3 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-// Update delete button state based on selected items
-function updateDeleteButton() {
-    const deleteBtn = document.getElementById('deleteSelectedBtn');
-    const selectedItems = document.querySelectorAll('.cart-checkbox:checked');
-
-    if (selectedItems.length > 0) {
-        deleteBtn.disabled = false;
-        deleteBtn.textContent = `Hapus Terpilih (${selectedItems.length})`;
-    } else {
-        deleteBtn.disabled = true;
-        deleteBtn.textContent = 'Hapus Terpilih';
-    }
-}
-
-// Call updateDeleteButton when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    updateDeleteButton();
-});
-
-// Sequential deletion of selected items
+// Batch delete function
 async function deleteSelectedItems() {
     const selectedCheckboxes = document.querySelectorAll('.cart-checkbox:checked');
     const selectedItems = Array.from(selectedCheckboxes).map(cb => cb.value);
 
     if (selectedItems.length === 0) {
-        showNotification('Pilih setidaknya satu item untuk dihapus', 'warning');
+        alert('Pilih item untuk dihapus');
         return;
     }
 
-    // Show confirmation dialog
-    const confirmed = confirm(`Apakah Anda yakin ingin menghapus ${selectedItems.length} item terpilih?`);
-    if (!confirmed) return;
+    if (!confirm(`Hapus ${selectedItems.length} item terpilih?`)) return;
 
     const deleteBtn = document.getElementById('deleteSelectedBtn');
-    const originalText = deleteBtn.textContent;
-
-    // Initialize progress tracking
-    let totalItems = selectedItems.length;
-    let deletedCount = 0;
-    let failedCount = 0;
-
-    // Disable the button and show loading state
-    deleteBtn.disabled = true;
-    deleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Menghapus... (0/' + totalItems + ')';
 
     try {
-        // Process deletions sequentially
-        for (let i = 0; i < selectedItems.length; i++) {
-            const cartId = selectedItems[i];
-            const cartItemElement = document.querySelector(`.cart-item[data-cart-id="${cartId}"]`);
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Menghapus...';
 
-            try {
-                // Highlight the item being deleted
-                if (cartItemElement) {
-                    cartItemElement.style.backgroundColor = '#fff3cd';
-                    cartItemElement.style.borderLeft = '4px solid #ffc107';
+        for (const cartId of selectedItems) {
+            const response = await fetch(`{{ route('cart.remove', ':cartId') }}`.replace(':cartId', cartId), {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
                 }
+            });
 
-                // Send delete request
-                const response = await fetch(`{{ route('cart.remove', ':cartId') }}`.replace(':cartId', cartId), {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content') })
-                });
-
-                if (response.ok) {
-                    deletedCount++;
-
-                    // Fade out and remove the element
-                    if (cartItemElement) {
-                        cartItemElement.style.transition = 'all 0.5s ease';
-                        cartItemElement.style.opacity = '0';
-                        setTimeout(() => {
-                            cartItemElement.remove();
-
-                            // Update UI counters
-                            const remainingItems = totalItems - deletedCount - failedCount;
-                            deleteBtn.innerHTML = `<i class="bi bi-hourglass-split me-1"></i>Menghapus... (${deletedCount}/${totalItems})`;
-
-                            // Check if all items processed
-                            if (deletedCount + failedCount === totalItems) {
-                                finishDeletion(deletedCount, failedCount);
-                            }
-                        }, 500);
-                    }
-                } else {
-                    failedCount++;
-
-                    // Remove highlight from failed item
-                    if (cartItemElement) {
-                        cartItemElement.style.backgroundColor = '';
-                        cartItemElement.style.borderLeft = '';
-                    }
-
-                    console.error(`Failed to delete item ${cartId}: ${response.status}`);
-                }
-
-            } catch (error) {
-                failedCount++;
-                console.error(`Error deleting item ${cartId}:`, error);
-
-                // Remove highlight from failed item
-                if (cartItemElement) {
-                    cartItemElement.style.backgroundColor = '';
-                    cartItemElement.style.borderLeft = '';
-                }
-            }
-
-            // Add small delay between deletions for better UX
-            if (i < selectedItems.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 200));
+            if (response.ok) {
+                document.querySelector(`[data-cart-id="${cartId}"]`).remove();
             }
         }
 
+        alert(`${selectedItems.length} item berhasil dihapus`);
+        location.reload();
+
     } catch (error) {
-        console.error('Error during batch deletion:', error);
-        showNotification('Terjadi kesalahan saat menghapus item', 'error');
-        deleteBtn.innerHTML = originalText;
+        alert('Terjadi kesalahan');
         deleteBtn.disabled = false;
-        return;
+        deleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Hapus Terpilih';
     }
 }
 
-// Finish the deletion process
-function finishDeletion(deletedCount, failedCount) {
-    const deleteBtn = document.getElementById('deleteSelectedBtn');
-
-    // Update button state
-    deleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Hapus Terpilih';
-    deleteBtn.disabled = true;
-
-    // Update checkboxes and select all
-    const selectAllCheckbox = document.getElementById('selectAll');
-    if (selectAllCheckbox) {
-        selectAllCheckbox.checked = false;
-        selectAllCheckbox.indeterminate = false;
-    }
-
-    // Update summary and UI
-    updateSummary();
-
-    // Show final notification
-    if (failedCount === 0) {
-        showNotification(`${deletedCount} item berhasil dihapus dari keranjang`, 'success');
-    } else if (deletedCount > 0) {
-        showNotification(`${deletedCount} item berhasil dihapus, ${failedCount} item gagal dihapus`, 'warning');
-    } else {
-        showNotification('Gagal menghapus item. Silakan coba lagi', 'error');
-    }
-
-    // Refresh page if all items were deleted to update the empty cart state
-    const remainingItems = document.querySelectorAll('.cart-item').length;
-    if (remainingItems === 0) {
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500);
-    }
-}
-
-// Attach event listener to delete button
+// Attach delete event
 document.addEventListener('DOMContentLoaded', function() {
     const deleteBtn = document.getElementById('deleteSelectedBtn');
     if (deleteBtn) {
         deleteBtn.addEventListener('click', deleteSelectedItems);
     }
 });
-
-// Make showNotification available globally
-window.showNotification = showNotification;
 </script>
 
 </body>

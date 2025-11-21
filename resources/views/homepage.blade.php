@@ -407,6 +407,10 @@
       overflow: hidden;
     }
 
+    .menu-description-mobile-hidden {
+      display: none;
+    }
+
     .menu-price {
       font-size: 1.2rem;
       font-weight: 600;
@@ -415,10 +419,27 @@
       margin-bottom: 0.5rem;
     }
 
+    .menu-price-mobile {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 0.25rem;
+      margin-bottom: 0;
+    }
+
+    .menu-badge-mobile {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+    }
+
     .menu-actions {
       margin-top: auto;
       padding-top: 1rem;
       border-top: 1px solid rgba(139, 111, 71, 0.1);
+    }
+
+    .menu-actions-mobile {
+      padding: 0.75rem 0.75rem 0.5rem;
+      border-top: none;
     }
 
     .btn-add-cart {
@@ -699,52 +720,133 @@
       transform: translateY(-2px);
     }
 
-    /* Footer */
+    /* Footer - Enhanced */
     .footer {
       background: linear-gradient(135deg, var(--brown) 0%, var(--dark-brown) 100%);
       color: white;
-      min-height: auto;
-      padding: 3rem 0 1.5rem;
+      padding: 4rem 0 2rem;
+      position: relative;
+      margin-top: 4rem;
+    }
+
+    .footer::before {
+      content: "";
+      position: absolute;
+      top: -4rem;
+      left: 0;
+      right: 0;
+      height: 4rem;
+      background: linear-gradient(135deg, var(--bakery-cream) 0%, var(--cream) 100%);
+      border-radius: 0 0 50% 50%;
     }
 
     .footer-content {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      z-index: 1;
     }
 
     .footer-section h5 {
       color: white;
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      font-weight: 600;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+    }
+
+    .footer-section h5::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--sage), rgba(255,255,255,0.8));
+      border-radius: 2px;
     }
 
     .footer-info {
       display: flex;
-      align-items: center;
-      margin-bottom: 0.75rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
       color: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+
+    .footer-info:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      transform: translateX(5px);
     }
 
     .footer-info i {
       width: 20px;
       margin-right: 0.75rem;
       color: var(--sage);
+      font-size: 1.1rem;
+      margin-top: 0.1rem;
+    }
+
+    .footer-info a {
+      color: inherit;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .footer-info a:hover {
+      color: white;
+      text-decoration: none;
+    }
+
+    .footer-info a:hover i {
+      transform: scale(1.1);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .footer-info span {
+      flex: 1;
+    }
+
+    .footer-info .detail {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .footer-description {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-description h6 {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 1rem;
     }
 
     .footer-divider {
       height: 1px;
-      background: rgba(255, 255, 255, 0.2);
-      margin: 2rem 0 1rem;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      margin: 3rem 0 2rem;
     }
 
     .footer-bottom {
       text-align: center;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 0.9rem;
     }
+
+
 
     /* WhatsApp Button */
     .whatsapp-float {
@@ -774,173 +876,111 @@
       color: white;
     }
 
-    /* Enhanced Navbar */
-    .navbar {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(253, 250, 247, 0.95)) !important;
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(139, 111, 71, 0.1);
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-      padding: 0.5rem 0;
-      transition: all 0.3s ease;
-    }
 
-    .navbar-brand {
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      font-size: 1.4rem;
-      color: var(--brown) !important;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
 
-    .navbar-brand:hover {
-      transform: translateY(-1px);
-      color: var(--dark-brown) !important;
-    }
-
-    .navbar-brand img {
-      filter: brightness(1.1) contrast(1.2);
-      transition: transform 0.3s ease;
-    }
-
-    .navbar-brand:hover img {
-      transform: scale(1.05);
-    }
-
-    .navbar-nav .nav-link {
-      font-family: 'Inter', sans-serif;
-      font-weight: 500;
-      font-size: 1rem;
-      color: var(--brown) !important;
-      padding: 0.5rem 1.2rem !important;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .navbar-nav .nav-link::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(139, 111, 71, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .navbar-nav .nav-link:hover::before {
-      left: 100%;
-    }
-
-    .navbar-nav .nav-link:hover {
-      color: var(--dark-brown) !important;
-      background-color: rgba(139, 111, 71, 0.05) !important;
-      transform: translateY(-2px);
-    }
-
-    .navbar-toggler {
-      border: 2px solid rgba(139, 111, 71, 0.3) !important;
-      border-radius: 8px !important;
-      padding: 0.4rem 0.6rem !important;
-      background: rgba(255, 255, 255, 0.8) !important;
-      transition: all 0.3s ease !important;
-    }
-
-    .navbar-toggler:hover {
-      background: rgba(139, 111, 71, 0.1) !important;
-      border-color: var(--brown) !important;
-    }
-
-    .navbar-toggler-icon {
-      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(139, 111, 71, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
-    }
-
-    .btn-outline-light {
-      background: rgba(255, 255, 255, 0.2) !important;
-      border-color: var(--brown) !important;
-      color: var(--brown) !important;
-      border-radius: 8px !important;
-      padding: 0.5rem 1rem !important;
-      font-weight: 600 !important;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease !important;
-    }
-
-    .btn-outline-light:hover {
-      background: var(--brown) !important;
-      color: white !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 6px 16px rgba(139, 111, 71, 0.3) !important;
-    }
-
-    .btn-light {
-      background: linear-gradient(135deg, var(--brown), var(--dark-brown)) !important;
-      border: none !important;
-      color: white !important;
-      border-radius: 8px !important;
-      padding: 0.5rem 1rem !important;
-      font-weight: 600 !important;
-      transition: all 0.3s ease !important;
-    }
-
-    .btn-light:hover {
-      background: linear-gradient(135deg, var(--dark-brown), #4a3f35) !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4) !important;
-      color: white !important;
-    }
-
-    .dropdown-menu {
-      background: rgba(255, 255, 255, 0.95) !important;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(139, 111, 71, 0.2) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-      margin-top: 0.5rem !important;
-    }
-
-    .dropdown-item {
-      color: var(--brown) !important;
-      font-weight: 500 !important;
-      padding: 0.5rem 1rem !important;
-      transition: all 0.3s ease !important;
-    }
-
-    .dropdown-item:hover {
-      background: rgba(139, 111, 71, 0.1) !important;
-      color: var(--dark-brown) !important;
-      transform: translateX(4px) !important;
-    }
-
-    .badge {
-      background: linear-gradient(135deg, #dc3545, #c82333) !important;
-      font-weight: 600 !important;
-      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
-    }
-
-    /* Responsive */
+    /* Responsive - Enhanced Mobile Design */
     @media (max-width: 768px) {
+      .hero {
+        min-height: 80vh;
+        padding: 2rem 1rem;
+      }
+
       .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+
+      .hero .lead {
+        font-size: 1rem;
       }
 
       .section-padding {
-        padding: 2.5rem 0;
+        padding: 2rem 0;
+      }
+
+      .section-title {
+        font-size: 2rem;
       }
 
       .menu-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.75rem;
+        padding: 0 0.5rem;
       }
 
-      .order-container {
-        padding: 1.5rem;
+      .menu-card {
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
       }
 
-      .total-price {
-        font-size: 1.5rem;
+      .menu-description-mobile-hidden {
+        display: none !important;
+      }
+
+      .menu-name {
+        font-size: 0.95rem;
+      }
+
+      .menu-price {
+        font-size: 1rem;
+      }
+
+      .menu-actions-mobile {
+        display: block !important;
+        padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+        border-top: none;
+      }
+
+      .menu-actions {
+        display: none !important;
+      }
+
+      .popular-menu-container {
+        padding: 1rem 0;
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+      }
+
+      .popular-menu-item {
+        width: 160px !important;
+        min-width: 140px !important;
+        margin-right: 0.5rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .promo-section {
+        padding: 2rem 0 !important;
+      }
+
+      .promo-container {
+        padding: 0 1rem;
+      }
+
+      .contact-section, .sponsors-section {
+        padding: 2rem 0;
+      }
+
+      .contact-card, .sponsor-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer {
+        padding: 2rem 0 1rem;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .about-content-card {
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 0 1rem;
       }
 
       .about-features {
@@ -949,7 +989,339 @@
       }
 
       .section-title-about {
-        font-size: 2.2rem;
+        font-size: 2rem;
+      }
+
+      .float-action-buttons {
+        display: flex !important;
+      }
+
+      .order-container {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .total-price {
+        font-size: 1.5rem;
+      }
+
+      /* Menu Card Mobile Optimization */
+      .menu-card-mobile {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .menu-card-mobile:active {
+        transform: scale(0.98);
+      }
+
+      .menu-card-mobile .menu-price-mobile {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--brown);
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255,255,255,0.9);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        border: 1px solid rgba(139, 111, 71, 0.2);
+      }
+
+      .menu-card-mobile .menu-badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border-radius: 4px;
+      }
+
+      .menu-card-mobile .menu-content {
+        padding: 0.75rem;
+        padding-top: 1.5rem;
+      }
+
+      .menu-card-mobile .menu-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        line-height: 1.2;
+      }
+
+      .menu-card-mobile .stock-info {
+        font-size: 0.7rem;
+        margin-top: 0.25rem;
+        text-align: center;
+        padding: 0.25rem;
+        background: rgba(139, 111, 71, 0.05);
+        border-radius: 4px;
+        border: 1px solid rgba(139, 111, 71, 0.1);
+      }
+
+      /* Enhanced Mobile Modal */
+      .modal-dialog {
+        margin: 5vh auto !important;
+        max-width: 95vw !important;
+        width: 320px !important;
+      }
+
+      .modal-content {
+        border-radius: 20px !important;
+        border: none !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+      }
+
+      /* Mobile Navigation Enhancements */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+        background: rgba(139, 111, 71, 0.95) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+      }
+
+      body {
+        padding-top: 70px;
+      }
+
+      /* Touch-friendly buttons */
+      .btn, .btn-sm, .btn-lg {
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      .contact-btn {
+        min-height: 48px;
+        font-size: 1rem;
+        border-radius: 8px;
+      }
+
+      /* Mobile Modal Quantity Controls */
+      .quantity-controls-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 1rem 0;
+        padding: 0 1rem;
+      }
+
+      .quantity-btn-mobile {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        border: 2px solid white;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.2s ease;
+      }
+
+      .quantity-btn-mobile:active {
+        transform: scale(0.95);
+        background: rgba(255,255,255,0.3);
+      }
+
+      .quantity-display-mobile {
+        flex: 1;
+        text-align: center;
+        color: white;
+        font-size: 1.4rem;
+        font-weight: bold;
+        padding: 0.5rem;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50px;
+        margin: 0 0.5rem;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Popular Menu Mobile Horizontal Scroll */
+      .popular-scroll-mobile {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        padding: 0.5rem 1rem;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        scroll-snap-type: x mandatory;
+      }
+
+      .popular-scroll-mobile::-webkit-scrollbar {
+        display: none;
+      }
+
+      .popular-item-mobile {
+        flex-shrink: 0;
+        width: 140px;
+        scroll-snap-align: start;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+      }
+
+      .popular-item-mobile:active {
+        transform: scale(0.98);
+      }
+
+      /* Promo Mobile Compact */
+      .promo-mobile-compact {
+        padding: 1.5rem 1rem !important;
+        text-align: center;
+      }
+
+      .promo-mobile-compact h2 {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+
+      .promo-mobile-compact p {
+        font-size: 0.9rem !important;
+        margin-bottom: 1rem !important;
+      }
+
+      /* Floating Action Button - Mobile Optimized */
+      .whatsapp-float {
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        z-index: 1000;
+      }
+
+      /* Enhanced Mobile Layout Spacing */
+      .container {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      /* Menu Grid Mobile Optimization */
+      .menu-grid-mobile {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        padding: 0 0.5rem;
+      }
+
+      .menu-card-mobile {
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+      }
+
+      .menu-card-mobile:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      }
+
+      .menu-image-mobile {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+      }
+
+      /* Enhanced Card Touch Targets */
+      .menu-card, .contact-card, .sponsor-card {
+        -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+      }
+
+      /* Improved Text Readability Mobile */
+      .section-title, .section-subtitle {
+        text-align: center;
+      }
+
+      .section-title {
+        margin-bottom: 0.5rem;
+      }
+
+      .section-subtitle {
+        margin-bottom: 2rem;
+      }
+
+      /* About Section Mobile */
+      .about-section {
+        padding: 2rem 0;
+      }
+
+      .about-image-container {
+        margin-top: 2rem;
+      }
+
+      /* Better form inputs for mobile */
+      .form-control, .form-select {
+        font-size: 1rem;
+        line-height: 1.4;
+        min-height: 44px;
+      }
+
+      /* Enhanced modal for mobile ordering */
+      #addToCartModal .modal-dialog {
+        margin: 2vh auto;
+        max-width: 95vw !important;
+        width: 360px !important;
+      }
+
+      #addToCartModal .modal-content {
+        border-radius: 20px !important;
+      }
+
+      /* Cart action buttons mobile */
+      .btn-add-cart, .btn-order-wa {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        min-height: 44px;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      /* Improved touch target for close buttons */
+      .btn-close, [data-bs-dismiss] {
+        min-width: 44px;
+        min-height: 44px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .hero .lead {
+        font-size: 0.95rem;
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        padding: 0 0.25rem;
+      }
+
+      .menu-card {
+        border-radius: 8px;
+      }
+
+      .footer {
+        padding: 1.5rem 0 1rem;
+      }
+
+      .promo-section {
+        padding: 1.5rem 0 !important;
       }
     }
 
@@ -1025,66 +1397,7 @@
 
 <body>
   <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #8b5e3c;">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="{{ asset('image/logo1.png') }}" alt="Wijaya Bakery" width="35" height="35" class="me-2">
-        <span class="fw-bold">Wijaya Bakery</span>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="#about">Tentang</a></li>
-          <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
-          <li class="nav-item"><a class="nav-link" href="#promo">Promo</a></li>
-        </ul>
-        <ul class="navbar-nav">
-          @auth
-            <!-- Cart Button -->
-            <li class="nav-item me-2">
-              <a href="{{ route('cart.index') }}" class="btn btn-outline-light position-relative">
-                <i class="bi bi-cart"></i>
-                @if(Auth::user()->cartCount() > 0)
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    {{ Auth::user()->cartCount() }}
-                  </span>
-                @endif
-              </a>
-            </li>
-            <!-- User Dropdown -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="dropdown-item">Logout</button>
-                  </form>
-                </li>
-              </ul>
-            </li>
-          @else
-            <li class="nav-item">
-              <a class="btn btn-outline-light me-2" href="{{ route('user.login.form') }}">
-                <i class="bi bi-box-arrow-in-right me-1"></i>Login
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-light" href="{{ route('user.register.form') }}">
-                <i class="bi bi-person-plus me-1"></i>Daftar
-              </a>
-            </li>
-          @endauth
-        </ul>
-      </div>
-    </div>
-  </nav>
+  @include('components.navbar')
 
   <!-- WhatsApp button -->
   <a href="https://wa.me/6282236047539" target="_blank" class="whatsapp-float">
@@ -1204,6 +1517,13 @@
           </div>
         @endforeach
       </div>
+
+      <!-- "Selengkapnya" Button -->
+      <div class="text-center mt-5">
+        <a href="{{ route('all-menu.index') }}" class="btn btn-outline-dark px-4 py-2" style="font-weight: 600; border-color: var(--brown); color: var(--brown); transition: all 0.3s ease;">
+          Lihat Semua Menu
+        </a>
+      </div>
     </div>
   </section>
 
@@ -1293,7 +1613,7 @@
               </div>
             @endif
 
-            <a href="#menu" class="btn btn-light btn-lg fw-bold px-4" style="border-radius: 30px;">
+            <a href="{{ route('all-menu.index') }}" class="btn btn-light btn-lg fw-bold px-4" style="border-radius: 30px;">
               <i class="fas fa-arrow-down me-2"></i>Lihat Menu Lengkap
             </a>
           </div>
@@ -1414,16 +1734,22 @@
         <div class="footer-section">
           <h5>Kontak</h5>
           <div class="footer-info">
-            <i class="bi bi-geo-alt-fill"></i>
-            <span>Dusun Pasar, RT. 016/RW. 004, Desa Bucor Kulon, Kecamatan Pakuniran, Probolinggo</span>
+            <a href="https://www.google.com/maps/search/?api=1&query=Dusun+Pasar,+RT.+016+RW.+004,+Desa+Bucor+Kulon,+Kecamatan+Pakuniran,+Probolinggo" target="_blank" rel="noopener noreferrer">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span class="detail">Dusun Pasar, RT. 016/RW. 004, Desa Bucor Kulon<br>Kecamatan Pakuniran, Probolinggo</span>
+            </a>
           </div>
           <div class="footer-info">
-            <i class="bi bi-envelope-fill"></i>
-            <span>wijayabakerybucorkulon@gmail.com</span>
+            <a href="mailto:wijayabakerybucorkulon@gmail.com">
+              <i class="bi bi-envelope-fill"></i>
+              <span class="detail">wijayabakerybucorkulon@gmail.com</span>
+            </a>
           </div>
           <div class="footer-info">
-            <i class="bi bi-telephone-fill"></i>
-            <span>+62 822-3604-7539</span>
+            <a href="tel:+6282236047539">
+              <i class="bi bi-telephone-fill"></i>
+              <span class="detail">+62 822-3604-7539</span>
+            </a>
           </div>
         </div>
         

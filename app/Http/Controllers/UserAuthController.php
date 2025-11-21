@@ -7,11 +7,12 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\DB;
-use App\Notifications\ResetPasswordNotification;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use App\Notifications\ResetPasswordNotification;
 
 class UserAuthController extends Controller
 {
@@ -58,32 +59,36 @@ class UserAuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'no_telepon' => 'required|string|max:20|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users',
+                'no_telepon' => 'required|string|max:20|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        // Get user role ID - automatically assign as 'pengguna' (customer)
-        $userRole = Role::where('role_name', 'pengguna')->first();
-        if (!$userRole) {
-            return back()->with('error', 'Role pengguna tidak ditemukan. Silakan hubungi administrator.');
+            // Get user role ID - automatically assign as 'pengguna' (customer)
+            $userRole = Role::where('role_name', 'pengguna')->first();
+            if (!$userRole) {
+                return back()->with('error', 'Role pengguna tidak ditemukan. Pastikan database telah di-seed dengan RoleSeeder.')->withInput();
+            }
+
+            $user = User::create([
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'no_telepon' => $request->no_telepon,
+                'password' => Hash::make($request->password),
+                'role_id' => $userRole->id,
+            ]);
+
+            Auth::login($user);
+
+            return redirect('/')->with('success', 'Registrasi berhasil! Selamat datang di Wijaya Bakery.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Registrasi gagal: ' . $e->getMessage())->withInput();
         }
-
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'no_telepon' => $request->no_telepon,
-            'password' => Hash::make($request->password),
-            'role_id' => $userRole->id,
-        ]);
-
-        Auth::login($user);
-
-        return redirect('/')->with('success', 'Registrasi berhasil! Selamat datang di Wijaya Bakery.');
     }
 
     public function logout(Request $request)
@@ -96,9 +101,16 @@ class UserAuthController extends Controller
         return redirect('/')->with('success', 'Logout berhasil!');
     }
 
-    // Google OAuth
+    // Google OAuth Methods
     public function redirectToGoogle()
     {
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
+
+        if (!$clientId || !$clientSecret) {
+            return redirect()->route('user.login.form')->with('error', 'Google OAuth belum dikonfigurasi. Silakan hubungi administrator.');
+        }
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -107,31 +119,45 @@ class UserAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
+            // Debug: check if we got user data
+            if (!$googleUser) {
+                return redirect('/login-user')->with('error', 'Tidak dapat mendapatkan data dari Google: user object null');
+            }
+
+            if (!$googleUser->email) {
+                return redirect('/login-user')->with('error', 'Google tidak memberikan email. Silakan allow email permission.');
+            }
+
             $user = User::where('email', $googleUser->email)->first();
 
             if (!$user) {
                 // Get user role
                 $userRole = Role::where('role_name', 'pengguna')->first();
                 if (!$userRole) {
-                    return redirect('/login-user')->with('error', 'Role pengguna tidak ditemukan.');
+                    return redirect('/login-user')->with('error', 'Role pengguna tidak ditemukan dalam database. Jalankan: php artisan db:seed --class=RoleSeeder');
                 }
 
                 // Create new user
                 $user = User::create([
-                    'name' => $googleUser->name,
-                    'username' => $googleUser->email, // Use email as username for Google users
+                    'name' => $googleUser->name ?? 'Google User',
+                    'username' => $googleUser->email,
                     'email' => $googleUser->email,
-                    'no_telepon' => null, // Google doesn't provide phone
-                    'password' => Hash::make(Str::random(16)), // Random password
+                    'no_telepon' => null,
+                    'password' => Hash::make(Str::random(16)),
                     'role_id' => $userRole->id,
                 ]);
             }
 
+            if (!$user) {
+                return redirect('/login-user')->with('error', 'Gagal membuat akun user baru.');
+            }
+
             Auth::login($user);
 
-            return redirect('/')->with('success', 'Login dengan Google berhasil!');
+            return redirect('/')->with('success', 'Login dengan Google berhasil! Selamat datang, ' . ($user->name ?? 'User') . '!');
         } catch (\Exception $e) {
-            return redirect('/login-user')->with('error', 'Terjadi kesalahan saat login dengan Google.');
+            Log::error('Google OAuth Error: ' . $e->getMessage());
+            return redirect('/login-user')->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
@@ -192,6 +218,21 @@ class UserAuthController extends Controller
         ]);
 
         return redirect()->route('user.profile')->with('success', 'Alamat berhasil diperbarui!');
+    }
+
+    public function updatePhone(Request $request)
+    {
+        $request->validate([
+            'no_telepon' => 'required|string|max:20|unique:users,no_telepon,' . Auth::id(),
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+        $user->update([
+            'no_telepon' => $request->no_telepon,
+        ]);
+
+        return redirect()->route('user.profile')->with('success', 'Nomor telepon berhasil diperbarui!');
     }
 
     // Indonesian Regions API Methods
