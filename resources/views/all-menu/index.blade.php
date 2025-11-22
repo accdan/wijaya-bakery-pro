@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+        /* ==================== CSS VARIABLES ==================== */
         :root {
             --cream: #faf8f5;
             --warm-white: #ffffff;
@@ -22,21 +23,22 @@
             --text-secondary: #6b5b4f;
         }
 
+        /* ==================== BASE STYLES ==================== */
         body {
             font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--cream);
             color: var(--text-primary);
             line-height: 1.6;
-            padding-top: 80px !important; /* Extra space for fixed navbar */
+            padding-top: 80px !important;
         }
 
-        /* Page Title */
+        /* ==================== PAGE HEADER ==================== */
         .page-title {
             background: linear-gradient(135deg, var(--warm-white), var(--cream));
             padding: 4rem 0 3rem;
             text-align: center;
             border-bottom: 1px solid var(--sage);
-            margin-top: 70px; /* Extra space for fixed navbar */
+            margin-top: 70px;
         }
 
         .page-title h1 {
@@ -49,10 +51,9 @@
         .page-title p {
             font-size: 1.2rem;
             color: var(--text-secondary);
-            margin-bottom: 0;
         }
 
-        /* Filter Section */
+        /* ==================== FILTER SECTION ==================== */
         .filter-section {
             background: var(--warm-white);
             border-radius: 12px;
@@ -79,6 +80,7 @@
             box-shadow: 0 0 0 0.2rem rgba(139, 111, 71, 0.15);
         }
 
+        /* ==================== BUTTONS ==================== */
         .btn-primary {
             background-color: var(--brown);
             border-color: var(--brown);
@@ -106,7 +108,7 @@
             color: white;
         }
 
-        /* Menu Grid */
+        /* ==================== MENU GRID ==================== */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -119,7 +121,7 @@
             background: var(--warm-white);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -130,7 +132,7 @@
 
         .menu-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             border-color: rgba(139, 111, 71, 0.2);
         }
 
@@ -195,47 +197,61 @@
             margin-top: auto;
         }
 
-        /* Pagination */
+        /* ==================== PAGINATION ==================== */
         .pagination {
-            margin-top: 3rem;
+            margin-top: 2rem;
+            display: flex;
             justify-content: center;
+            gap: 0.5rem;
         }
 
         .pagination .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background: var(--warm-white);
             color: var(--brown);
-            border-color: rgba(139, 111, 71, 0.3);
-            padding: 0.75rem 1rem;
-            border-radius: 6px !important;
-            margin: 0 0.125rem;
             font-weight: 500;
+            font-size: 0.9rem;
             transition: all 0.2s ease;
+            text-decoration: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .pagination .page-link:hover {
-            color: var(--dark-brown);
-            background-color: var(--sage);
-            border-color: var(--sage);
+            background: var(--sage);
+            color: var(--brown);
+            border-color: var(--brown);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         .pagination .page-item.active .page-link {
-            background-color: var(--brown);
-            border-color: var(--brown);
+            background: var(--brown);
             color: white;
+            border-color: var(--brown);
+            font-weight: 600;
         }
 
         .pagination .page-item.disabled .page-link {
             color: var(--text-secondary);
-            background-color: transparent;
+            background: var(--cream);
             border-color: transparent;
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        /* Hide previous and next buttons
-        .pagination .page-item:first-child,
-        .pagination .page-item:last-child {
-            display: none;
-        } */
+        .pagination .page-item.prev .page-link,
+        .pagination .page-item.next .page-link {
+            font-weight: 600;
+        }
 
-        /* Empty State */
+        /* ==================== EMPTY STATE ==================== */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -257,7 +273,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Results Info */
+        /* ==================== RESULTS INFO ==================== */
         .results-info {
             display: flex;
             justify-content: space-between;
@@ -277,7 +293,7 @@
             margin-right: 0.5rem;
         }
 
-        /* Mobile */
+        /* ==================== MOBILE RESPONSIVE ==================== */
         @media (max-width: 768px) {
             .page-title h1 {
                 font-size: 2rem;
@@ -406,7 +422,7 @@
                     @foreach($menus as $menu)
                         <div class="menu-card"
                              @if($menu->stok > 0 && auth()->check())
-                                 onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}')"
+                                 onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}', '{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}')"
                              @endif>
 
                             <div class="menu-image-container">
@@ -480,10 +496,51 @@
                     @endforeach
                 </div>
 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-center">
-                    {{ $menus->appends(request()->query())->links() }}
-                </div>
+                <!-- Simple Pagination - Exact Like Image -->
+@if($menus->hasPages())
+<div class="d-flex justify-content-between align-items-center my-5 px-3" style="max-width: 500px; margin-left: auto; margin-right: auto;">
+    
+    <!-- Left: Page Info -->
+    <div style="color: #6b5b4f; font-size: 0.95rem;">
+        Halaman <strong>{{ $menus->currentPage() }}</strong> dari <strong>{{ $menus->lastPage() }}</strong>
+    </div>
+
+    <!-- Center: Navigation -->
+    <div class="d-flex align-items-center gap-2">
+        <!-- Previous Button -->
+        @if($menus->onFirstPage())
+            <button class="btn btn-sm" disabled style="background: transparent; border: none; color: #ccc; cursor: not-allowed;">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        @else
+            <a href="{{ $menus->previousPageUrl() }}" class="btn btn-sm" style="background: transparent; border: none; color: var(--brown);">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        @endif
+
+        <!-- Current Page Badge -->
+        <span class="badge" style="background-color: var(--brown); color: white; font-size: 0.95rem; padding: 0.5rem 0.75rem; border-radius: 8px; min-width: 36px;">
+            {{ $menus->currentPage() }}
+        </span>
+
+        <!-- Next Button -->
+        @if($menus->hasMorePages())
+            <a href="{{ $menus->nextPageUrl() }}" class="btn btn-sm" style="background: transparent; border: none; color: var(--brown);">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        @else
+            <button class="btn btn-sm" disabled style="background: transparent; border: none; color: #ccc; cursor: not-allowed;">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        @endif
+    </div>
+
+    <!-- Right: Total Items -->
+    <div style="color: #6b5b4f; font-size: 0.95rem;">
+        Total: <strong>{{ $menus->total() }}</strong> menu
+    </div>
+</div>
+@endif
 
             @else
                 <!-- Empty State -->
@@ -573,25 +630,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <script>
-        // Function to show add to cart modal
-        function showAddToCartModal(menuId, menuName, menuPrice, maxStock) {
-            // Check if user is logged in
+        // ==================== MODAL FUNCTIONS ====================
+        // Show add to cart modal with menu details
+        function showAddToCartModal(menuId, menuName, menuPrice, maxStock, menuImage) {
             @auth
                 const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
-
-                // Find menu image
-                const menuCards = document.querySelectorAll('.menu-card');
-                let menuImage = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600';
-                for (let card of menuCards) {
-                    const cardName = card.querySelector('.menu-name')?.textContent;
-                    if (cardName && cardName.includes(menuName)) {
-                        const img = card.querySelector('.menu-image');
-                        if (img && img.src) {
-                            menuImage = img.src;
-                        }
-                        break;
-                    }
-                }
 
                 // Set modal content
                 document.getElementById('modalMenuImage').src = menuImage;
@@ -602,7 +645,7 @@
                 document.getElementById('modalQuantityInput').value = 1;
                 updateModalTotal();
 
-                // Set up form submission
+                // Set form action
                 const form = document.getElementById('addToCartForm');
                 form.action = '{{ route("cart.add", ":menuId") }}'.replace(':menuId', menuId);
 
@@ -610,7 +653,6 @@
             @endauth
 
             @guest
-                // Redirect to login if not authenticated
                 window.location.href = '{{ route("user.login.form") }}';
             @endguest
         }

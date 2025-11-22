@@ -308,7 +308,7 @@
       z-index: 1;
     }
 
-    /* Menu Section - Redesigned */
+    /* Menu Section */
     .menu-section {
       background-color: var(--sage);
       min-height: auto;
@@ -317,7 +317,7 @@
 
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
       max-width: 1200px;
       margin: 0 auto;
@@ -327,8 +327,8 @@
       background: var(--warm-white);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       cursor: pointer;
@@ -337,26 +337,9 @@
     }
 
     .menu-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      border-color: rgba(139, 111, 71, 0.3);
-    }
-
-    .menu-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(139, 111, 71, 0.05), rgba(213, 182, 150, 0.05));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 1;
-    }
-
-    .menu-card:hover::before {
-      opacity: 1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-color: rgba(139, 111, 71, 0.2);
     }
 
     .menu-image-container {
@@ -371,15 +354,10 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-
-    .menu-card:hover .menu-image {
-      transform: scale(1.06);
     }
 
     .menu-content {
-      padding: 1.2rem;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -387,7 +365,6 @@
     }
 
     .menu-name {
-      font-family: 'Playfair Display', serif;
       font-size: 1.1rem;
       font-weight: 600;
       color: var(--text-primary);
@@ -398,101 +375,32 @@
     .menu-description {
       font-size: 0.85rem;
       color: var(--text-secondary);
-      line-height: 1.5;
+      line-height: 1.4;
       flex-grow: 1;
       margin: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .menu-description-mobile-hidden {
-      display: none;
     }
 
     .menu-price {
       font-size: 1.2rem;
       font-weight: 600;
       color: var(--brown);
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
+      margin: 0.5rem 0;
     }
 
-    .menu-price-mobile {
-      font-size: 1rem;
-      font-weight: 500;
-      margin-top: 0.25rem;
-      margin-bottom: 0;
-    }
-
-    .menu-badge-mobile {
-      font-size: 0.7rem;
-      padding: 0.15rem 0.4rem;
-    }
-
-    .menu-actions {
-      margin-top: auto;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(139, 111, 71, 0.1);
-    }
-
-    .menu-actions-mobile {
-      padding: 0.75rem 0.75rem 0.5rem;
-      border-top: none;
-    }
-
-    .btn-add-cart {
-      background-color: var(--brown);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
+    .menu-category {
+      display: inline-block;
+      background: rgba(139, 111, 71, 0.1);
+      color: var(--brown);
+      padding: 0.25rem 0.5rem;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       font-weight: 500;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-
-    .btn-add-cart:hover {
-      background-color: var(--dark-brown);
-      transform: translateY(-1px);
-    }
-
-    .btn-order-wa {
-      background-color: #25d366;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-
-    .btn-order-wa:hover {
-      background-color: #1fb855;
-      transform: translateY(-1px);
     }
 
     .stock-info {
       font-size: 0.8rem;
       color: var(--text-secondary);
-      text-align: left;
-      margin-top: 0.25rem;
-    }
-
-    .quantity-selector {
-      display: none;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem;
-      background: rgba(139, 111, 71, 0.05);
-      border-radius: 4px;
-    }
-
-    .quantity-selector.show {
-      display: block;
+      margin-top: auto;
     }
 
     /* Order Section */
@@ -1451,7 +1359,7 @@
       <div class="menu-grid">
         @foreach($menus as $menu)
           <!-- Menu Item -->
-          <div class="menu-card" @if($menu->stok > 0 && auth()->check()) onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}')" @endif>
+          <div class="menu-card" @if($menu->stok > 0 && auth()->check()) onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}', '{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}')" @endif>
             <div class="menu-image-container">
               <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}" alt="{{ $menu->nama_menu }}" class="menu-image">
             </div>
@@ -2038,29 +1946,14 @@
     });
 
     // Function to show add to cart modal
-    function showAddToCartModal(menuId, menuName, menuPrice, maxStock) {
+    function showAddToCartModal(menuId, menuName, menuPrice, maxStock, menuImage) {
       const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
-
-      // Find menu image
-      const menuCards = document.querySelectorAll('.menu-card');
-      let menuImage = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600';
-      for (let card of menuCards) {
-        const cardName = card.querySelector('.menu-name')?.textContent;
-        if (cardName === menuName) {
-          const img = card.querySelector('.menu-image');
-          if (img) {
-            menuImage = img.src;
-          }
-          break;
-        }
-      }
 
       // Set modal content
       document.getElementById('modalMenuImage').src = menuImage;
       document.getElementById('modalMenuName').textContent = menuName;
       document.getElementById('modalMenuPrice').textContent = 'Rp ' + parseInt(menuPrice).toLocaleString('id-ID');
       document.getElementById('modalStock').textContent = maxStock;
-      document.getElementById('modalQuantity').max = maxStock;
       document.getElementById('modalQuantity').value = 1;
       updateModalTotal();
 
