@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Semua Menu | Wijaya Bakery</title>
 
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Menu Card Shared Styles -->
+    <link rel="stylesheet" href="{{ asset('css/menu-card.css') }}">
 
     <style>
         /* ==================== CSS VARIABLES ==================== */
@@ -33,33 +41,71 @@
         }
 
         /* ==================== PAGE HEADER ==================== */
-        .page-title {
-            background: linear-gradient(135deg, var(--warm-white), var(--cream));
-            padding: 4rem 0 3rem;
+        .page-header {
+            background: linear-gradient(135deg, #8B4513 0%, #5D3A1A 100%);
+            padding: 5rem 0 4rem;
             text-align: center;
-            border-bottom: 1px solid var(--sage);
-            margin-top: 70px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .page-title h1 {
+        .page-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .page-header h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            color: white;
+            margin-bottom: 0.75rem;
+            position: relative;
+            z-index: 1;
         }
 
-        .page-title p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
+        .page-header p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header .breadcrumb-nav {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1rem;
+        }
+
+        .page-header .breadcrumb-nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .page-header .breadcrumb-nav a:hover {
+            color: white;
+        }
+
+        .page-header .breadcrumb-nav span {
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0 0.5rem;
         }
 
         /* ==================== FILTER SECTION ==================== */
         .filter-section {
             background: var(--warm-white);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             margin-bottom: 2rem;
+            margin-top: -3rem;
+            position: relative;
+            z-index: 10;
         }
 
         .form-label {
@@ -68,14 +114,16 @@
             margin-bottom: 0.5rem;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border: 2px solid var(--sage);
             border-radius: 8px;
             padding: 0.75rem;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--brown);
             box-shadow: 0 0 0 0.2rem rgba(139, 111, 71, 0.15);
         }
@@ -121,7 +169,7 @@
             background: var(--warm-white);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -132,7 +180,7 @@
 
         .menu-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
             border-color: rgba(139, 111, 71, 0.2);
         }
 
@@ -220,7 +268,7 @@
             font-size: 0.9rem;
             transition: all 0.2s ease;
             text-decoration: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .pagination .page-link:hover {
@@ -228,7 +276,7 @@
             color: var(--brown);
             border-color: var(--brown);
             transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
         .pagination .page-item.active .page-link {
@@ -332,10 +380,15 @@
     @include('components.navbar')
 
     <!-- Page Header -->
-    <section class="py-5" style="background: linear-gradient(135deg, var(--warm-white), var(--cream));">
+    <section class="page-header">
         <div class="container">
-            <h1 class="section-title" style="margin-bottom: 0.5rem;">Semua Menu</h1>
-            <p class="section-subtitle">Temukan semua produk roti dan kue favorit Anda</p>
+            <div class="breadcrumb-nav">
+                <a href="/">Beranda</a>
+                <span>›</span>
+                <a href="{{ route('all-menu.index') }}">Menu</a>
+            </div>
+            <h1>🥐 Katalog Menu</h1>
+            <p>Temukan semua produk roti dan kue favorit Anda</p>
         </div>
     </section>
 
@@ -349,10 +402,9 @@
                     <div class="col-md-4">
                         <label for="search" class="form-label fw-bold">Cari Menu</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text" class="form-control search-input" id="search" name="search"
-                                   placeholder="Cari berdasarkan nama atau deskripsi..."
-                                   value="{{ $search }}">
+                                placeholder="Cari berdasarkan nama atau deskripsi..." value="{{ $search }}">
                         </div>
                     </div>
 
@@ -374,8 +426,10 @@
                         <label for="sort" class="form-label fw-bold">Urutkan</label>
                         <select class="form-select select-input" id="sort" name="sort">
                             <option value="nama" {{ $sortBy == 'nama' ? 'selected' : '' }}>Nama A-Z</option>
-                            <option value="harga_asc" {{ $sortBy == 'harga_asc' ? 'selected' : '' }}>Harga Terendah</option>
-                            <option value="harga_desc" {{ $sortBy == 'harga_desc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                            <option value="harga_asc" {{ $sortBy == 'harga_asc' ? 'selected' : '' }}>Harga Terendah
+                            </option>
+                            <option value="harga_desc" {{ $sortBy == 'harga_desc' ? 'selected' : '' }}>Harga Tertinggi
+                            </option>
                             <option value="terbaru" {{ $sortBy == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
                         </select>
                     </div>
@@ -383,10 +437,10 @@
                     <!-- Buttons -->
                     <div class="col-md-4 d-flex gap-2">
                         <button type="submit" class="btn btn-primary flex-fill">
-                            <i class="fas fa-filter me-2"></i>Filter
+                            <i class="bi bi-funnel me-2"></i>Filter
                         </button>
                         <a href="{{ route('all-menu.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-undo me-2"></i>Reset
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>Reset
                         </a>
                     </div>
                 </form>
@@ -420,133 +474,67 @@
                 <!-- Menu Cards -->
                 <div class="menu-grid">
                     @foreach($menus as $menu)
-                        <div class="menu-card"
-                             @if($menu->stok > 0 && auth()->check())
-                                 onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}', '{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}')"
-                             @endif>
-
-                            <div class="menu-image-container">
-                                <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}"
-                                     alt="{{ $menu->nama_menu }}" class="menu-image">
-                            </div>
-
-                            <div class="menu-content">
-                                <h3 class="menu-name">
-                                    {{ $menu->nama_menu }}
-                                    @php
-                                        $bestPromo = $menu->getBestPromotion(1);
-                                    @endphp
-                                    @if($bestPromo)
-                                        @php
-                                            $promoDisplay = $menu->getPromotionDisplay(1);
-                                        @endphp
-                                        <span class="badge bg-danger ms-1" style="font-size: 0.7em;">
-                                            <i class="fas fa-percentage me-1"></i>
-                                            @if($bestPromo->discount_type == 'percentage' && $promoDisplay)
-                                              {{ $promoDisplay['discount_text'] }}
-                                            @elseif($bestPromo->discount_type == 'fixed' && $promoDisplay)
-                                              {{ $promoDisplay['discount_text'] }}
-                                            @else
-                                              Promo!
-                                            @endif
-                                        </span>
-                                    @endif
-                                </h3>
-
-                                <p class="menu-description">{{ Str::limit($menu->deskripsi_menu, 100) }}</p>
-
-                                <div class="menu-category">
-                                    <i class="fas fa-tag me-1"></i>{{ $menu->kategori->nama_kategori }}
-                                </div>
-
-                                <div class="menu-price">
-                                    @if($menu->stok > 0)
-                                        Rp {{ number_format($menu->harga, 0, ',', '.') }}
-                                        @if($bestPromo && $bestPromo->discount_type == 'percentage' && $bestPromo->min_quantity <= 1)
-                                            <small class="text-success ms-2">
-                                              Diskon {{ $bestPromo->discount_value }}%
-                                            </small>
-                                        @endif
-                                    @else
-                                        <span>Stok Kosong</span>
-                                    @endif
-                                </div>
-
-                                @if($menu->stok > 0)
-                                    @auth
-                                        <div class="stock-info">Tersedia {{ $menu->stok }}</div>
-                                    @else
-                                        <div class="text-center mt-2">
-                                            <small class="text-muted">Login untuk pesan</small>
-                                        </div>
-                                    @endauth
-                                @else
-                                    <!-- WhatsApp direct -->
-                                    @php
-                                        $waMessage = "Halo, saya ingin memesan menu: {$menu->nama_menu}. Mohon konfirmasi ketersediaan.";
-                                        $waUrl = "https://wa.me/6283112116135?text=" . urlencode($waMessage);
-                                    @endphp
-                                    <a href="{{ $waUrl }}" target="_blank" class="btn btn-order-wa">
-                                        <i class="bi bi-whatsapp me-1"></i>Pesan via WhatsApp
-                                    </a>
-                                    <div class="stock-info">Stok habis</div>
-                                @endif
-                            </div>
-                        </div>
+                        <x-menu-card :menu="$menu" :descriptionLimit="100" />
                     @endforeach
                 </div>
 
                 <!-- Simple Pagination - Exact Like Image -->
-@if($menus->hasPages())
-<div class="d-flex justify-content-between align-items-center my-5 px-3" style="max-width: 500px; margin-left: auto; margin-right: auto;">
-    
-    <!-- Left: Page Info -->
-    <div style="color: #6b5b4f; font-size: 0.95rem;">
-        Halaman <strong>{{ $menus->currentPage() }}</strong> dari <strong>{{ $menus->lastPage() }}</strong>
-    </div>
+                @if($menus->hasPages())
+                    <div class="d-flex justify-content-between align-items-center my-5 px-3"
+                        style="max-width: 500px; margin-left: auto; margin-right: auto;">
 
-    <!-- Center: Navigation -->
-    <div class="d-flex align-items-center gap-2">
-        <!-- Previous Button -->
-        @if($menus->onFirstPage())
-            <button class="btn btn-sm" disabled style="background: transparent; border: none; color: #ccc; cursor: not-allowed;">
-                <i class="bi bi-chevron-left"></i>
-            </button>
-        @else
-            <a href="{{ $menus->previousPageUrl() }}" class="btn btn-sm" style="background: transparent; border: none; color: var(--brown);">
-                <i class="bi bi-chevron-left"></i>
-            </a>
-        @endif
+                        <!-- Left: Page Info -->
+                        <div style="color: #6b5b4f; font-size: 0.95rem;">
+                            Halaman <strong>{{ $menus->currentPage() }}</strong> dari <strong>{{ $menus->lastPage() }}</strong>
+                        </div>
 
-        <!-- Current Page Badge -->
-        <span class="badge" style="background-color: var(--brown); color: white; font-size: 0.95rem; padding: 0.5rem 0.75rem; border-radius: 8px; min-width: 36px;">
-            {{ $menus->currentPage() }}
-        </span>
+                        <!-- Center: Navigation -->
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Previous Button -->
+                            @if($menus->onFirstPage())
+                                <button class="btn btn-sm" disabled
+                                    style="background: transparent; border: none; color: #ccc; cursor: not-allowed;">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                            @else
+                                <a href="{{ $menus->previousPageUrl() }}" class="btn btn-sm"
+                                    style="background: transparent; border: none; color: var(--brown);">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            @endif
 
-        <!-- Next Button -->
-        @if($menus->hasMorePages())
-            <a href="{{ $menus->nextPageUrl() }}" class="btn btn-sm" style="background: transparent; border: none; color: var(--brown);">
-                <i class="bi bi-chevron-right"></i>
-            </a>
-        @else
-            <button class="btn btn-sm" disabled style="background: transparent; border: none; color: #ccc; cursor: not-allowed;">
-                <i class="bi bi-chevron-right"></i>
-            </button>
-        @endif
-    </div>
+                            <!-- Current Page Badge -->
+                            <span class="badge"
+                                style="background-color: var(--brown); color: white; font-size: 0.95rem; padding: 0.5rem 0.75rem; border-radius: 8px; min-width: 36px;">
+                                {{ $menus->currentPage() }}
+                            </span>
 
-    <!-- Right: Total Items -->
-    <div style="color: #6b5b4f; font-size: 0.95rem;">
-        Total: <strong>{{ $menus->total() }}</strong> menu
-    </div>
-</div>
-@endif
+                            <!-- Next Button -->
+                            @if($menus->hasMorePages())
+                                <a href="{{ $menus->nextPageUrl() }}" class="btn btn-sm"
+                                    style="background: transparent; border: none; color: var(--brown);">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            @else
+                                <button class="btn btn-sm" disabled
+                                    style="background: transparent; border: none; color: #ccc; cursor: not-allowed;">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            @endif
+                        </div>
+
+                        <!-- Right: Total Items -->
+                        <div style="color: #6b5b4f; font-size: 0.95rem;">
+                            Total: <strong>{{ $menus->total() }}</strong> menu
+                        </div>
+                    </div>
+                @endif
 
             @else
                 <!-- Empty State -->
                 <div class="text-center py-5">
                     <div class="mb-4">
-                        <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
+                        <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
                     </div>
                     <h4 class="mb-3">Menu Tidak Ditemukan</h4>
                     <p class="text-muted mb-4">
@@ -557,7 +545,7 @@
                     </p>
                     @if($search || $kategori)
                         <a href="{{ route('all-menu.index') }}" class="btn btn-primary">
-                            <i class="fas fa-undo me-2"></i>Tampilkan Semua Menu
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>Tampilkan Semua Menu
                         </a>
                     @endif
                 </div>
@@ -565,62 +553,64 @@
         </div>
     </section>
 
-    <!-- Add to Cart Modal -->
-    <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 320px; position: absolute; top: 50%; left: 20%; transform: translateY(-50%); margin: 0;">
-            <div class="modal-content" style="border-radius: 32px; border: none; height: auto; min-height: 480px;">
-                <div class="modal-body text-center p-5 d-flex flex-column" style="background: linear-gradient(135deg, #8b6f47, #d4b896); color: white; height: 100%; border-radius: 32px;">
-                    <!-- Minimalist Image Container -->
-                    <div class="mb-4 flex-shrink-0">
-                        <img id="modalMenuImage" src="" alt="" class="rounded-circle mx-auto d-block" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.9); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+    <!-- Modern Simple Add to Cart Modal -->
+    <div class="modal fade" id="addToCartModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 340px;">
+            <div class="modal-content"
+                style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
+
+                <!-- Clean Header with Image -->
+                <div style="background: #faf8f5; padding: 1.5rem; text-align: center; position: relative;">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        style="position: absolute; top: 12px; right: 12px; opacity: 0.5;"></button>
+                    <img loading="lazy" id="modalMenuImage" src="" alt=""
+                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h5 id="modalMenuName" class="mt-3 mb-1"
+                        style="font-weight: 600; color: #3d2914; font-size: 1.1rem;"></h5>
+                    <div id="modalMenuPrice" style="color: #8B4513; font-weight: 700; font-size: 1.15rem;"></div>
+                </div>
+
+                <!-- Simple Body -->
+                <div style="padding: 1.25rem 1.5rem;">
+                    <!-- Stock Info -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.75rem; background: #f8f6f4; border-radius: 10px;">
+                        <span style="color: #6b5b4f; font-size: 0.85rem;">Stok tersedia</span>
+                        <span id="modalStock" style="font-weight: 600; color: #3d2914;"></span>
                     </div>
 
-                    <!-- Item Details -->
-                    <div class="mb-4 flex-grow-1">
-                        <h6 id="modalMenuName" class="fw-bold mb-3" style="font-size: 1.4rem; line-height: 1.3;"></h6>
-                        <div class="mb-3">
-                            <div class="text-white-50 small mb-1">Harga Satuan</div>
-                            <div id="modalMenuPrice" class="fw-semibold" style="font-size: 1.1rem;"></div>
-                        </div>
-                        <div class="mb-4">
-                            <div class="text-white-50 small mb-1">Stok Tersedia</div>
-                            <div id="modalStock" class="badge bg-white bg-opacity-25 text-white py-2 px-3 rounded-pill" style="font-size: 0.9rem;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Quantity Controls -->
-                    <form id="addToCartForm" class="flex-shrink-0 w-100">
+                    <!-- Quantity Selector -->
+                    <form id="addToCartForm">
                         @csrf
-                        <div class="d-flex align-items-center justify-content-between mb-4 px-3">
-                            <button type="button" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: none;" onclick="changeQuantityModal(-1)">
-                                <i class="bi bi-dash fs-5"></i>
-                            </button>
-
-                            <div class="flex-grow-1 mx-3">
-                                <div class="bg-white bg-opacity-25 rounded-pill d-flex align-items-center justify-content-center py-2 px-4">
-                                    <span class="text-white fw-semibold fs-5" id="modalQuantity">1</span>
-                                    <input type="hidden" name="quantity" id="modalQuantityInput" value="1" min="1">
-                                </div>
-                            </div>
-
-                            <button type="button" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: none;" onclick="changeQuantityModal(1)">
-                                <i class="bi bi-plus fs-5"></i>
-                            </button>
+                        <div
+                            style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                            <button type="button" onclick="changeQuantityModal(-1)"
+                                style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e0d8d0; background: white; cursor: pointer; font-size: 1.2rem; color: #8B4513; display: flex; align-items: center; justify-content: center;">−</button>
+                            <span id="modalQuantity"
+                                style="font-size: 1.5rem; font-weight: 700; color: #3d2914; min-width: 40px; text-align: center;">1</span>
+                            <input type="hidden" name="quantity" id="modalQuantityInput" value="1">
+                            <button type="button" onclick="changeQuantityModal(1)"
+                                style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e0d8d0; background: white; cursor: pointer; font-size: 1.2rem; color: #8B4513; display: flex; align-items: center; justify-content: center;">+</button>
                         </div>
 
-                        <!-- Total and Add Button -->
-                        <div class="mb-4">
-                            <div class="text-white-50 small mb-1">Total Pembayaran</div>
-                            <div id="modalTotal" class="fw-bold" style="font-size: 1.3rem;"></div>
+                        <!-- Total -->
+                        <div style="text-align: center; margin-bottom: 1rem;">
+                            <span style="color: #6b5b4f; font-size: 0.8rem;">Total</span>
+                            <div id="modalTotal" style="font-size: 1.4rem; font-weight: 700; color: #8B4513;"></div>
                         </div>
 
-                        <button type="submit" class="btn btn-outline-light w-100 py-3 rounded-pill" style="border-color: white; border-width: 2px; color: white; font-weight: 600; font-size: 1rem;">
-                            <i class="bi bi-cart-plus-fill me-2"></i>Tambah ke Keranjang
+                        <!-- Add Button -->
+                        <button type="submit"
+                            style="width: 100%; padding: 0.875rem; background: linear-gradient(135deg, #8B4513, #5D3A1A); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                            onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(139,69,19,0.3)';"
+                            onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                            🛒 Tambah ke Keranjang
                         </button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -634,7 +624,7 @@
         // Show add to cart modal with menu details
         function showAddToCartModal(menuId, menuName, menuPrice, maxStock, menuImage) {
             @auth
-                const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
+                                    const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
 
                 // Set modal content
                 document.getElementById('modalMenuImage').src = menuImage;
@@ -695,7 +685,7 @@
             // Disable button and show loading
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menambahkan...';
+            submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin me-2"></i>Menambahkan...';
             submitBtn.disabled = true;
 
             try {
@@ -784,15 +774,15 @@
         }
 
         // Manual form submission for filters (no auto-submit)
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Add loading state when filter form submits
             const filterForm = document.querySelector('.filter-section form');
             if (filterForm) {
-                filterForm.addEventListener('submit', function(e) {
+                filterForm.addEventListener('submit', function (e) {
                     const submitBtn = this.querySelector('button[type="submit"]');
                     if (submitBtn) {
                         const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Mencari...';
+                        submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin me-2"></i>Mencari...';
                         submitBtn.disabled = true;
                     }
                 });
@@ -801,7 +791,7 @@
             // Handle add to cart form submission
             const addToCartForm = document.getElementById('addToCartForm');
             if (addToCartForm) {
-                addToCartForm.onsubmit = function(e) {
+                addToCartForm.onsubmit = function (e) {
                     e.preventDefault();
                     const menuId = this.action.split('/').pop();
                     addToCart(menuId);
@@ -810,4 +800,5 @@
         });
     </script>
 </body>
+
 </html>

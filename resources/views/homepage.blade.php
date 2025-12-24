@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Wijaya Bakery</title>
+
+  <!-- Preconnect to external domains for faster loading -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
+  <!-- Fonts - reduced weights -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+  <!-- Menu Card Shared Styles -->
+  <link rel="stylesheet" href="{{ asset('css/menu-card.css') }}">
 
   <style>
     html {
@@ -21,13 +33,23 @@
     }
 
     :root {
-      --cream: #faf8f5;
-      --warm-white: #ffffff;
-      --sage: #d4b896;
-      --brown: #8b6f47;
-      --dark-brown: #5d4e37;
-      --text-primary: #4a3f35;
-      --text-secondary: #6b5b4f;
+      /* Fresh Bakery Theme Colors 🥐 */
+      --bakery-cream: #FEF9F3;
+      --bakery-warm-white: #ffffff;
+      --bakery-golden: #D4A574;
+      --bakery-brown: #8B4513;
+      --bakery-dark-brown: #5D3A1A;
+      --bakery-peach: #FFECD2;
+      --bakery-cinnamon: #C97B4B;
+      --text-primary: #3D2914;
+      --text-secondary: #6B5241;
+
+      /* Legacy support */
+      --cream: var(--bakery-cream);
+      --warm-white: var(--bakery-warm-white);
+      --sage: var(--bakery-peach);
+      --brown: var(--bakery-brown);
+      --dark-brown: var(--bakery-dark-brown);
     }
 
     body {
@@ -37,7 +59,10 @@
       line-height: 1.6;
     }
 
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
       font-family: "Playfair Display", serif;
       color: var(--text-primary);
       font-weight: 600;
@@ -519,14 +544,16 @@
       margin-bottom: 0.5rem;
     }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
       border: 2px solid var(--sage);
       border-radius: 8px;
       padding: 0.75rem;
       transition: all 0.3s ease;
     }
 
-    .form-control:focus, .form-select:focus {
+    .form-control:focus,
+    .form-select:focus {
       border-color: var(--brown);
       box-shadow: 0 0 0 0.2rem rgba(139, 111, 71, 0.15);
     }
@@ -720,38 +747,65 @@
       transform: translateY(-2px);
     }
 
-    /* Footer - Enhanced */
+    /* Footer - Fresh Brown Premium Design */
     .footer {
-      background: linear-gradient(135deg, var(--brown) 0%, var(--dark-brown) 100%);
-      color: white;
-      padding: 4rem 0 2rem;
+      background: linear-gradient(135deg, #F5EBD9 0%, #E8DCC8 50%, #D4C4A8 100%);
+      color: #4E342E;
+      padding: 5rem 0 2rem;
       position: relative;
       margin-top: 4rem;
+      border-top: 1px solid rgba(139, 69, 19, 0.15);
     }
 
     .footer::before {
       content: "";
       position: absolute;
-      top: -4rem;
+      top: 0;
       left: 0;
       right: 0;
-      height: 4rem;
-      background: linear-gradient(135deg, var(--bakery-cream) 0%, var(--cream) 100%);
-      border-radius: 0 0 50% 50%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23A0522D' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
 
     .footer-content {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-bottom: 2.5rem;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 3rem;
+      margin-bottom: 3rem;
       position: relative;
       z-index: 1;
     }
 
+    .footer-brand {
+      max-width: 300px;
+    }
+
+    .footer-brand img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 4px 12px rgba(93, 64, 55, 0.15));
+    }
+
+    .footer-brand h4 {
+      color: #5D4037;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-brand p {
+      color: #795548;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
     .footer-section h5 {
-      color: white;
-      font-size: 1.2rem;
+      color: #5D4037;
+      font-size: 1.1rem;
       margin-bottom: 1.5rem;
       font-weight: 700;
       position: relative;
@@ -761,11 +815,11 @@
     .footer-section h5::after {
       content: "";
       position: absolute;
-      bottom: -5px;
+      bottom: -8px;
       left: 0;
-      width: 40px;
+      width: 30px;
       height: 3px;
-      background: linear-gradient(90deg, var(--sage), rgba(255,255,255,0.8));
+      background: linear-gradient(90deg, #A0522D, #CD853F);
       border-radius: 2px;
     }
 
@@ -773,24 +827,23 @@
       display: flex;
       align-items: flex-start;
       margin-bottom: 1rem;
-      color: rgba(255, 255, 255, 0.9);
+      color: #795548;
       transition: all 0.3s ease;
       border-radius: 8px;
-      padding: 0.5rem;
+      padding: 0.5rem 0;
     }
 
     .footer-info:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
+      color: #5D4037;
       transform: translateX(5px);
     }
 
     .footer-info i {
       width: 20px;
       margin-right: 0.75rem;
-      color: var(--sage);
-      font-size: 1.1rem;
-      margin-top: 0.1rem;
+      color: #A0522D;
+      font-size: 1rem;
+      margin-top: 0.15rem;
     }
 
     .footer-info a {
@@ -803,47 +856,93 @@
     }
 
     .footer-info a:hover {
-      color: white;
-      text-decoration: none;
+      color: #5D4037;
     }
 
     .footer-info a:hover i {
-      transform: scale(1.1);
-      color: rgba(255, 255, 255, 0.9);
+      transform: scale(1.2);
+      color: #8B4513;
     }
 
-    .footer-info span {
-      flex: 1;
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
     }
 
-    .footer-info .detail {
-      font-size: 0.95rem;
-      line-height: 1.4;
+    .footer-social a {
+      width: 42px;
+      height: 42px;
+      background: rgba(160, 82, 45, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #A0522D;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(160, 82, 45, 0.15);
     }
 
-    .footer-description {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 1.5rem;
-    }
-
-    .footer-description h6 {
+    .footer-social a:hover {
+      background: linear-gradient(135deg, #A0522D, #CD853F);
       color: white;
-      font-weight: 600;
-      margin-bottom: 1rem;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(160, 82, 45, 0.25);
+      border-color: transparent;
     }
 
     .footer-divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      margin: 3rem 0 2rem;
+      background: linear-gradient(90deg, transparent, rgba(160, 82, 45, 0.2), transparent);
+      margin: 2rem 0;
     }
 
     .footer-bottom {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: #795548;
+      font-size: 0.85rem;
+    }
+
+    .footer-bottom a {
+      color: #A0522D;
+      text-decoration: none;
+    }
+
+    @media (max-width: 991px) {
+      .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .footer-brand {
+        max-width: 100%;
+        grid-column: span 2;
+        text-align: center;
+      }
+
+      .footer-brand img {
+        margin: 0 auto 1rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-brand {
+        grid-column: span 1;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
     }
 
 
@@ -947,7 +1046,7 @@
         margin-right: 0.5rem;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
       .promo-section {
@@ -958,11 +1057,13 @@
         padding: 0 1rem;
       }
 
-      .contact-section, .sponsors-section {
+      .contact-section,
+      .sponsors-section {
         padding: 2rem 0;
       }
 
-      .contact-card, .sponsor-card {
+      .contact-card,
+      .sponsor-card {
         padding: 1rem;
         margin-bottom: 1rem;
       }
@@ -1023,7 +1124,7 @@
         position: absolute;
         top: 8px;
         right: 8px;
-        background: rgba(255,255,255,0.9);
+        background: rgba(255, 255, 255, 0.9);
         padding: 0.25rem 0.5rem;
         border-radius: 6px;
         border: 1px solid rgba(139, 111, 71, 0.2);
@@ -1072,7 +1173,7 @@
       .modal-content {
         border-radius: 20px !important;
         border: none !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
       }
 
       /* Mobile Navigation Enhancements */
@@ -1085,7 +1186,7 @@
         background: rgba(139, 111, 71, 0.95) !important;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
       }
 
       body {
@@ -1093,7 +1194,9 @@
       }
 
       /* Touch-friendly buttons */
-      .btn, .btn-sm, .btn-lg {
+      .btn,
+      .btn-sm,
+      .btn-lg {
         min-height: 44px;
         touch-action: manipulation;
       }
@@ -1117,7 +1220,7 @@
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.2);
         border: 2px solid white;
         color: white;
         display: flex;
@@ -1129,7 +1232,7 @@
 
       .quantity-btn-mobile:active {
         transform: scale(0.95);
-        background: rgba(255,255,255,0.3);
+        background: rgba(255, 255, 255, 0.3);
       }
 
       .quantity-display-mobile {
@@ -1139,7 +1242,7 @@
         font-size: 1.4rem;
         font-weight: bold;
         padding: 0.5rem;
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
         border-radius: 50px;
         margin: 0 0.5rem;
         min-height: 48px;
@@ -1169,7 +1272,7 @@
         scroll-snap-align: start;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s ease;
       }
 
@@ -1220,14 +1323,14 @@
         border-radius: 10px;
         overflow: hidden;
         background: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         position: relative;
       }
 
       .menu-card-mobile:active {
         transform: scale(0.98);
-        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
       }
 
       .menu-image-mobile {
@@ -1237,12 +1340,15 @@
       }
 
       /* Enhanced Card Touch Targets */
-      .menu-card, .contact-card, .sponsor-card {
-        -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+      .menu-card,
+      .contact-card,
+      .sponsor-card {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
       }
 
       /* Improved Text Readability Mobile */
-      .section-title, .section-subtitle {
+      .section-title,
+      .section-subtitle {
         text-align: center;
       }
 
@@ -1264,7 +1370,8 @@
       }
 
       /* Better form inputs for mobile */
-      .form-control, .form-select {
+      .form-control,
+      .form-select {
         font-size: 1rem;
         line-height: 1.4;
         min-height: 44px;
@@ -1282,7 +1389,8 @@
       }
 
       /* Cart action buttons mobile */
-      .btn-add-cart, .btn-order-wa {
+      .btn-add-cart,
+      .btn-order-wa {
         width: 100%;
         margin-bottom: 0.5rem;
         min-height: 44px;
@@ -1291,7 +1399,8 @@
       }
 
       /* Improved touch target for close buttons */
-      .btn-close, [data-bs-dismiss] {
+      .btn-close,
+      [data-bs-dismiss] {
         min-width: 44px;
         min-height: 44px;
       }
@@ -1331,6 +1440,7 @@
         opacity: 0;
         transform: translateX(-50px);
       }
+
       to {
         opacity: 1;
         transform: translateX(0);
@@ -1342,6 +1452,7 @@
         opacity: 0;
         transform: translateY(30px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -1353,6 +1464,7 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -1364,6 +1476,7 @@
         opacity: 0;
         transform: translateX(50px);
       }
+
       to {
         opacity: 1;
         transform: translateX(0);
@@ -1371,8 +1484,15 @@
     }
 
     @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
     }
 
     @keyframes bounceIn {
@@ -1380,13 +1500,16 @@
         opacity: 0;
         transform: scale(0.3);
       }
+
       50% {
         opacity: 1;
         transform: scale(1.05);
       }
+
       70% {
         transform: scale(0.9);
       }
+
       100% {
         opacity: 1;
         transform: scale(1);
@@ -1405,8 +1528,8 @@
   </a>
   @php
     $heroImage = $hero && $hero->gambar
-        ? asset('uploads/hero/' . $hero->gambar)
-        : asset('images/hero-bg1.jpeg');
+      ? asset('storage/uploads/hero/' . $hero->gambar)
+      : asset('storage/images/hero-bg1.jpeg');
   @endphp
 
 
@@ -1419,27 +1542,30 @@
       </div>
     </div>
   </section>
-<!-- About Section - Simplified -->
-<section id="about" class="py-5" style="background-color: var(--cream);">
+  <!-- About Section - Fullscreen -->
+  <section id="about" class="about-section">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <img src="{{ asset('images/bakery1.jpeg') }}" alt="Wijaya Bakery" class="img-fluid rounded fade-in-left" style="box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
-            </div>
-            <div class="col-lg-6">
-                <div class="ps-lg-4 mt-4 mt-lg-0">
-                    <h2 class="mb-3" style="color: var(--text-primary); font-weight: 600;">Tentang Wijaya Bakery</h2>
-                    <p class="lead mb-3" style="color: var(--text-secondary);">
-                        {!! $data->about_deskripsi ?? 'Didiri kami telah lebih dari 30 tahun melayani masyarakat dengan produk roti dan kue berkualitas tinggi. Kami menggunakan bahan-bahan alami dan resep turun temurun untuk memberikan pengalaman rasa terbaik kepada pelanggan.' !!}
-                    </p>
-                    <p class="mb-4" style="color: var(--text-secondary); line-height: 1.7;">
-                        Dari pagi hingga malam, jenis bakery ini siap memanjakan lidah Anda dengan berbagai macam roti dan kue segar setiap hari. Dedikasi kami dalam menciptakan produk yang enak dan berkualitas telah membuat bakery ini menjadi pilihan favorit masyarakat setempat.
-                    </p>
-                </div>
-            </div>
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <img loading="lazy" src="{{ asset('storage/images/bakery1.jpeg') }}" alt="Wijaya Bakery"
+            class="img-fluid rounded fade-in-left" style="box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
         </div>
+        <div class="col-lg-6">
+          <div class="ps-lg-4 mt-4 mt-lg-0">
+            <h2 class="mb-3" style="color: var(--text-primary); font-weight: 600;">Tentang Wijaya Bakery</h2>
+            <p class="lead mb-3" style="color: var(--text-secondary);">
+              {!! $data->about_deskripsi ?? 'Didiri kami telah lebih dari 30 tahun melayani masyarakat dengan produk roti dan kue berkualitas tinggi. Kami menggunakan bahan-bahan alami dan resep turun temurun untuk memberikan pengalaman rasa terbaik kepada pelanggan.' !!}
+            </p>
+            <p class="mb-4" style="color: var(--text-secondary); line-height: 1.7;">
+              Dari pagi hingga malam, jenis bakery ini siap memanjakan lidah Anda dengan berbagai macam roti dan kue
+              segar setiap hari. Dedikasi kami dalam menciptakan produk yang enak dan berkualitas telah membuat bakery
+              ini menjadi pilihan favorit masyarakat setempat.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
 
   <!-- Menu Section -->
@@ -1450,225 +1576,144 @@
 
       <div class="menu-grid">
         @foreach($menus as $menu)
-          <!-- Menu Item -->
-          <div class="menu-card" @if($menu->stok > 0 && auth()->check()) onclick="showAddToCartModal('{{ $menu->id }}', '{{ $menu->nama_menu }}', '{{ $menu->harga }}', '{{ $menu->stok }}')" @endif>
-            <div class="menu-image-container">
-              <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' }}" alt="{{ $menu->nama_menu }}" class="menu-image">
-            </div>
-            <div class="menu-content">
-              <h3 class="menu-name">
-                {{ $menu->nama_menu }}
-                @php
-                  // Use the enhanced Menu model to get best promo
-                  $bestPromo = $menu->getBestPromotion(1); // Check for minimum 1 quantity
-                @endphp
-                @if($bestPromo)
-                  @php
-                    $promoDisplay = $menu->getPromotionDisplay(1);
-                  @endphp
-                  <span class="badge bg-danger ms-1" style="font-size: 0.7em;">
-                    <i class="fas fa-percentage me-1"></i>
-                    @if($bestPromo->discount_type == 'percentage' && $promoDisplay)
-                      {{ $promoDisplay['discount_text'] }}
-                    @elseif($bestPromo->discount_type == 'fixed' && $promoDisplay)
-                      {{ $promoDisplay['discount_text'] }}
-                    @else
-                      Promo!
-                    @endif
-                  </span>
-                @endif
-              </h3>
-              <p class="menu-description">{{ Str::limit($menu->deskripsi_menu, 80) }}</p>
-              <div class="menu-price">
-                @if($menu->stok > 0)
-                  Rp {{ number_format($menu->harga, 0, ',', '.') }}
-                  @if($bestPromo && $bestPromo->discount_type == 'percentage' && $bestPromo->min_quantity <= 1)
-                    <small class="text-success ms-2">
-                      Diskon {{ $bestPromo->discount_value }}%
-                    </small>
-                  @endif
-                @else
-                  <span>Stok Kosong</span>
-                @endif
-              </div>
-
-              <div class="menu-actions d-none d-lg-block">
-                @if($menu->stok > 0)
-                  @auth
-                    <div class="stock-info">Tersedia {{ $menu->stok }}</div>
-                  @else
-                    <div class="text-center mb-2">
-                      <small class="text-muted">Login untuk pesan</small>
-                    </div>
-                  @endauth
-                @else
-                  <!-- WhatsApp direct -->
-                  @php
-                    $waMessage = "Halo, saya ingin memesan menu: {$menu->nama_menu}. Mohon konfirmasi ketersediaan.";
-                    $waUrl = "https://wa.me/6283112116135?text=" . urlencode($waMessage);
-                  @endphp
-                  <a href="{{ $waUrl }}" target="_blank" class="btn btn-order-wa">
-                    <i class="bi bi-whatsapp me-1"></i>Pesan via WhatsApp
-                  </a>
-                  <div class="stock-info">Stok habis</div>
-                @endif
-              </div>
-            </div>
-          </div>
+          <x-menu-card :menu="$menu" :descriptionLimit="80" />
         @endforeach
       </div>
 
       <!-- "Selengkapnya" Button -->
       <div class="text-center mt-5">
-        <a href="{{ route('all-menu.index') }}" class="btn btn-outline-dark px-4 py-2" style="font-weight: 600; border-color: var(--brown); color: var(--brown); transition: all 0.3s ease;">
+        <a href="{{ route('all-menu.index') }}" class="btn btn-outline-dark px-4 py-2"
+          style="font-weight: 600; border-color: var(--brown); color: var(--brown); transition: all 0.3s ease;">
           Lihat Semua Menu
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Popular Menu Section - Minimalist Horizontal -->
+  <!-- Popular Menu Section - News Ticker Style -->
   @if($topMenusThisMonth->count() > 0)
-  <section id="popular" class="py-5" style="background-color: var(--warm-white);">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-4">
-          <h3 class="mb-0" style="color: var(--text-primary); font-weight: 600; font-size: 1.8rem;">Menu Terlaris Bulan Ini</h3>
-          <p class="text-muted mb-0 mt-2" style="font-size: 1rem;">Dipilih oleh banyak pelanggan</p>
-        </div>
-        <div class="col-lg-8">
-          <div class="d-flex gap-3 overflow-x-auto pb-2" style="scrollbar-width: none; -ms-overflow-style: none;">
-            <style>
-              .overflow-x-auto::-webkit-scrollbar { display: none; }
-            </style>
+    <section id="popular" class="popular-section" style="overflow: hidden;">
+      <div class="container-fluid px-0">
+        <!-- Header -->
+        <!-- <div class="container mb-3">
+              <div class="d-flex align-items-center gap-3">
+                <span
+                  style="background: linear-gradient(135deg, #8B4513, #5D3A1A); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; white-space: nowrap;">🔥
+                  TERLARIS</span>
+                <span style="color: #6b5b4f; font-size: 0.9rem;">Pilihan terbaik dari pelanggan kami →</span>
+              </div>
+            </div> -->
+
+        <!-- Ticker Container -->
+        <div class="ticker-wrapper"
+          style="background: linear-gradient(90deg, #faf8f5, #f5ebe0, #faf8f5); padding: 1rem 0; border-top: 1px solid rgba(139,69,19,0.1); border-bottom: 1px solid rgba(139,69,19,0.1);">
+          <div class="ticker-track">
+            <!-- First set of items -->
             @foreach($topMenusThisMonth->take(5) as $menu)
-            <div class="flex-shrink-0" style="width: 200px;">
-              <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="row g-0 align-items-center">
-                  <div class="col-5">
-                    <img src="{{ $menu->gambar_menu ? asset('uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400' }}" class="img-fluid" style="border-radius: 12px 0 0 12px; height: 80px; object-fit: cover;">
-                  </div>
-                  <div class="col-7">
-                    <div class="card-body p-3">
-                      <h6 class="card-title mb-1" style="font-size: 0.9rem; font-weight: 600; line-height: 1.2;">{{ $menu->nama_menu }}</h6>
-                      <div class="d-flex align-items-center text-warning" style="font-size: 0.8rem;">
-                        <i class="fas fa-star me-1"></i>
-                        <span>{{ $menu->total_ordered }} terjual</span>
-                      </div>
-                    </div>
-                  </div>
+              <div class="ticker-item">
+                <img
+                  src="{{ $menu->gambar_menu ? asset('storage/uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200' }}"
+                  alt="{{ $menu->nama_menu }}">
+                <div class="ticker-content">
+                  <span class="ticker-name">{{ $menu->nama_menu }}</span>
+                  <span class="ticker-sales">⭐ {{ $menu->total_ordered }} terjual</span>
                 </div>
               </div>
-            </div>
+            @endforeach
+            <!-- Duplicate for seamless loop -->
+            @foreach($topMenusThisMonth->take(5) as $menu)
+              <div class="ticker-item">
+                <img
+                  src="{{ $menu->gambar_menu ? asset('storage/uploads/menu/' . $menu->gambar_menu) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200' }}"
+                  alt="{{ $menu->nama_menu }}">
+                <div class="ticker-content">
+                  <span class="ticker-name">{{ $menu->nama_menu }}</span>
+                  <span class="ticker-sales">⭐ {{ $menu->total_ordered }} terjual</span>
+                </div>
+              </div>
             @endforeach
           </div>
         </div>
       </div>
-    </div>
-  </section>
+
+      <style>
+        .ticker-wrapper {
+          overflow: hidden;
+          position: relative;
+        }
+
+        .ticker-track {
+          display: flex;
+          gap: 2rem;
+          animation: ticker 20s linear infinite;
+          width: max-content;
+        }
+
+        .ticker-track:hover {
+          animation-play-state: paused;
+        }
+
+        .ticker-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          background: white;
+          padding: 0.5rem 1rem 0.5rem 0.5rem;
+          border-radius: 50px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+          white-space: nowrap;
+          transition: transform 0.2s;
+        }
+
+        .ticker-item:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 12px rgba(139, 69, 19, 0.15);
+        }
+
+        .ticker-item img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .ticker-content {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .ticker-name {
+          font-weight: 600;
+          color: #3d2914;
+          font-size: 0.9rem;
+        }
+
+        .ticker-sales {
+          font-size: 0.75rem;
+          color: #8B4513;
+        }
+
+        @keyframes ticker {
+          0% {
+            transform: translateX(0);
+          }
+
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      </style>
+    </section>
   @endif
 
 
-
-  <!-- Promo Section - Simple Highlights -->
-  <section id="promo" class="py-5" style="background: linear-gradient(45deg, #FF6B6B, #FF8E53); color: white; position: relative; overflow: hidden;">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6">
-          <div class="position-relative" style="z-index: 2;">
-            <h2 class="display-4 fw-bold mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Promo Spesial</h2>
-            <p class="lead mb-4" style="opacity: 0.9;">Penawaran khusus untuk hari ini!</p>
-
-            @php
-              $featuredPromo = \App\Models\Promo::where('status', true)->where('is_discount_active', true)->latest()->first();
-            @endphp
-
-            @if($featuredPromo)
-              <div class="bg-white text-dark p-4 rounded-3 shadow-lg mb-4" style="border-left: 5px solid #FF6B6B;">
-                <div class="d-flex align-items-start">
-                  <div class="flex-shrink-0 me-3">
-                    @if($featuredPromo->gambar_promo)
-                      <img src="{{ asset('uploads/promo/' . $featuredPromo->gambar_promo) }}" alt="{{ $featuredPromo->nama_promo }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
-                    @else
-                      <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <i class="fas fa-percentage fa-lg"></i>
-                      </div>
-                    @endif
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="mb-1">{{ $featuredPromo->nama_promo }}</h4>
-                    @if($featuredPromo->is_discount_active && $featuredPromo->discount_value > 0)
-                      <div class="badge bg-danger mb-2" style="font-size: 0.9em;">
-                        <i class="fas fa-star me-1"></i>
-                        @if($featuredPromo->discount_type == 'percentage')
-                          Diskon {{ $featuredPromo->discount_value }}%
-                        @else
-                          Diskon Rp {{ number_format($featuredPromo->discount_value, 0, ',', '.') }}
-                        @endif
-                      </div>
-                    @endif
-                    <p class="mb-0" style="font-size: 0.9em; opacity: 0.8;">{!! Str::limit($featuredPromo->deskripsi_promo, 150) !!}</p>
-                  </div>
-                </div>
-              </div>
-            @endif
-
-            <a href="{{ route('all-menu.index') }}" class="btn btn-light btn-lg fw-bold px-4" style="border-radius: 30px;">
-              <i class="fas fa-arrow-down me-2"></i>Lihat Menu Lengkap
-            </a>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="position-relative">
-            <!-- Decorative elements -->
-            <div class="position-absolute" style="top: -50px; right: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-            <div class="position-absolute" style="bottom: -20px; left: -50px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
-
-            <!-- Promo highlights -->
-            @php
-              $otherPromos = \App\Models\Promo::where('status', true)->where('is_discount_active', true)->latest()->skip(1)->take(3)->get();
-            @endphp
-
-            @if($otherPromos->count() > 0)
-              <div class="row g-3">
-                @foreach($otherPromos as $promo)
-                <div class="col-6">
-                  <div class="bg-white bg-opacity-25 backdrop-blur-sm text-white p-3 rounded-3 border border-white border-opacity-25 h-100">
-                    <div class="d-flex align-items-center mb-2">
-                      <i class="fas fa-fire text-warning me-2"></i>
-                      <h6 class="mb-0 fw-bold">{{ $promo->nama_promo }}</h6>
-                    </div>
-                    <p class="small mb-2" style="opacity: 0.9;">{!! Str::limit($promo->deskripsi_promo, 50) !!}</p>
-                    @if($promo->discount_value > 0)
-                      <div class="badge bg-warning text-dark">
-                        @if($promo->discount_type == 'percentage')
-                          {{ $promo->discount_value }}% OFF
-                        @else
-                          Rp {{ number_format($promo->discount_value, 0, '.', '.') }}
-                        @endif
-                      </div>
-                    @endif
-                  </div>
-                </div>
-                @endforeach
-              </div>
-            @endif
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Background decoration -->
-    <div class="position-absolute" style="top: 0; right: 0; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; transform: translate(50%, -50%);"></div>
-    <div class="position-absolute" style="bottom: 0; left: 0; width: 200px; height: 200px; background: rgba(255,255,255,0.03); border-radius: 50%; transform: translate(-50%, 50%);"></div>
-  </section>
 
   <!-- Contact Section -->
   <section id="contact" class="contact-section">
     <div class="container">
       <h2 class="section-title">Hubungi Kami</h2>
       <p class="section-subtitle">Terhubung dengan kami melalui platform favorit Anda</p>
-      
+
       <div class="row g-4 justify-content-center">
         <div class="col-md-4">
           <div class="contact-card card h-100 text-center p-4">
@@ -1709,74 +1754,108 @@
   </section>
 
   <!-- Partners Section -->
-  <section id="sponsors" class="sponsors-section">
-    <div class="container">
-      <h2 class="section-title">Partner Kami</h2>
-      <p class="section-subtitle">Berkolaborasi dengan brand terpercaya</p>
-      
-      <div class="row g-4 justify-content-center">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-          <div class="sponsor-card text-center">
-            <div class="py-3">
-              <i class="bi bi-building" style="font-size: 2rem; color: var(--brown);"></i>
-              <div class="mt-2 small">Partner 1</div>
+  @if($sponsors->count() > 0)
+    <section id="sponsors" class="sponsors-section">
+      <div class="container">
+        <h2 class="section-title">Partner Kami</h2>
+        <p class="section-subtitle">Berkolaborasi dengan brand terpercaya</p>
+
+        <div class="row g-4 justify-content-center">
+          @foreach($sponsors as $sponsor)
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+              <div class="sponsor-card text-center">
+                <div class="py-3">
+                  @if($sponsor->logo_sponsor)
+                    <img loading="lazy" src="{{ asset('storage/uploads/sponsor/' . $sponsor->logo_sponsor) }}"
+                      alt="{{ $sponsor->nama_sponsor }}"
+                      style="max-width: 80px; max-height: 60px; object-fit: contain; filter: grayscale(30%); transition: all 0.3s ease;"
+                      onmouseover="this.style.filter='grayscale(0%)'" onmouseout="this.style.filter='grayscale(30%)'">
+                  @else
+                    <i class="bi bi-building" style="font-size: 2rem; color: var(--brown);"></i>
+                  @endif
+                  <div class="mt-2 small" style="color: var(--text-secondary); font-weight: 500;">
+                    {{ $sponsor->nama_sponsor }}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          @endforeach
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  @endif
 
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Wijaya Bakery">
+          <h4>Wijaya Bakery</h4>
+          <p>Roti dan kue segar dengan resep turun-temurun sejak 1990. Kami berkomitmen menghadirkan produk berkualitas
+            dengan cita rasa autentik.</p>
+          <div class="footer-social">
+            <a href="https://www.instagram.com/wijayabakery.id/" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://wa.me/6282236047539" target="_blank"><i class="bi bi-whatsapp"></i></a>
+            <a href="mailto:wijayabakerybucorkulon@gmail.com"><i class="bi bi-envelope"></i></a>
+          </div>
+        </div>
+
+        <!-- Kontak -->
         <div class="footer-section">
           <h5>Kontak</h5>
           <div class="footer-info">
-            <a href="https://www.google.com/maps/search/?api=1&query=Dusun+Pasar,+RT.+016+RW.+004,+Desa+Bucor+Kulon,+Kecamatan+Pakuniran,+Probolinggo" target="_blank" rel="noopener noreferrer">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span class="detail">Dusun Pasar, RT. 016/RW. 004, Desa Bucor Kulon<br>Kecamatan Pakuniran, Probolinggo</span>
+            <a href="tel:+6282236047539">
+              <i class="bi bi-telephone-fill"></i>
+              <span>+62 822-3604-7539</span>
             </a>
           </div>
           <div class="footer-info">
             <a href="mailto:wijayabakerybucorkulon@gmail.com">
               <i class="bi bi-envelope-fill"></i>
-              <span class="detail">wijayabakerybucorkulon@gmail.com</span>
-            </a>
-          </div>
-          <div class="footer-info">
-            <a href="tel:+6282236047539">
-              <i class="bi bi-telephone-fill"></i>
-              <span class="detail">+62 822-3604-7539</span>
+              <span>wijayabakery@gmail.com</span>
             </a>
           </div>
         </div>
-        
+
+        <!-- Lokasi -->
         <div class="footer-section">
-          <h5>Jam Operasional</h5>
+          <h5>Lokasi</h5>
+          <div class="footer-info">
+            <a href="https://www.google.com/maps/search/?api=1&query=Dusun+Pasar,+RT.+016+RW.+004,+Desa+Bucor+Kulon"
+              target="_blank">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span>Dusun Pasar, RT. 016/RW. 004<br>Desa Bucor Kulon, Pakuniran<br>Probolinggo</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Jam Operasional -->
+        <div class="footer-section">
+          <h5>Jam Buka</h5>
           <div class="footer-info">
             <i class="bi bi-clock-fill"></i>
             <div>
-              <div>Senin - Jumat: 08:00 - 20:00</div>
-              <div>Sabtu - Minggu: 08:00 - 22:00</div>
+              <div>Senin - Jumat</div>
+              <div style="opacity: 0.7;">08:00 - 20:00</div>
+            </div>
+          </div>
+          <div class="footer-info">
+            <i class="bi bi-clock-fill"></i>
+            <div>
+              <div>Sabtu - Minggu</div>
+              <div style="opacity: 0.7;">08:00 - 22:00</div>
             </div>
           </div>
         </div>
-        
-        <div class="footer-section">
-          <h5>Ikuti Kami</h5>
-          <div class="footer-info">
-            <i class="bi bi-instagram"></i>
-            <span>@wijayabakery.id</span>
-          </div>
-        </div>
       </div>
-      
+
       <div class="footer-divider"></div>
-      
+
       <div class="footer-bottom">
-        <small>&copy; 2024 Website dibuat oleh Danu Dwi Saputra.</small>
+        <small>&copy; {{ date('Y') }} Wijaya Bakery. All rights reserved.</small>
+        <small>Dibuat dengan ❤️ oleh <a href="#">Danu Dwi Saputra</a></small>
       </div>
     </div>
   </footer>
@@ -1785,56 +1864,56 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- Add to Cart Modal - Elegant Vertical Design -->
-  <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 320px; position: absolute; top: 50%; left: 20%; transform: translateY(-50%); margin: 0;">
-      <div class="modal-content" style="border-radius: 32px; border: none; height: auto; min-height: 480px;">
-        <div class="modal-body text-center p-5 d-flex flex-column" style="background: linear-gradient(135deg, #8b6f47, #d4b896); color: white; height: 100%; border-radius: 32px;">
-          <!-- Minimalist Image Container -->
-          <div class="mb-4 flex-shrink-0">
-            <img id="modalMenuImage" src="" alt="" class="rounded-circle mx-auto d-block" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.9); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+  <!-- Modern Simple Add to Cart Modal -->
+  <div class="modal fade" id="addToCartModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 340px;">
+      <div class="modal-content"
+        style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
+
+        <!-- Clean Header with Image -->
+        <div style="background: #faf8f5; padding: 1.5rem; text-align: center; position: relative;">
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            style="position: absolute; top: 12px; right: 12px; opacity: 0.5;"></button>
+          <img loading="lazy" id="modalMenuImage" src="" alt=""
+            style="width: 80px; height: 80px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <h5 id="modalMenuName" class="mt-3 mb-1" style="font-weight: 600; color: #3d2914; font-size: 1.1rem;"></h5>
+          <div id="modalMenuPrice" style="color: #8B4513; font-weight: 700; font-size: 1.15rem;"></div>
+        </div>
+
+        <!-- Simple Body -->
+        <div style="padding: 1.25rem 1.5rem;">
+          <!-- Stock Info -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.75rem; background: #f8f6f4; border-radius: 10px;">
+            <span style="color: #6b5b4f; font-size: 0.85rem;">Stok tersedia</span>
+            <span id="modalStock" style="font-weight: 600; color: #3d2914;"></span>
           </div>
 
-          <!-- Item Details -->
-          <div class="mb-4 flex-grow-1">
-            <h6 id="modalMenuName" class="fw-bold mb-3" style="font-size: 1.4rem; line-height: 1.3;"></h6>
-            <div class="mb-3">
-              <div class="text-white-50 small mb-1">Harga Satuan</div>
-              <div id="modalMenuPrice" class="fw-semibold" style="font-size: 1.1rem;"></div>
-            </div>
-            <div class="mb-4">
-              <div class="text-white-50 small mb-1">Stok Tersedia</div>
-              <div id="modalStock" class="badge bg-white bg-opacity-25 text-white py-2 px-3 rounded-pill" style="font-size: 0.9rem;"></div>
-            </div>
-          </div>
-
-          <!-- Quantity Controls - Simplified -->
-          <form id="addToCartForm" class="flex-shrink-0 w-100">
+          <!-- Quantity Selector -->
+          <form id="addToCartForm">
             @csrf
-            <div class="d-flex align-items-center justify-content-between mb-4 px-3">
-              <button type="button" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: none;" onclick="changeQuantityModal(-1)">
-                <i class="bi bi-dash fs-5"></i>
-              </button>
-
-              <div class="flex-grow-1 mx-3">
-                <div class="bg-white bg-opacity-25 rounded-pill d-flex align-items-center justify-content-center py-2 px-4">
-                  <span class="text-white fw-semibold fs-5" id="modalQuantity">1</span>
-                  <input type="hidden" name="quantity" id="modalQuantityInput" value="1" min="1">
-                </div>
-              </div>
-
-              <button type="button" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: none;" onclick="changeQuantityModal(1)">
-                <i class="bi bi-plus fs-5"></i>
-              </button>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+              <button type="button" onclick="changeQuantityModal(-1)"
+                style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e0d8d0; background: white; cursor: pointer; font-size: 1.2rem; color: #8B4513; display: flex; align-items: center; justify-content: center;">−</button>
+              <span id="modalQuantity"
+                style="font-size: 1.5rem; font-weight: 700; color: #3d2914; min-width: 40px; text-align: center;">1</span>
+              <input type="hidden" name="quantity" id="modalQuantityInput" value="1">
+              <button type="button" onclick="changeQuantityModal(1)"
+                style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e0d8d0; background: white; cursor: pointer; font-size: 1.2rem; color: #8B4513; display: flex; align-items: center; justify-content: center;">+</button>
             </div>
 
-            <!-- Total and Add Button -->
-            <div class="mb-4">
-              <div class="text-white-50 small mb-1">Total Pembayaran</div>
-              <div id="modalTotal" class="fw-bold" style="font-size: 1.3rem;"></div>
+            <!-- Total -->
+            <div style="text-align: center; margin-bottom: 1rem;">
+              <span style="color: #6b5b4f; font-size: 0.8rem;">Total</span>
+              <div id="modalTotal" style="font-size: 1.4rem; font-weight: 700; color: #8B4513;"></div>
             </div>
 
-            <button type="submit" class="btn btn-outline-light w-100 py-3 rounded-pill" style="border-color: white; border-width: 2px; color: white; font-weight: 600; font-size: 1rem;">
-              <i class="bi bi-cart-plus-fill me-2"></i>Tambah ke Keranjang
+            <!-- Add Button -->
+            <button type="submit"
+              style="width: 100%; padding: 0.875rem; background: linear-gradient(135deg, #8B4513, #5D3A1A); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+              onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(139,69,19,0.3)';"
+              onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+              🛒 Tambah ke Keranjang
             </button>
           </form>
         </div>
@@ -2008,32 +2087,32 @@
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success && data.waUrl) {
-          // Pesanan berhasil disimpan, redirect ke WhatsApp
-          window.location.href = data.waUrl;
-        } else {
-          alert('Terjadi kesalahan saat menyimpan pesanan: ' + (data.message || 'Unknown error'));
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.waUrl) {
+            // Pesanan berhasil disimpan, redirect ke WhatsApp
+            window.location.href = data.waUrl;
+          } else {
+            alert('Terjadi kesalahan saat menyimpan pesanan: ' + (data.message || 'Unknown error'));
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat memproses pemesanan. Silakan coba lagi.');
           submitButton.innerHTML = originalText;
           submitButton.disabled = false;
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat memproses pemesanan. Silakan coba lagi.');
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-      });
+        });
     }
 
     // Event listener untuk menu pertama
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const firstSelect = document.querySelector('.menu-select');
       if (firstSelect) {
-        firstSelect.addEventListener('change', function() { updatePrice(this); });
+        firstSelect.addEventListener('change', function () { updatePrice(this); });
         const firstQuantity = document.querySelector('.quantity-input');
-        firstQuantity.addEventListener('input', function() { updateItemPrice(this); });
+        firstQuantity.addEventListener('input', function () { updateItemPrice(this); });
       }
     });
 
@@ -2066,7 +2145,7 @@
 
       // Set up form submission
       const form = document.getElementById('addToCartForm');
-      form.onsubmit = function(e) {
+      form.onsubmit = function (e) {
         e.preventDefault();
         addToCart(menuId);
       };
@@ -2101,9 +2180,13 @@
       }
     }
 
-    // Function to add item to cart
+    // Function to add item to cart - FAST without reload
     async function addToCart(menuId) {
-      const quantity = parseInt(document.getElementById('modalQuantity').value);
+      const quantity = parseInt(document.getElementById('modalQuantity').textContent) || 1;
+      const btn = document.querySelector('#addToCartForm button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="bi bi-check2"></i> Menambahkan...';
 
       try {
         const response = await fetch('{{ route("cart.add", ":menuId") }}'.replace(':menuId', menuId), {
@@ -2119,51 +2202,68 @@
         const data = await response.json();
 
         if (data.success) {
-          // Close modal
+          // Close modal immediately
           const modal = bootstrap.Modal.getInstance(document.getElementById('addToCartModal'));
           modal.hide();
 
-          // Show success message
-          showToast('Item berhasil ditambahkan ke keranjang!', 'success');
+          // Show quick success toast
+          showToast('✓ Ditambahkan ke keranjang!', 'success');
 
-          // Update cart count in navbar (you might need to reload or update this dynamically)
-          // For now, we'll refresh the page to show updated cart count
-          setTimeout(() => location.reload(), 1000);
+          // Update cart count in navbar without reload
+          const cartBadge = document.querySelector('.cart-count, .badge');
+          if (cartBadge && data.cartCount) {
+            cartBadge.textContent = data.cartCount;
+          }
         } else {
-          showToast(data.message || 'Terjadi kesalahan', 'error');
+          showToast(data.message || 'Gagal menambahkan', 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        showToast('Terjadi kesalahan saat menambahkan ke keranjang', 'error');
+        showToast('Terjadi kesalahan', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
     }
 
-    // Function to show toast notifications
+    // Fast toast notification
     function showToast(message, type = 'info') {
-      // Create toast element
-      const toastHTML = `
-        <div class="toast align-items-center text-white border-0 position-fixed top-50 start-50 translate-middle ${type === 'success' ? 'bg-success' : 'bg-danger'}" role="alert" style="z-index: 9999; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-          <div class="d-flex p-3">
-            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-3 fs-4"></i>
-            <div class="toast-body fw-bold">
-              ${message}
-            </div>
-          </div>
-        </div>
+      // Remove existing toasts
+      document.querySelectorAll('.quick-toast').forEach(t => t.remove());
+
+      const toast = document.createElement('div');
+      toast.className = 'quick-toast';
+      toast.innerHTML = message;
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        z-index: 99999;
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.2s ease;
       `;
 
-      document.body.insertAdjacentHTML('beforeend', toastHTML);
+      // Add animation keyframes if not exists
+      if (!document.getElementById('toastStyles')) {
+        const style = document.createElement('style');
+        style.id = 'toastStyles';
+        style.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
+        document.head.appendChild(style);
+      }
 
-      // Show toast
-      const toastElement = document.querySelector('.toast:last-child');
-      toastElement.style.display = 'block';
+      document.body.appendChild(toast);
 
-      // Auto-hide after 3 seconds
-      setTimeout(() => {
-        toastElement.remove();
-      }, 3000);
+      // Quick auto-hide
+      setTimeout(() => toast.remove(), 1500);
     }
   </script>
 
 </body>
+
 </html>

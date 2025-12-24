@@ -64,3 +64,4 @@ class ResetPasswordNotification extends Notification
         ];
     }
 }
+

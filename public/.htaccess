@@ -5,6 +5,32 @@
 
     RewriteEngine On
 
+    # ================================
+    # SECURITY - BLOCK SENSITIVE FILES
+    # ================================
+
+    # Block access to sensitive files
+    <FilesMatch "\.(env|env\.example|htaccess|htpasswd|log|md)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Block access to backup files
+    <FilesMatch "\.(bak|backup|old|orig|orig\.bak)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Block direct access to PHP files in certain directories
+    RewriteRule ^app/.* - [F,L]
+    RewriteRule ^bootstrap/.* - [F,L]
+    RewriteRule ^config/.* - [F,L]
+    RewriteRule ^database/.* - [F,L]
+
+    # ================================
+    # LARAVEL LARAVEL INCLUDES
+    # ================================
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -22,4 +48,45 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+# ================================
+# SECURITY HEADERS
+# ================================
+<IfModule mod_headers.c>
+    # Remove server signature
+    Header always unset "X-Powered-By"
+    Header unset "X-Powered-By"
+    ServerSignature Off
+    ServerTokens Prod
+
+    # Security Headers
+    Header always set X-Frame-Options DENY
+    Header always set X-Content-Type-Options nosniff
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # CORS configuration (adjust domain as needed)
+    Header set Access-Control-Allow-Origin "https://yourdomain.com"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-TOKEN"
+
+    # HSTS (enable after HTTPS is fully working)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# ================================
+# PERFORMANCE & SECURITY
+# ================================
+<IfModule mod_deflate.c>
+    # Enable compression
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>

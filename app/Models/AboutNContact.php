@@ -26,3 +26,4 @@ class AboutNContact extends Model
         return $this->contact_deskripsi;
     }
 }
+

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin || Detail Pengguna</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/icondapur.jpg') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
@@ -55,7 +55,7 @@
                         <div class="card-body">
                             <div class="row justify-content-center">
                                 <div class="col-12 col-md-4 text-center mb-3">
-                                    <img src="{{ $user->profile_picture ? asset('uploads/profile/' . $user->profile_picture) : asset('image/default-avatar.png') }}"
+                                    <img loading="lazy" src="{{ $user->profile_picture ? asset('storage/uploads/profile/' . $user->profile_picture) : asset('storage/image/default-avatar.png') }}"
                                         class="profile-img img-fluid rounded" alt="Foto Profil">
                                 </div>
                                 <div class="col-12 col-md-8">
@@ -106,3 +106,7 @@
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 </body>
 </html>
+
+
+
+

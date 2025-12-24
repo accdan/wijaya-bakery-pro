@@ -4,13 +4,38 @@ html {
 }
 
 :root {
-  --cream: #faf8f5;
-  --warm-white: #ffffff;
-  --sage: #d4b896;
-  --brown: #8b6f47;
-  --dark-brown: #5d4e37;
-  --text-primary: #4a3f35;
-  --text-secondary: #6b5b4f;
+  /* Fresh Bakery Theme Colors 🥐 */
+  --bakery-cream: #FEF9F3;
+  --bakery-warm-white: #ffffff;
+  --bakery-golden: #D4A574;
+  --bakery-brown: #8B4513;
+  --bakery-dark-brown: #5D3A1A;
+  --bakery-peach: #FFECD2;
+  --bakery-cinnamon: #C97B4B;
+  --text-primary: #3D2914;
+  --text-secondary: #6B5241;
+
+  /* Legacy support */
+  --cream: var(--bakery-cream);
+  --warm-white: var(--bakery-warm-white);
+  --sage: var(--bakery-peach);
+  --brown: var(--bakery-brown);
+  --dark-brown: var(--bakery-dark-brown);
+}
+
+/* ================================
+   Fullscreen Section Utility
+   ================================ */
+.fullscreen-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+  position: relative;
+}
+
+.fullscreen-section>.container {
+  width: 100%;
 }
 
 body {
@@ -95,17 +120,21 @@ h4 {
 /* Simplified about section */
 .about-section {
   background-color: var(--warm-white);
-  min-height: 100vh;       /* cukup min-height aja */
+  min-height: 100vh;
+  /* cukup min-height aja */
   display: flex;
   align-items: center;
-  padding: 2rem 0;         /* kasih napas */
-  overflow: hidden;        /* cegah scroll horizontal & vertical */
+  padding: 2rem 0;
+  /* kasih napas */
+  overflow: hidden;
+  /* cegah scroll horizontal & vertical */
 }
 
 .about-image {
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  max-width: 100%;         /* pastikan gambar gak lebih lebar */
+  max-width: 100%;
+  /* pastikan gambar gak lebih lebar */
   height: auto;
 }
 
@@ -115,9 +144,9 @@ h4 {
   border-radius: 12px;
   border-left: 4px solid var(--brown);
   width: 100%;
-  max-width: 600px;       
-  margin: 0 auto;          
-  overflow: hidden;        
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 .about-content p {
@@ -293,12 +322,21 @@ h4 {
   border-color: var(--brown);
 }
 
-/* Cleaner promo section */
-.promo-section {
+/* Popular menu section */
+.popular-section {
   background-color: var(--warm-white);
   min-height: 100vh;
   display: flex;
   align-items: center;
+  padding: 4rem 0;
+}
+
+/* Cleaner promo section */
+.promo-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
 }
 
 .promo-card {
@@ -387,10 +425,10 @@ h4 {
 /* Minimalist sponsors section */
 .sponsors-section {
   background-color: var(--cream);
-  min-height: 40vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 2rem 0;
+  padding: 4rem 0;
 }
 
 /* Modern, clean footer design */
@@ -483,5 +521,17 @@ h4 {
   .footer-content {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  /* Fullscreen sections become auto on mobile */
+  .fullscreen-section,
+  .about-section,
+  .menu-section,
+  .popular-section,
+  .promo-section,
+  .contact-section,
+  .sponsors-section {
+    min-height: auto;
+    padding: 3rem 0;
   }
 }

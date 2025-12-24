@@ -30,7 +30,7 @@ class Hero extends Model
         // Hapus gambar saat record dihapus
         static::deleting(function ($hero) {
             if ($hero->gambar) {
-                $path = public_path('uploads/hero/' . $hero->gambar);
+                $path = storage_path('app/public/uploads/hero/' . $hero->gambar);
                 if (File::exists($path)) {
                     File::delete($path);
                 }
@@ -40,3 +40,4 @@ class Hero extends Model
 
 
 }
+

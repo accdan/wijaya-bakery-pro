@@ -417,7 +417,7 @@
                                                         <div class="row align-items-center mb-2 pb-2 {{ $loop->last ? '' : 'border-bottom' }} small">
                                                             <div class="col-auto">
                                                                 @if($item->menu && $item->menu->gambar_menu)
-                                                                    <img src="{{ asset('uploads/menu/' . $item->menu->gambar_menu) }}"
+                                                                    <img loading="lazy" src="{{ asset('storage/uploads/menu/' . $item->menu->gambar_menu) }}"
                                                                          alt="{{ $item->menu->nama_menu }}"
                                                                          class="img-fluid rounded" style="width: 35px; height: 35px; object-fit: cover;">
                                                                 @else
@@ -750,3 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
+
+
+

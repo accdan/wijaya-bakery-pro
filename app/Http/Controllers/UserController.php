@@ -7,6 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Helpers\ImageOptimizer;
 
 class UserController extends Controller
 {
@@ -39,9 +40,11 @@ class UserController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/profile'), $filename);
-            $data['profile_picture'] = $filename;
+            $destinationPath = storage_path('app/public/uploads/profile');
+            $filename = ImageOptimizer::processUpload($file, $destinationPath, null, 300, 85);
+            if ($filename) {
+                $data['profile_picture'] = $filename;
+            }
         }
 
         User::create($data);
@@ -63,11 +66,15 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => [
-                'required', 'string', 'max:255',
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('users', 'username')->ignore($user->id),
             ],
             'email' => [
-                'nullable', 'email', 'max:255',
+                'nullable',
+                'email',
+                'max:255',
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'no_telepon' => 'nullable|string|max:20',
@@ -77,7 +84,12 @@ class UserController extends Controller
         ]);
 
         $data = $request->only([
-            'name', 'username', 'email', 'no_telepon', 'password', 'role_id'
+            'name',
+            'username',
+            'email',
+            'no_telepon',
+            'password',
+            'role_id'
         ]);
 
         if (!empty($data['password'])) {
@@ -88,9 +100,11 @@ class UserController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/profile'), $filename);
-            $data['profile_picture'] = $filename;
+            $destinationPath = storage_path('app/public/uploads/profile');
+            $filename = ImageOptimizer::processUpload($file, $destinationPath, null, 300, 85);
+            if ($filename) {
+                $data['profile_picture'] = $filename;
+            }
         }
 
         $user->update($data);
@@ -112,3 +126,4 @@ class UserController extends Controller
         return redirect()->route('admin.user.index')->with('success', 'User berhasil dihapus.');
     }
 }
+

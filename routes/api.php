@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MenuTranslateController;
 
-Route::get('/menu/{id}/translate', [MenuTranslateController::class, 'translate']);
+
+// API routes - add your API endpoints here
+// Note: MenuTranslateController was removed because it didn't exist

@@ -23,3 +23,4 @@ class RedirectIfNotUser
         return $next($request);
     }
 }
+

@@ -33,7 +33,7 @@ class UserAuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('username', $request->username)->with('role')->first();
 
         if (!$user) {
             return back()->with('error', 'Username tidak ditemukan.')
@@ -128,7 +128,7 @@ class UserAuthController extends Controller
                 return redirect('/login-user')->with('error', 'Google tidak memberikan email. Silakan allow email permission.');
             }
 
-            $user = User::where('email', $googleUser->email)->first();
+            $user = User::where('email', $googleUser->email)->with('role')->first();
 
             if (!$user) {
                 // Get user role
@@ -150,6 +150,11 @@ class UserAuthController extends Controller
 
             if (!$user) {
                 return redirect('/login-user')->with('error', 'Gagal membuat akun user baru.');
+            }
+
+            // Check if user is admin
+            if ($user->isAdmin()) {
+                return redirect('/login-user')->with('error', 'Akun admin tidak dapat login melalui Google. Gunakan halaman login admin.');
             }
 
             Auth::login($user);
@@ -331,3 +336,4 @@ class UserAuthController extends Controller
         return redirect()->route('user.login.form')->with('success', 'Password berhasil direset! Silakan login dengan password baru.');
     }
 }
+

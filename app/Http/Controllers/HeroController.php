@@ -6,6 +6,7 @@ use App\Models\Hero;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use App\Helpers\ImageOptimizer;
 
 class HeroController extends Controller
 {
@@ -30,9 +31,11 @@ class HeroController extends Controller
 
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/hero'), $filename);
-            $data['gambar'] = $filename;
+            $destinationPath = storage_path('app/public/uploads/hero');
+            $filename = ImageOptimizer::processUpload($file, $destinationPath, null, 1200, 85);
+            if ($filename) {
+                $data['gambar'] = $filename;
+            }
         }
 
         Hero::create($data);
@@ -58,44 +61,42 @@ class HeroController extends Controller
         $data = $request->only(['status']);
 
         if ($request->hasFile('gambar')) {
-            $oldPath = public_path('uploads/hero/' . $hero->gambar);
+            $oldPath = storage_path('app/public/uploads/hero/' . $hero->gambar);
             if ($hero->gambar && File::exists($oldPath)) {
                 File::delete($oldPath);
             }
 
             $file = $request->file('gambar');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/hero'), $filename);
-            $data['gambar'] = $filename;
+            $destinationPath = storage_path('app/public/uploads/hero');
+            $filename = ImageOptimizer::processUpload($file, $destinationPath, null, 1200, 85);
+            if ($filename) {
+                $data['gambar'] = $filename;
+            }
         }
 
         $hero->update($data);
 
         return redirect()->route('admin.hero.index')->with('success', 'Hero berhasil diperbarui!');
     }
-public function destroy($id){
-    $hero = Hero::findOrFail($id);
-    if ($hero->gambar && file_exists(public_path('uploads/hero/' . $hero->gambar))) {
-        unlink(public_path('uploads/hero/' . $hero->gambar));
+    public function destroy($id)
+    {
+        $hero = Hero::findOrFail($id);
+        if ($hero->gambar && file_exists(storage_path('app/public/uploads/hero/' . $hero->gambar))) {
+            unlink(storage_path('app/public/uploads/hero/' . $hero->gambar));
+        }
+
+        $hero->delete();
+
+        return redirect()->route('admin.hero.index')->with('success', 'Hero berhasil dihapus.');
     }
 
-    $hero->delete();
+    public function toggleStatus($id)
+    {
+        $hero = Hero::findOrFail($id);
+        $hero->status = !$hero->status;
+        $hero->save();
 
-    return redirect()->route('admin.hero.index')->with('success', 'Hero berhasil dihapus.');
-}
-
-    // public function destroy($id)
-    // {
-    //     $hero = Hero::findOrFail($id);
-
-    //     $path = public_path('uploads/hero/' . $hero->gambar);
-    //     if ($hero->gambar && File::exists($path)) {
-    //         File::delete($path);
-    //     }
-
-    //     $hero->delete();
-
-    //     return redirect()->route('admin.hero.index')->with('success', 'Hero berhasil dihapus.');
-    // }
-
+        $status = $hero->status ? 'diaktifkan' : 'dinonaktifkan';
+        return redirect()->route('admin.hero.index')->with('success', "Gambar hero berhasil {$status}!");
+    }
 }

@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Pesanan;
 use App\Models\Menu;
-use App\Models\Promo;
 use Carbon\Carbon;
 
 class PesananSeeder extends Seeder
@@ -108,29 +107,6 @@ class PesananSeeder extends Seeder
             $hargaSatuan = $menu->harga;
             $totalHarga = $hargaSatuan * $quantity;
 
-            // Sometimes apply discounts (about 40% of orders)
-            $discountAmount = 0;
-            $discountType = null;
-            $promoId = null;
-            $finalPrice = $totalHarga;
-
-            if (rand(1, 100) <= 40) {
-                // Get applicable discount for this menu at current time
-                $activeDiscounts = Promo::activeDiscounts()->with('menu')->get();
-
-                foreach ($activeDiscounts as $promo) {
-                    if ($promo->isApplicable($menuId, $quantity)) {
-                        $discountAmount = $promo->calculateDiscount($hargaSatuan, $quantity, $menuId);
-                        if ($discountAmount > 0) {
-                            $discountType = $promo->discount_type;
-                            $promoId = $promo->id;
-                            $finalPrice = $totalHarga - $discountAmount;
-                            break; // Use first matching discount
-                        }
-                    }
-                }
-            }
-
             // Create order with specific created_at time
             Pesanan::create([
                 'nama_pemesan' => $customer['name'],
@@ -139,17 +115,16 @@ class PesananSeeder extends Seeder
                 'harga_satuan' => $hargaSatuan,
                 'jumlah' => $quantity,
                 'total_harga' => $totalHarga,
-                'discount_amount' => $discountAmount,
-                'discount_type' => $discountType,
-                'promo_id' => $promoId,
-                'final_price' => $finalPrice,
+                'discount_amount' => 0,
+                'discount_type' => null,
+                'final_price' => $totalHarga,
                 'catatan' => $this->getRandomCatatan(),
                 'created_at' => $createdDates[$i],
                 'updated_at' => $createdDates[$i],
             ]);
         }
 
-        $this->command->info('Generated 47 realistic orders with varied customers, items, and discount applications.');
+        $this->command->info('Generated 47 realistic orders with varied customers and items.');
     }
 
     /**

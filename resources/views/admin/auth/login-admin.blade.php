@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - TOKO ROTI</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/icondapur.jpg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="bg-image d-flex align-items-center justify-content-center min-vh-100"
-         style="background-image: url('{{ asset('image/random1.jpg') }}');
+         style="background-image: url('{{ asset('storage/image/random1.jpg') }}');
                 background-size: cover;
                 background-position: center;">
 
@@ -17,7 +17,7 @@
             <div class="card-body p-4">
 
                 <div class="text-center mb-3">
-                    <img src="{{ asset('image/logo1.png') }}" alt="Logo Dapur Indonesia" class="img-fluid" style="max-height: 100px;">
+                    <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Logo Dapur Indonesia" class="img-fluid" style="max-height: 100px;">
                 </div>
 
                 <h4 class="text-center text-warning mb-3">PRODUK PKM TOKO ROTI</h4>
@@ -86,3 +86,7 @@
     </script>
 </body>
 </html>
+
+
+
+

@@ -36,7 +36,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('image/logo1.png') }}" alt="Wijaya Bakery" width="35" height="35" class="me-2">
+                <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Wijaya Bakery" width="35" height="35" class="me-2">
                 <span>Wijaya Bakery</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
@@ -128,7 +128,7 @@
                                     <div class="col-auto">
                                         <div class="position-relative">
                                             @if($item->menu && $item->menu->gambar_menu)
-                                                <img src="{{ asset('uploads/menu/' . $item->menu->gambar_menu) }}"
+                                                <img loading="lazy" src="{{ asset('storage/uploads/menu/' . $item->menu->gambar_menu) }}"
                                                      alt="{{ $item->menu->nama_menu }}"
                                                      class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                             @else
@@ -150,11 +150,11 @@
                                             @endif
                                         </small>
 
-                                        @if($item->promo || ($item->promo_id && $item->discount_amount))
+                                        @if($item->discount_amount && $item->discount_amount > 0)
                                             <br>
                                             <span class="discount-badge me-2">
                                                 <i class="bi bi-tag-fill me-1"></i>
-                                                Promo: {{ $item->promo ? $item->promo->nama_promo : 'Diskon Applied' }}
+                                                Diskon
                                                 @if($item->discount_type === 'percentage')
                                                     ({{ $item->discount_value }}% off)
                                                 @elseif($item->discount_type === 'fixed')
@@ -210,7 +210,7 @@
                             @if($discountTotal > 0)
                                 <div class="alert alert-success mt-3" role="alert">
                                     <i class="bi bi-trophy-fill me-2"></i>
-                                    <strong>Selamat!</strong> Anda berhasil menghemat Rp {{ number_format($discountTotal, 0, ',', '.') }} dengan promo.
+                                    <strong>Selamat!</strong> Anda berhasil menghemat Rp {{ number_format($discountTotal, 0, ',', '.') }}.
                                 </div>
                             @endif
                         </div>
@@ -249,3 +249,7 @@
     </script>
 </body>
 </html>
+
+
+
+

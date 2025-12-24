@@ -41,3 +41,4 @@ class AboutContactController extends Controller
         return redirect()->back()->with('success', 'Data About & Contact berhasil disimpan.');
     }
 }
+

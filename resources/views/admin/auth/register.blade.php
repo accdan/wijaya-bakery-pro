@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Register - Dapur Indonesia</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/icondapur.jpg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background: url('{{ asset('image/random2.jpg') }}') no-repeat center center fixed;
+            background: url('{{ asset('storage/image/random2.jpg') }}') no-repeat center center fixed;
             background-size: cover;
         }
         .card {
@@ -109,7 +109,7 @@
     <div class="d-flex align-items-center justify-content-center min-vh-100">
         <div class="card shadow border-0 p-4 w-100">
             <div class="text-center mb-3">
-                <img src="{{ asset('image/logo1.png') }}" alt="Logo Dapur Indonesia" class="img-fluid" style="max-height: 100px" />
+                <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Logo Dapur Indonesia" class="img-fluid" style="max-height: 100px" />
             </div>
 
             <h4 class="text-center text-warning mb-4">Daftar Akun Baru</h4>
@@ -188,7 +188,7 @@
                     <div class="dropzone rounded" id="dropzone">
                         <p>Seret & lepaskan gambar di sini atau klik untuk memilih</p>
                         <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="d-none" />
-                        <img id="previewImage" class="d-none rounded-circle mt-2" alt="Preview Foto Profil" />
+                        <img loading="lazy" id="previewImage" class="d-none rounded-circle mt-2" alt="Preview Foto Profil" />
                     </div>
                     @error('profile_picture')
                         <div class="text-danger small mt-1">{{ $message }}</div>
@@ -350,3 +350,7 @@
     </script>
 </body>
 </html>
+
+
+
+

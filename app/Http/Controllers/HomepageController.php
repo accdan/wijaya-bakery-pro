@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use App\Models\Hero;
-use App\Models\Promo;
 use App\Models\Sponsor;
 use App\Models\AboutNContact;
 use App\Models\Pesanan;
@@ -14,9 +13,8 @@ class HomepageController extends Controller
 {
     public function index()
     {
-        $menus = Menu::latest()->paginate(15); // tampil 15 menu per halaman untuk memperlihatkan lebih banyak menu
+        $menus = Menu::latest()->paginate(15);
         $hero = Hero::where('status', 1)->latest()->first();
-        $promos = Promo::where('status', 1)->get();
         $sponsors = Sponsor::all();
         $data = AboutNContact::first();
 
@@ -31,8 +29,7 @@ class HomepageController extends Controller
             ->limit(5)
             ->get();
 
-        return view('homepage', compact('menus', 'hero', 'promos', 'sponsors', 'data', 'topMenusThisMonth'));
+        return view('homepage', compact('menus', 'hero', 'sponsors', 'data', 'topMenusThisMonth'));
     }
-
-
 }
+

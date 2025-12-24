@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Sponsor extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'sponsor';
     protected $keyType = 'string';
     public $incrementing = false;
@@ -50,3 +53,4 @@ class Sponsor extends Model
         return $this->delete();
     }
 }
+

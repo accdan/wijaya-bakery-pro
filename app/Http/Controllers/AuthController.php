@@ -28,15 +28,16 @@ class AuthController extends Controller
         // Check if user exists, has admin role, and role is active
         if (!$user || !$user->role || $user->role->role_name !== 'admin' || !$user->role->role_status) {
             return back()->with('error', 'Username tidak ditemukan atau bukan admin.')
-                        ->withInput($request->only('username'));
+                ->withInput($request->only('username'));
         }
 
         if (!Hash::check($request->password, $user->password)) {
             return back()->with('error', 'Password salah.')
-                        ->withInput($request->only('username'));
+                ->withInput($request->only('username'));
         }
 
         Auth::guard('admin')->login($user);
+        Auth::guard('web')->login($user); // Also login to web guard for homepage access
         $request->session()->regenerate();
 
         return redirect('/dashboard-admin')->with('success', 'Login admin berhasil!');
@@ -55,3 +56,4 @@ class AuthController extends Controller
         return redirect('/')->with('success', 'Logout berhasil!');
     }
 }
+

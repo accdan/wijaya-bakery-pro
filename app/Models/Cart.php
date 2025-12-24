@@ -43,3 +43,4 @@ class Cart extends Model
         return $this->quantity * $this->menu->harga;
     }
 }
+

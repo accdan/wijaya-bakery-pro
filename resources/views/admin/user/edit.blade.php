@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin || Ubah Pengguna</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/icondapur.jpg') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         @include('include.navbarSistem')
@@ -37,51 +40,68 @@
                                 <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
 
-                            <form action="{{ route('admin.user.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('admin.user.update', $user->id) }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
-                                @method('PUT')
+                                @method('PATCH')
                                 <div class="row">
                                     <!-- Kiri -->
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="name">Nama Pengguna</label>
-                                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $user->name) }}" required>
+                                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                                name="name" value="{{ old('name', $user->name) }}" required>
                                             @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </div>
 
                                         <div class="form-group">
                                             <label for="username">Username</label>
-                                            <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username', $user->username) }}" required>
-                                            @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                            <input type="text"
+                                                class="form-control @error('username') is-invalid @enderror"
+                                                name="username" value="{{ old('username', $user->username) }}" required>
+                                            @error('username')<div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $user->email) }}">
+                                            <input type="email"
+                                                class="form-control @error('email') is-invalid @enderror" name="email"
+                                                value="{{ old('email', $user->email) }}">
                                             @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </div>
 
                                         <div class="form-group">
                                             <label for="no_telepon">Nomor Telepon</label>
-                                            <input type="text" class="form-control @error('no_telepon') is-invalid @enderror" name="no_telepon" value="{{ old('no_telepon', $user->no_telepon) }}">
-                                            @error('no_telepon')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                            <input type="text"
+                                                class="form-control @error('no_telepon') is-invalid @enderror"
+                                                name="no_telepon" value="{{ old('no_telepon', $user->no_telepon) }}">
+                                            @error('no_telepon')<div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
                                     <!-- Tengah -->
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="password">Password <small class="text-muted">(kosongkan jika tidak ingin mengubah)</small></label>
-                                            <input type="password" class="form-control @error('password') is-invalid @enderror" name="password">
-                                            @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                            <label for="password">Password <small class="text-muted">(kosongkan jika
+                                                    tidak ingin mengubah)</small></label>
+                                            <input type="password"
+                                                class="form-control @error('password') is-invalid @enderror"
+                                                name="password">
+                                            @error('password')<div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="form-group">
                                             <label for="role_id">Role</label>
-                                            <select name="role_id" id="role_id" class="form-control @error('role_id') is-invalid @enderror">
+                                            <select name="role_id" id="role_id"
+                                                class="form-control @error('role_id') is-invalid @enderror">
                                                 <option value="">-- Pilih Role --</option>
                                                 @foreach($roles as $role)
-                                                    <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>{{ $role->role_name }}</option>
+                                                    <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                                                        {{ $role->role_name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('role_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -92,18 +112,26 @@
                                     <div class="col-md-4 text-center">
                                         <div class="form-group">
                                             <label for="profile_picture">Foto Profil</label>
-                                            <input type="file" name="profile_picture" id="profile_picture" class="form-control-file @error('profile_picture') is-invalid @enderror" accept="image/*">
-                                            @error('profile_picture')<div class="text-danger">{{ $message }}</div>@enderror
+                                            <input type="file" name="profile_picture" id="profile_picture"
+                                                class="form-control-file @error('profile_picture') is-invalid @enderror"
+                                                accept="image/*">
+                                            @error('profile_picture')<div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
-                                        <div style="width: 300px; height: 300px; border: 2px dashed #ccc; margin: auto; display: flex; align-items: center; justify-content: center;">
-                                            <img id="preview" src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://via.placeholder.com/300x300?text=Preview' }}" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                        <div
+                                            style="width: 100%; max-width: 300px; min-height: 200px; border: 2px dashed #ccc; margin: auto; display: flex; align-items: center; justify-content: center; background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 20px 20px;">
+                                            <img loading="lazy" id="preview"
+                                                src="{{ $user->profile_picture ? asset('storage/uploads/profile/' . $user->profile_picture) : 'https://via.placeholder.com/300x300?text=Preview' }}"
+                                                class="img-fluid rounded"
+                                                style="max-width: 100%; max-height: 300px; object-fit: contain;">
                                         </div>
                                         <input type="hidden" name="cropped_image" id="cropped_image">
                                     </div>
                                 </div>
 
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                                    <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan
+                                        Perubahan</button>
                                     <a href="{{ route('admin.user.index') }}" class="btn btn-secondary">Batal</a>
                                 </div>
                             </form>
@@ -141,15 +169,42 @@
 
                 if (cropper) cropper.destroy();
                 cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
+                    aspectRatio: NaN, // Free aspect ratio untuk full image
+                    viewMode: 2,
                     autoCropArea: 1,
-                    crop(event) {
-                        const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-                        canvas.toBlob((blob) => {
-                            const formData = new FormData();
-                            formData.append('cropped_image', blob);
+                    responsive: true,
+                    background: true,
+                    ready() {
+                        const containerData = cropper.getContainerData();
+                        cropper.setCropBoxData({
+                            left: 0,
+                            top: 0,
+                            width: containerData.width,
+                            height: containerData.height
                         });
+                    },
+                    crop(event) {
+                        try {
+                            const canvas = cropper.getCroppedCanvas({
+                                maxWidth: 400,
+                                maxHeight: 400,
+                                imageSmoothingEnabled: true,
+                                imageSmoothingQuality: 'high'
+                            });
+                            if (canvas) {
+                                canvas.toBlob((blob) => {
+                                    if (blob) {
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => {
+                                            document.getElementById('cropped_image').value = reader.result;
+                                        };
+                                        reader.readAsDataURL(blob);
+                                    }
+                                }, 'image/png');
+                            }
+                        } catch (e) {
+                            console.log('Crop error:', e);
+                        }
                     }
                 });
             };
@@ -157,4 +212,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return strtolower($this->role->role_name) === 'admin';
+        return $this->role && strtolower($this->role->role_name) === 'admin';
     }
 
     public function carts()
@@ -75,3 +75,4 @@ class User extends Authenticatable
         return $this->carts()->sum('quantity');
     }
 }
+

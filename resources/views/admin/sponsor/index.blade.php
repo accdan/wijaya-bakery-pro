@@ -1,15 +1,185 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin || Sponsor</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <title>Kelola Sponsor || Wijaya Bakery</title>
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/logo1.png') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: #f4f6f9;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 1.5rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .btn-add {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-add:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        /* Sponsor grid */
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .sponsor-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .sponsor-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .sponsor-logo-container {
+            height: 140px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .sponsor-logo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .sponsor-placeholder {
+            width: 80px;
+            height: 80px;
+            background: #dee2e6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-size: 2rem;
+        }
+
+        .sponsor-body {
+            padding: 1.25rem;
+        }
+
+        .sponsor-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 0.5rem;
+        }
+
+        .sponsor-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            min-height: 2.7rem;
+        }
+
+        .sponsor-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-action.edit {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .btn-action.delete {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Modal */
+        .modal-content {
+            border: none;
+            border-radius: 12px;
+        }
+    </style>
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         @include('include.navbarSistem')
@@ -18,9 +188,16 @@
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
-                    <div class="row mb-2">
+                    <div class="row align-items-center">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Manajemen Sponsor</h1>
+                            <h1 class="m-0" style="font-weight: 600;">Kelola Sponsor</h1>
+                            <p class="text-muted mb-0">Partner dan sponsor bakery</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right mb-0">
+                                <li class="breadcrumb-item"><a href="{{ url('dashboard-admin') }}">Dashboard</a></li>
+                                <li class="breadcrumb-item active">Sponsor</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -28,56 +205,57 @@
 
             <section class="content">
                 <div class="container-fluid">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title">Daftar Sponsor</h3>
-                            <a href="{{ route('admin.sponsor.create') }}" class="btn btn-primary btn-sm ml-auto">
-                                <i class="fas fa-plus"></i> Tambah Sponsor
+                    <div class="page-card">
+                        <div class="page-header">
+                            <div>
+                                <h5><i class="fas fa-handshake mr-2"></i>Daftar Sponsor</h5>
+                                <small style="opacity: 0.8;">{{ $sponsors->count() }} sponsor terdaftar</small>
+                            </div>
+                            <a href="{{ route('admin.sponsor.create') }}" class="btn btn-add">
+                                <i class="fas fa-plus mr-2"></i>Tambah Sponsor
                             </a>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="sponsorTable" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Nama Sponsor</th>
-                                            <th>Deskripsi</th>
-                                            <th>Logo</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($sponsors as $index => $sponsor)
-                                            <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td>{{ $sponsor->nama_sponsor }}</td>
-                                                <td>{{ Str::limit($sponsor->deskripsi_sponsor, 50) }}</td>
-                                                <td>
-                                                    @if($sponsor->logo_sponsor)
-                                                        <img src="{{ asset('uploads/sponsor/' . $sponsor->logo_sponsor) }}" alt="logo" width="80">
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="{{ route('admin.sponsor.edit', $sponsor->id) }}" class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit
-                                                    </a>
-                                                    <button class="btn btn-danger btn-sm delete-sponsor-btn"
-                                                        data-toggle="modal"
-                                                        data-target="#deleteSponsorModal"
-                                                        data-sponsor-id="{{ $sponsor->id }}">
-                                                        <i class="fas fa-trash"></i> Hapus
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+
+                        @if($sponsors->count() > 0)
+                            <div class="sponsor-grid">
+                                @foreach($sponsors as $sponsor)
+                                    <div class="sponsor-card">
+                                        <div class="sponsor-logo-container">
+                                            @if($sponsor->logo_sponsor)
+                                                <img loading="lazy" src="{{ asset('storage/uploads/sponsor/' . $sponsor->logo_sponsor) }}"
+                                                    alt="{{ $sponsor->nama_sponsor }}" class="sponsor-logo">
+                                            @else
+                                                <div class="sponsor-placeholder">
+                                                    <i class="fas fa-building"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="sponsor-body">
+                                            <div class="sponsor-name">{{ $sponsor->nama_sponsor }}</div>
+                                            <div class="sponsor-desc">
+                                                {{ $sponsor->deskripsi_sponsor ?? 'Tidak ada deskripsi' }}
+                                            </div>
+                                            <div class="sponsor-actions">
+                                                <a href="{{ route('admin.sponsor.edit', $sponsor->id) }}"
+                                                    class="btn-action edit">
+                                                    <i class="fas fa-pen"></i>Edit
+                                                </a>
+                                                <button class="btn-action delete" data-toggle="modal" data-target="#deleteModal"
+                                                    data-id="{{ $sponsor->id }}">
+                                                    <i class="fas fa-trash"></i>Hapus
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-                            <div id="tablePagination"></div>
-                        </div>
+                        @else
+                            <div class="empty-state">
+                                <i class="fas fa-handshake"></i>
+                                <h5>Belum ada sponsor</h5>
+                                <p>Tambahkan sponsor untuk ditampilkan di homepage</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </section>
@@ -86,25 +264,23 @@
         @include('include.footerSistem')
     </div>
 
-    <!-- Modal Konfirmasi Hapus -->
-    <div class="modal fade" id="deleteSponsorModal" tabindex="-1" aria-labelledby="deleteSponsorModalLabel" aria-hidden="true">
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteSponsorModalLabel"><i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Hapus</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus sponsor ini? Tindakan ini tidak dapat dibatalkan.
+                    <p>Apakah Anda yakin ingin menghapus sponsor ini?</p>
                 </div>
                 <form id="deleteForm" method="POST">
                     @csrf
                     @method('DELETE')
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Hapus</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash mr-1"></i>Hapus</button>
                     </div>
                 </form>
             </div>
@@ -117,34 +293,23 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
-    <script src="{{ asset('js/ToastScript.js') }}"></script>
+
     <script>
         $(document).ready(function () {
-            $("#sponsorTable").DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true
+            // Delete modal
+            $('.delete').click(function () {
+                const id = $(this).data('id');
+                $('#deleteForm').attr('action', '{{ url("mng-sponsor") }}/' + id);
             });
 
-            $('.delete-sponsor-btn').click(function () {
-                let sponsorId = $(this).data('sponsor-id');
-                let deleteUrl = "{{ url('sponsor') }}/" + sponsorId;
-                $('#deleteForm').attr('action', deleteUrl);
-            });
-
-            @if (session('success') || session('error'))
-                $('#toastNotification').toast({
-                    delay: 3000,
-                    autohide: true
-                }).toast('show');
+            @if(session('success') || session('error'))
+                $('#toastNotification').toast({ delay: 3000 }).toast('show');
             @endif
         });
     </script>
 </body>
+
 </html>
+
+
+

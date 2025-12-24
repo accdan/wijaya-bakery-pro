@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Wijaya Admin</title>
-  <link rel="icon" type="image/png" href="{{ asset('image/logo1.png') }}">
+  <link rel="icon" type="image/png" href="{{ asset('storage/image/logo1.png') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
@@ -38,14 +38,14 @@
     <!-- Kiri kosong / bisa diisi gambar / info -->
     <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center">
       <!-- Kosong atau bisa logo besar / quote / ilustrasi -->
-      <img src="{{ asset('image/logo1.png') }}" alt="Logo Dapur Indonesia" style="max-width: 200px;">
+      <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Logo Dapur Indonesia" style="max-width: 200px;">
     </div>
 
     <!-- Form login kanan -->
     <div class="col-md-6 d-flex align-items-center justify-content-center">
       <div class="login-card shadow-sm w-100" style="max-width: 400px;">
         <div class="text-center mb-4 d-md-none">
-          <img src="{{ asset('image/logo1.png') }}" alt="Logo Dapur Indonesia" style="max-height: 80px;">
+          <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Logo Dapur Indonesia" style="max-height: 80px;">
         </div>
         <h4 class="text-brown mb-3 text-center">Login Owner</h4>
 
@@ -96,3 +96,7 @@
   </script>
 </body>
 </html>
+
+
+
+

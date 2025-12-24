@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin || Edit Pesanan</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/icondapur.jpg') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
 
                         <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST">
                             @csrf
-                            @method('PUT')
+                            @method('PATCH')
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -181,3 +181,7 @@
 </script>
 </body>
 </html>
+
+
+
+

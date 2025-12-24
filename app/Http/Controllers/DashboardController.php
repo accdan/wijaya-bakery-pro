@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Promo;
 use App\Models\Sponsor;
 use App\Models\Role;
 use App\Models\Kategori;
@@ -16,13 +15,12 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $totalPeran     = Role::count();
-        $totalUser      = User::count();
-        $totalKategori  = Kategori::count();
-        $totalMenu      = Menu::count();
-        $totalPromo     = Promo::count();
-        $totalSponsor   = Sponsor::count();
-        $lowStockMenus  = Menu::where('stok', '<', 20)->orderBy('stok')->get();
+        $totalPeran = Role::count();
+        $totalUser = User::count();
+        $totalKategori = Kategori::count();
+        $totalMenu = Menu::count();
+        $totalSponsor = Sponsor::count();
+        $lowStockMenus = Menu::where('stok', '<', 20)->orderBy('stok')->get();
 
         // Get year and date range from request or use defaults
         $year = $request->get('year', now()->year);
@@ -62,18 +60,51 @@ class DashboardController extends Controller
         $revenueYear = Pesanan::where('created_at', '>=', now()->startOfYear())->sum('total_harga');
         $revenueTotal = Pesanan::sum('total_harga');
 
+        // NEW: Daily revenue (today)
+        $revenueToday = Pesanan::whereDate('created_at', today())->sum('total_harga');
+        $ordersToday = Pesanan::whereDate('created_at', today())->count();
+
         // Order counts (existing features)
         $ordersMonth = Pesanan::where('created_at', '>=', now()->startOfMonth())->count();
         $ordersYear = Pesanan::where('created_at', '>=', now()->startOfYear())->count();
         $ordersTotal = Pesanan::count();
 
+        // Active orders - count orders created today (since status column doesn't exist)
+        $activeOrders = Pesanan::whereDate('created_at', today())->count();
+
+        // NEW: Maintenance mode status
+        $maintenanceMode = app()->isDownForMaintenance();
+
+        // NEW: Out of stock count
+        $outOfStockMenus = Menu::where('stok', '<=', 0)->count();
+
         return view('admin.dashboard-admin', compact(
-            'totalPeran', 'totalUser', 'totalKategori', 'totalMenu', 'totalPromo', 'totalSponsor',
-            'lowStockMenus', 'salesData', 'topMenusThisMonth',
-            'revenueMonth', 'revenueYear', 'revenueTotal',
-            'ordersMonth', 'ordersYear', 'ordersTotal',
-            'monthlyProfitData', 'year', 'startMonth', 'endMonth',
-            'dailySalesData', 'salesYear', 'salesMonth'
+            'totalPeran',
+            'totalUser',
+            'totalKategori',
+            'totalMenu',
+            'totalSponsor',
+            'lowStockMenus',
+            'salesData',
+            'topMenusThisMonth',
+            'revenueMonth',
+            'revenueYear',
+            'revenueTotal',
+            'revenueToday',
+            'ordersMonth',
+            'ordersYear',
+            'ordersTotal',
+            'ordersToday',
+            'activeOrders',
+            'maintenanceMode',
+            'outOfStockMenus',
+            'monthlyProfitData',
+            'year',
+            'startMonth',
+            'endMonth',
+            'dailySalesData',
+            'salesYear',
+            'salesMonth'
         ));
     }
 
@@ -124,8 +155,8 @@ class DashboardController extends Controller
             $filledData[$date] = isset($dailyData[$date])
                 ? [
                     'date' => $date,
-                    'total' => (float)$dailyData[$date]->total,
-                    'orders' => (int)$dailyData[$date]->orders,
+                    'total' => (float) $dailyData[$date]->total,
+                    'orders' => (int) $dailyData[$date]->orders,
                     'day' => $day
                 ]
                 : [
@@ -139,3 +170,4 @@ class DashboardController extends Controller
         return $filledData;
     }
 }
+

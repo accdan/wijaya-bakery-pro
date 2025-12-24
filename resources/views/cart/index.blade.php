@@ -5,540 +5,742 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Keranjang Belanja | Wijaya Bakery</title>
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/logo1.png') }}">
+    
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Custom CSS -->
     <style>
         :root {
-            --brown: #8b5e3c;
-            --light-brown: #d4b896;
+            --bakery-cream: #FDF8F3;
+            --bakery-brown: #8B4513;
+            --bakery-dark-brown: #5D3A1A;
+            --bakery-golden: #D4A574;
+            --bakery-warm: #F5EBD9;
+            --bakery-peach: #FAF3EB;
+            --text-primary: #3D2914;
+            --text-secondary: #8B7355;
+            --shadow-sm: 0 2px 8px rgba(139, 69, 19, 0.08);
+            --shadow-md: 0 4px 16px rgba(139, 69, 19, 0.12);
         }
+
+        * { box-sizing: border-box; }
+
         body {
-            background-color: #faf8f5;
-        }
-    .cart-card {
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        .btn-brown {
-            background-color: var(--brown);
-            border-color: var(--brown)
-            color: white;
-        }
-        .btn-brown:hover {
-            background-color: #6f4d32;
-            border-color: #6f4d32;
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background: var(--bakery-cream);
+            min-height: 100vh;
+            margin: 0;
         }
 
-        /* Enhanced Mobile Styles for Cart */
-        .cart-item-row {
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            color: var(--text-primary);
+        }
+
+        /* Simple Page header with navbar offset */
+        .page-header {
+            background: var(--bakery-cream);
+            padding: 5rem 0 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-header h1 {
+            color: var(--bakery-brown);
+            font-size: 1.35rem;
+            margin: 0;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            margin: 0.5rem 0 0;
+            font-size: 0.8rem;
+        }
+
+        .breadcrumb-custom {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .breadcrumb-custom a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .breadcrumb-custom a:hover { color: var(--bakery-brown); }
+
+        .breadcrumb-custom .active {
+            color: var(--bakery-brown);
+            font-weight: 500;
+        }
+
+        /* Cart container */
+        .cart-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem;
+        }
+
+        /* Minimalist Cart card */
+        .cart-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .cart-header {
+            background: var(--bakery-peach);
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(139, 69, 19, 0.08);
+        }
+
+        .cart-header h5 {
+            color: var(--bakery-brown);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .cart-body { padding: 0; }
+
+        /* Minimalist Cart item */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(139, 69, 19, 0.06);
             transition: all 0.2s ease;
+            gap: 1rem;
         }
 
-        .cart-item-row:hover {
-            background-color: rgba(139, 111, 71, 0.02);
+        .cart-item:hover { background: var(--bakery-peach); }
+        .cart-item:last-child { border-bottom: none; }
+
+        .item-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--bakery-brown);
+            cursor: pointer;
         }
 
-        .quantity-input-mobile {
-            width: 60px;
-            text-align: center;
-            border: 2px solid var(--brown);
+        .item-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: var(--bakery-warm);
+            flex-shrink: 0;
+        }
+
+        .item-details { flex: 1; min-width: 0; }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.15rem;
+            font-size: 0.9rem;
+        }
+
+        .item-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-stock {
+            font-size: 0.7rem;
+            color: #5D8A4D;
+            margin-top: 0.15rem;
+        }
+
+        /* Compact Quantity control */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--bakery-peach);
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
             border-radius: 6px;
-            margin: 0 0.5rem;
-        }
-
-        .btn-quantity-mobile {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--bakery-brown);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            border: none;
-        }
-
-        .checkout-summary {
-            position: sticky;
-            top: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-        }
-
-        .checkout-btn-mobile {
-            min-height: 48px;
-            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.15s;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
-        .discount-badge-mobile {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(220, 53, 69, 0.9);
+        .qty-btn:hover {
+            background: var(--bakery-brown);
             color: white;
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 600;
         }
 
-        /* Better touch targets for mobile */
+        .qty-input {
+            width: 36px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .qty-input:focus { outline: none; }
+
+        /* Compact Item price */
+        .item-price {
+            text-align: right;
+            min-width: 100px;
+        }
+
+        .item-price .price {
+            font-weight: 700;
+            color: var(--bakery-brown);
+            font-size: 0.95rem;
+        }
+
+        .item-price .unit-price {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* Minimalist Delete button */
+        .btn-delete {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #c0a080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-delete:hover {
+            background: #fee;
+            color: #dc3545;
+        }
+
+        /* Coklat Summary card */
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 1rem;
+            overflow: hidden;
+        }
+
+        .summary-header {
+            background: linear-gradient(135deg, var(--bakery-brown), var(--bakery-dark-brown));
+            color: white;
+            padding: 1rem 1.25rem;
+        }
+
+        .summary-header h5 {
+            color: white;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .summary-body { padding: 1.25rem; }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(139, 69, 19, 0.1);
+            margin-top: 0.5rem;
+        }
+
+        .summary-total span {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .summary-total .total-price { color: var(--bakery-brown); }
+
+        /* Compact Notes */
+        .notes-section { margin-top: 1rem; }
+
+        .notes-section label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.375rem;
+            display: block;
+            font-size: 0.8rem;
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            border: 1px solid rgba(139, 69, 19, 0.15);
+            border-radius: 10px;
+            padding: 0.625rem;
+            resize: none;
+            font-family: inherit;
+            font-size: 0.8rem;
+            transition: border-color 0.2s;
+        }
+
+        .notes-section textarea:focus {
+            border-color: var(--bakery-golden);
+            outline: none;
+        }
+
+        /* Bakery Checkout button */
+        .btn-checkout {
+            width: 100%;
+            background: linear-gradient(135deg, var(--bakery-brown), var(--bakery-dark-brown));
+            border: none;
+            color: white;
+            padding: 0.875rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .btn-checkout:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .wa-note {
+            text-align: center;
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* Minimalist Empty cart */
+        .empty-cart {
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-cart-icon {
+            font-size: 3.5rem;
+            color: var(--bakery-golden);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-cart h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-size: 1.25rem;
+        }
+
+        .empty-cart p {
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-shop {
+            background: linear-gradient(135deg, var(--bakery-brown), var(--bakery-dark-brown));
+            color: white;
+            padding: 0.625rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-shop:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        /* Compact Select all bar */
+        .select-all-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            background: var(--bakery-cream);
+            border-bottom: 1px solid rgba(139, 69, 19, 0.06);
+        }
+
+        .select-all-bar label {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .btn-delete-selected {
+            background: transparent;
+            border: 1px solid rgba(139, 69, 19, 0.15);
+            color: var(--text-secondary);
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-left: auto;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-delete-selected:hover {
+            background: #fee;
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .btn-delete-selected:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Smooth animations */
+        .cart-item, .qty-btn, .btn-delete, .btn-checkout, .btn-shop {
+            transition: all 0.2s ease;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .btn, .btn-sm, .btn-lg {
-                min-height: 44px;
-                touch-action: manipulation;
+            .cart-item {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                padding: 0.875rem 1rem;
             }
 
-            .form-control, .form-select {
-                font-size: 1rem;
-                min-height: 44px;
-                border-radius: 8px;
+            .item-image { width: 56px; height: 56px; }
+
+            .item-details {
+                order: 2;
+                flex-basis: calc(100% - 80px);
             }
 
-            .cart-section-padding {
-                padding: 1rem 0;
-            }
+            .quantity-control { order: 3; }
+            .item-price { order: 4; min-width: auto; text-align: left; }
+            .btn-delete { order: 5; }
+            .item-checkbox { order: 1; }
 
-            .cart-item-mobile {
-                border-bottom: 1px solid rgba(139, 111, 71, 0.1);
-            }
-
-            .checkout-section-mobile {
-                background: var(--light-brown);
-                border-radius: 12px 12px 0 0;
-                padding: 1.5rem 1rem;
-                box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
-            }
-
-            .checkout-btn-mobile {
-                width: 100%;
-                min-height: 50px;
-                font-size: 1rem;
-                border-radius: 10px;
-                background: #25d366;
-                border: none;
-                color: white;
-            }
-
-            .empty-cart-mobile {
-                text-align: center;
-                padding: 3rem 1rem;
-            }
+            .summary-card { position: static; margin-top: 1rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     @include('components.navbar')
 
-            <div class="row">
-                <div class="col-12">
-                    <h1 class="text-center mb-4" style="color: #8b5e3c;">Keranjang Belanja</h1>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>🛒 Keranjang Belanja</h1>
+            <p>Kelola pesanan Anda sebelum checkout</p>
+        </div>
+    </div>
 
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+    <div class="cart-container">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-                    @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-                    @if($carts->isEmpty())
-                        <div class="text-center py-5 empty-cart-mobile">
-                            <i class="bi bi-cart-x" style="font-size: 4rem; color: #d4b896;"></i>
-                            <h3 class="mt-3" style="color: #8b5e3c;">Keranjang Kosong</h3>
-                            <p class="text-muted">Belum ada item di keranjang Anda.</p>
-                            <a href="/" class="btn btn-primary empty-cart-btn">Mulai Belanja</a>
-                        </div>
-                    @else
-                        <div class="row">
-                            <!-- Cart Items -->
-                            <div class="col-lg-8">
-                                <div class="card shadow-sm mb-4">
-                                    <div class="card-header" style="background-color: #8b5e3c; color: white;">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">Item Keranjang ({{ $carts->count() }} item)</h5>
-                                            @if($carts->count() > 1)
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <input type="checkbox" id="selectAll" class="form-check-input">
-                                                        <label for="selectAll" class="text-white mb-0 small">Pilih Semua</label>
-                                                    </div>
-                                                    <button type="button" class="btn btn-outline-light btn-sm" id="deleteSelectedBtn" disabled>
-                                                        <i class="bi bi-trash me-1"></i>Hapus Terpilih
-                                                    </button>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        @php
-                                            $activeDiscounts = \App\Models\Promo::activeDiscountsToday()->with('menu')->get();
-                                        @endphp
-                                        @foreach($carts as $cart)
-                                        @php
-                                            // Calculate discount for this cart item
-                                            $itemDiscount = 0;
-                                            $applicablePromo = null;
-                                            foreach ($activeDiscounts as $discount) {
-                                                if ($discount->isApplicable($cart->menu->id, $cart->quantity)) {
-                                                    $itemDiscount = $discount->calculateDiscount($cart->menu->harga, $cart->quantity, $cart->menu->id);
-                                                    $applicablePromo = $discount;
-                                                    break;
-                                                }
-                                            }
-                                            $finalItemPrice = ($cart->quantity * $cart->menu->harga) - $itemDiscount;
-                                            $hasDiscount = $itemDiscount > 0;
-                                        @endphp
-                                        <div class="row align-items-center mb-3 pb-3 border-bottom {{ $hasDiscount ? 'border-warning bg-light' : '' }} cart-item cart-item-row" data-cart-id="{{ $cart->id }}">
-                                            <div class="col-auto pe-3">
-                                                <input type="checkbox" class="form-check-input cart-checkbox" value="{{ $cart->id }}">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <img src="{{ $cart->menu->gambar_menu ? asset('uploads/menu/' . $cart->menu->gambar_menu) : asset('images/default-menu.png') }}"
-                                                     alt="{{ $cart->menu->nama_menu }}"
-                                                     class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <h6 class="mb-1 {{ $hasDiscount ? 'text-success' : '' }}">
-                                                    {{ $cart->menu->nama_menu }}
-                                                    @if($hasDiscount)
-                                                        <span class="badge bg-danger ms-1">
-                                                            <i class="fas fa-percentage me-1"></i>
-                                                            @if($applicablePromo->discount_type == 'percentage')
-                                                                {{ $applicablePromo->discount_value }}%
-                                                            @else
-                                                                Rp {{ number_format($applicablePromo->discount_value, 0, ',', '.') }}
-                                                            @endif
-                                                        </span>
-                                                    @endif
-                                                </h6>
-                                                <small class="text-muted">{{ Str::limit($cart->menu->deskripsi_menu, 50) }}</small>
-                                                @if($hasDiscount)
-                                                    <div class="mt-1">
-                                                        <small class="text-success">
-                                                            <i class="fas fa-tag me-1"></i>{{ $applicablePromo->nama_promo }} - Hemat Rp {{ number_format($itemDiscount, 0, ',', '.') }}
-                                                        </small>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="col-md-3">
-                                                <form method="POST" action="{{ route('cart.update', $cart->id) }}" class="d-flex align-items-center">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <div class="input-group input-group-sm">
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(this, -1)">-</button>
-                                                        <input type="number" name="quantity" class="form-control text-center quantity-input-mobile"
-                                                               value="{{ $cart->quantity }}" min="1" max="{{ $cart->menu->stok }}"
-                                                               onchange="this.form.submit()">
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(this, 1)">+</button>
-                                                    </div>
-                                                </form>
-                                                <small class="text-muted">Stok: {{ $cart->menu->stok }}</small>
-                                            </div>
-                                            <div class="col-md-2">
-                                                @if($hasDiscount)
-                                                    <div class="text-end">
-                                                        <small class="text-muted">
-                                                            <del>Rp {{ number_format($cart->quantity * $cart->menu->harga, 0, ',', '.') }}</del>
-                                                        </small>
-                                                        <br>
-                                                        <strong class="text-success">Rp {{ number_format($finalItemPrice, 0, ',', '.') }}</strong>
-                                                    </div>
-                                                @else
-                                                    <strong>Rp {{ number_format($cart->quantity * $cart->menu->harga, 0, ',', '.') }}</strong>
-                                                @endif
-                                            </div>
-                                            <div class="col-md-1">
-                                                <form method="POST" action="{{ route('cart.remove', $cart->id) }}" onsubmit="return confirm('Hapus item ini dari keranjang?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Cart Summary -->
-                            <div class="col-lg-4">
-                                <div class="card shadow-sm sticky-top checkout-summary">
-                                    <div class="card-header" style="background-color: #8b5e3c; color: white;">
-                                        <h5 class="mb-0">Ringkasan Pembelian</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        @php
-                                            $subtotal = $carts->sum(function($cart) {
-                                                return $cart->quantity * $cart->menu->harga;
-                                            });
-
-                                            $activeDiscounts = \App\Models\Promo::activeDiscountsToday()->with('menu')->get();
-                                            $totalDiscount = 0;
-
-                                            foreach($carts as $cart) {
-                                                foreach ($activeDiscounts as $discount) {
-                                                    if ($discount->isApplicable($cart->menu->id, $cart->quantity)) {
-                                                        $totalDiscount += $discount->calculateDiscount($cart->menu->harga, $cart->quantity, $cart->menu->id);
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            $finalTotal = $subtotal - $totalDiscount;
-                                        @endphp
-
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Subtotal:</span>
-                                            <strong>Rp {{ number_format($subtotal, 0, ',', '.') }}</strong>
-                                        </div>
-
-                                        @if($totalDiscount > 0)
-                                            <div class="d-flex justify-content-between mb-2 text-danger">
-                                                <span>Potongan Diskon:</span>
-                                                <strong>- Rp {{ number_format($totalDiscount, 0, ',', '.') }}</strong>
-                                            </div>
-                                            <hr>
-                                            <div class="alert alert-success">
-                                                <strong>Anda hemat: Rp {{ number_format($totalDiscount, 0, ',', '.') }}!</strong>
-                                            </div>
-                                        @endif
-
-                                        <hr class="border-primary">
-
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span class="h5 mb-0" style="color: #8b5e3c;"><strong>Total:</strong></span>
-                                            <strong class="h5 mb-0" style="color: #8b5e3c;">Rp {{ number_format($finalTotal, 0, ',', '.') }}</strong>
-                                        </div>
-
-                                        <form method="POST" action="{{ route('cart.checkout') }}">
-                                            @csrf
-                                            <input type="hidden" id="selectedItems" name="selected_items">
-
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">
-                                                    <i class="bi bi-chat-dots me-2"></i>Catatan (Opsional)
-                                                </label>
-                        <textarea name="catatan_pesanan" class="form-control" rows="3"
-                                                          placeholder="Contoh: Mohon dikemas rapi, dll.">{{ $savedOrderNotes }}</textarea>
-                                            </div>
-
-                                            <button type="submit" id="checkoutBtn" class="btn btn-success w-100 checkout-btn-mobile">
-                                                <i class="bi bi-check-circle me-2"></i>Checkout & Pesan
-                                                <span class="spinner-border spinner-border-sm ms-2 d-none"></span>
-                                            </button>
-                                        </form>
-
-                                        <small class="text-muted mt-2">
-                                            <i class="bi bi-whatsapp me-1"></i>
-                                            Pesanan akan dikirim ke WhatsApp untuk konfirmasi
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+        @if($carts->isEmpty())
+            <div class="cart-card">
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">
+                        <i class="bi bi-cart-x"></i>
+                    </div>
+                    <h3>Keranjang Masih Kosong</h3>
+                    <p>Belum ada item di keranjang Anda. Yuk, mulai belanja!</p>
+                    <a href="/#menu" class="btn-shop">
+                        <i class="bi bi-shop"></i>Lihat Menu
+                    </a>
                 </div>
             </div>
+        @else
+            <div class="row g-4">
+                <!-- Cart Items -->
+                <div class="col-lg-8">
+                    <div class="cart-card">
+                        <div class="cart-header">
+                            <h5><i class="bi bi-bag me-2"></i>Item Keranjang ({{ $carts->count() }} item)</h5>
+                        </div>
+                        
+                        @if($carts->count() > 1)
+                            <div class="select-all-bar">
+                                <input type="checkbox" id="selectAll" class="item-checkbox">
+                                <label for="selectAll">Pilih Semua</label>
+                                <button type="button" class="btn-delete-selected" id="deleteSelectedBtn" disabled>
+                                    <i class="bi bi-trash me-1"></i>Hapus Terpilih
+                                </button>
+                            </div>
+                        @endif
+                        
+                        <div class="cart-body">
+                            @foreach($carts as $cart)
+                                <div class="cart-item" data-cart-id="{{ $cart->id }}">
+                                    <input type="checkbox" class="item-checkbox cart-checkbox" value="{{ $cart->id }}">
+                                    
+                                    <img loading="lazy" src="{{ $cart->menu->gambar_menu ? asset('storage/uploads/menu/' . $cart->menu->gambar_menu) : asset('storage/images/default-menu.png') }}"
+                                         alt="{{ $cart->menu->nama_menu }}" class="item-image">
+                                    
+                                    <div class="item-details">
+                                        <div class="item-name">{{ $cart->menu->nama_menu }}</div>
+                                        <div class="item-desc">{{ Str::limit($cart->menu->deskripsi_menu, 60) }}</div>
+                                        <div class="item-stock"><i class="bi bi-check-circle me-1"></i>Stok: {{ $cart->menu->stok }}</div>
+                                    </div>
+                                    
+                                    <form method="POST" action="{{ route('cart.update', $cart->id) }}" class="quantity-control">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="button" class="qty-btn" onclick="changeQuantity(this, -1)">−</button>
+                                        <input type="number" name="quantity" class="qty-input"
+                                               value="{{ $cart->quantity }}" min="1" max="{{ $cart->menu->stok }}"
+                                               onchange="this.form.submit()">
+                                        <button type="button" class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </form>
+                                    
+                                    <div class="item-price">
+                                        <div class="price">Rp {{ number_format($cart->quantity * $cart->menu->harga, 0, ',', '.') }}</div>
+                                        <div class="unit-price">@ Rp {{ number_format($cart->menu->harga, 0, ',', '.') }}</div>
+                                    </div>
+                                    
+                                    <form method="POST" action="{{ route('cart.remove', $cart->id) }}"
+                                          onsubmit="return confirm('Hapus item ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Summary -->
+                <div class="col-lg-4">
+                    <div class="summary-card">
+                        <div class="summary-header">
+                            <h5><i class="bi bi-receipt me-2"></i>Ringkasan</h5>
+                        </div>
+                        <div class="summary-body">
+                            @php
+                                $subtotal = $carts->sum(function ($cart) {
+                                    return $cart->quantity * $cart->menu->harga;
+                                });
+                            @endphp
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span>Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                            </div>
+                            
+                            <div class="summary-total">
+                                <span>Total</span>
+                                <span class="total-price">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                            </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize checkboxes
-    const checkboxes = document.querySelectorAll('.cart-checkbox');
-    if (checkboxes.length > 0) {
-        checkboxes[0].checked = true;
-        updateSummary();
-    }
+                            <form method="POST" action="{{ route('cart.checkout') }}">
+                                @csrf
+                                <input type="hidden" id="selectedItems" name="selected_items">
+                                
+                                <div class="notes-section">
+                                    <label><i class="bi bi-chat-text me-1"></i>Catatan Pesanan</label>
+                                    <textarea name="catatan_pesanan" rows="3"
+                                        placeholder="Contoh: Mohon dikemas rapi, jangan terlalu manis, dll.">{{ $savedOrderNotes }}</textarea>
+                                </div>
 
-    // Handle select all
-    const selectAllCheckbox = document.getElementById('selectAll');
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
+                                <button type="submit" class="btn-checkout" id="checkoutBtn">
+                                    <i class="bi bi-whatsapp"></i>
+                                    <span>Checkout via WhatsApp</span>
+                                </button>
+                            </form>
+
+                            <div class="wa-note">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Pesanan akan dikirim ke WhatsApp untuk konfirmasi
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('.cart-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-            updateSummary();
-            updateDeleteButton();
-        });
-    }
+            
+            // Auto-select first item
+            if (checkboxes.length > 0) {
+                checkboxes[0].checked = true;
+                updateSummary();
+            }
 
-    // Handle individual checkboxes
-    document.querySelectorAll('.cart-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+            // Select all functionality
+            const selectAllCheckbox = document.getElementById('selectAll');
             if (selectAllCheckbox) {
-                const allChecked = document.querySelectorAll('.cart-checkbox:checked').length === checkboxes.length;
-                selectAllCheckbox.checked = allChecked;
+                selectAllCheckbox.addEventListener('change', function() {
+                    checkboxes.forEach(cb => cb.checked = this.checked);
+                    updateSummary();
+                    updateDeleteButton();
+                });
             }
-            updateSummary();
+
+            // Individual checkbox change
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (selectAllCheckbox) {
+                        selectAllCheckbox.checked = document.querySelectorAll('.cart-checkbox:checked').length === checkboxes.length;
+                    }
+                    updateSummary();
+                    updateDeleteButton();
+                });
+            });
+
+            function updateSummary() {
+                const selectedItems = Array.from(document.querySelectorAll('.cart-checkbox:checked')).map(cb => cb.value);
+                document.getElementById('selectedItems').value = selectedItems.join(',');
+
+                const checkoutBtn = document.getElementById('checkoutBtn');
+                if (selectedItems.length === 0) {
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.innerHTML = '<i class="bi bi-cart-x"></i><span>Pilih Item Dulu</span>';
+                } else {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.innerHTML = `<i class="bi bi-whatsapp"></i><span>Checkout ${selectedItems.length} Item</span>`;
+                }
+            }
+
+            function updateDeleteButton() {
+                const deleteBtn = document.getElementById('deleteSelectedBtn');
+                if (!deleteBtn) return;
+                
+                const selectedCount = document.querySelectorAll('.cart-checkbox:checked').length;
+                deleteBtn.disabled = selectedCount === 0;
+                deleteBtn.innerHTML = selectedCount > 0 
+                    ? `<i class="bi bi-trash me-1"></i>Hapus (${selectedCount})`
+                    : '<i class="bi bi-trash me-1"></i>Hapus Terpilih';
+            }
+
+            // Form submission
+            const checkoutForm = document.querySelector('form[action*="checkout"]');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function(e) {
+                    if (!document.getElementById('selectedItems').value) {
+                        e.preventDefault();
+                        alert('Pilih item untuk checkout');
+                        return false;
+                    }
+                    document.getElementById('checkoutBtn').disabled = true;
+                    document.getElementById('checkoutBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+                });
+            }
+
             updateDeleteButton();
         });
-    });
 
-    function updateSummary() {
-        const selectedItems = Array.from(document.querySelectorAll('.cart-checkbox:checked')).map(cb => cb.value);
-        document.getElementById('selectedItems').value = selectedItems.join(',');
-
-        const checkoutBtn = document.getElementById('checkoutBtn');
-        if (selectedItems.length === 0) {
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerHTML = '<i class="bi bi-cart-x me-2"></i>Pilih Item';
-        } else {
-            checkoutBtn.disabled = false;
-            checkoutBtn.innerHTML = `<i class="bi bi-check-circle me-2"></i>Checkout ${selectedItems.length} Item`;
-        }
-    }
-
-    function updateDeleteButton() {
-        const deleteBtn = document.getElementById('deleteSelectedBtn');
-        const selectedItems = document.querySelectorAll('.cart-checkbox:checked');
-
-        if (selectedItems.length > 0) {
-            deleteBtn.disabled = false;
-            deleteBtn.textContent = `Hapus Terpilih (${selectedItems.length})`;
-        } else {
-            deleteBtn.disabled = true;
-            deleteBtn.textContent = 'Hapus Terpilih';
-        }
-    }
-
-    // Update all quantity forms to include current order notes
-    function updateQuantityFormsWithNotes() {
-        const orderNotesTextarea = document.querySelector('textarea[name="catatan_pesanan"]');
-        const quantityForms = document.querySelectorAll('form[action*="cart.update"]');
-
-        if (orderNotesTextarea && quantityForms.length > 0) {
-            const currentNotes = orderNotesTextarea.value;
-
-            quantityForms.forEach(form => {
-                // Remove existing hidden input if exists
-                const existingInput = form.querySelector('input[name="catatan_pesanan"]');
-                if (existingInput) {
-                    existingInput.remove();
-                }
-
-                // Add current order notes as hidden input
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'catatan_pesanan';
-                hiddenInput.value = currentNotes;
-                form.appendChild(hiddenInput);
-            });
-        }
-    }
-
-    // Update forms when quantity changes or notes change
-    const orderNotesTextarea = document.querySelector('textarea[name="catatan_pesanan"]');
-    if (orderNotesTextarea) {
-        orderNotesTextarea.addEventListener('input', function() {
-            // Add a small delay to avoid too frequent updates
-            setTimeout(updateQuantityFormsWithNotes, 100);
-        });
-
-        // Initial update
-        updateQuantityFormsWithNotes();
-    }
-
-    // Form submission handler
-    const checkoutForm = document.querySelector('form[action*="checkout"]');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            const selectedItems = document.getElementById('selectedItems').value;
-            if (!selectedItems) {
-                e.preventDefault();
-                alert('Pilih item untuk checkout');
-                return false;
-            }
-
-            const btn = document.getElementById('checkoutBtn');
-            btn.disabled = true;
-            btn.innerHTML = 'Memproses...';
-        });
-    }
-
-    updateDeleteButton();
-});
-
-function changeQuantity(button, change) {
-    const input = button.parentNode.querySelector('input[type="number"]');
-    const newValue = parseInt(input.value) + change;
-
-    if (newValue >= 1 && newValue <= parseInt(input.max)) {
-        input.value = newValue;
-        input.form.submit();
-    }
-}
-
-// Batch delete function
-async function deleteSelectedItems() {
-    const selectedCheckboxes = document.querySelectorAll('.cart-checkbox:checked');
-    const selectedItems = Array.from(selectedCheckboxes).map(cb => cb.value);
-
-    if (selectedItems.length === 0) {
-        alert('Pilih item untuk dihapus');
-        return;
-    }
-
-    if (!confirm(`Hapus ${selectedItems.length} item terpilih?`)) return;
-
-    const deleteBtn = document.getElementById('deleteSelectedBtn');
-
-    try {
-        deleteBtn.disabled = true;
-        deleteBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Menghapus...';
-
-        for (const cartId of selectedItems) {
-            const response = await fetch(`{{ route('cart.remove', ':cartId') }}`.replace(':cartId', cartId), {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                document.querySelector(`[data-cart-id="${cartId}"]`).remove();
+        function changeQuantity(button, change) {
+            const input = button.parentNode.querySelector('input[type="number"]');
+            const newValue = parseInt(input.value) + change;
+            if (newValue >= 1 && newValue <= parseInt(input.max)) {
+                input.value = newValue;
+                input.form.submit();
             }
         }
 
-        alert(`${selectedItems.length} item berhasil dihapus`);
-        location.reload();
+        // Batch delete
+        document.getElementById('deleteSelectedBtn')?.addEventListener('click', async function() {
+            const selectedItems = Array.from(document.querySelectorAll('.cart-checkbox:checked')).map(cb => cb.value);
+            if (selectedItems.length === 0 || !confirm(`Hapus ${selectedItems.length} item terpilih?`)) return;
 
-    } catch (error) {
-        alert('Terjadi kesalahan');
-        deleteBtn.disabled = false;
-        deleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Hapus Terpilih';
-    }
-}
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menghapus...';
 
-// Attach delete event
-document.addEventListener('DOMContentLoaded', function() {
-    const deleteBtn = document.getElementById('deleteSelectedBtn');
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', deleteSelectedItems);
-    }
-});
-</script>
-
+            try {
+                for (const cartId of selectedItems) {
+                    await fetch(`{{ route('cart.remove', ':cartId') }}`.replace(':cartId', cartId), {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+                }
+                location.reload();
+            } catch (error) {
+                alert('Terjadi kesalahan');
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-trash me-1"></i>Hapus Terpilih';
+            }
+        });
+    </script>
 </body>
 </html>
+
+
+

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Dapur Indonesia</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/icondapur.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/image/icondapur.jpg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
     {{-- Background --}}
     <div class="bg-image d-flex align-items-center justify-content-center min-vh-100"
-         style="background-image: url('{{ asset('image/random1.jpg') }}');
+         style="background-image: url('{{ asset('storage/image/random1.jpg') }}');
                 background-size: cover;
                 background-position: center;">
 
@@ -21,7 +21,7 @@
 
                 {{-- Logo --}}
                 <div class="text-center mb-3">
-                    <img src="{{ asset('image/logo1.png') }}" alt="Logo Dapur Indonesia" class="img-fluid" style="max-height: 100px;">
+                    <img loading="lazy" src="{{ asset('storage/image/logo1.png') }}" alt="Logo Dapur Indonesia" class="img-fluid" style="max-height: 100px;">
                 </div>
 
                 {{-- Judul --}}
@@ -75,7 +75,7 @@
 
                     <div class="d-grid mt-3">
                         <a href="{{ url('auth-google-redirect') }}" class="btn btn-light">
-                            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width:20px; height:20px; margin-right:8px;">
+                            <img loading="lazy" src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width:20px; height:20px; margin-right:8px;">
                             Masuk dengan Google
                         </a>
                     </div>
@@ -105,3 +105,7 @@
     </script>
 </body>
 </html>
+
+
+
+

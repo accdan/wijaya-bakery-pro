@@ -55,3 +55,4 @@ class Role extends Model
         $this->save();
     }
 }
+

@@ -180,14 +180,9 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Item yang dipilih tidak valid');
         }
 
-        // Check stock for all items and calculate discounts
+        // Check stock for all items
         $totalPrice = 0;
-        $totalDiscount = 0;
-        $appliedDiscounts = [];
         $errors = [];
-
-        // Get active discounts considering current date/time
-        $activeDiscounts = \App\Models\Promo::activeDiscountsToday()->with('menu')->get();
 
         // Enhanced time-based greeting with improved logic
         $greeting = $this->getTimeBasedGreeting();
@@ -197,10 +192,14 @@ class CartController extends Controller
         $addressInfo = "";
         if ($user->province || $user->regency || $user->street || $user->hamlet) {
             $addressInfo .= "*ALAMAT PEMBELI:*\n";
-            if ($user->province) $addressInfo .= "- Prov. {$user->province}\n";
-            if ($user->regency) $addressInfo .= "- Kab./Kota {$user->regency}\n";
-            if ($user->street) $addressInfo .= "- Jl. {$user->street}\n";
-            if ($user->hamlet) $addressInfo .= "- Dusun/Kp. {$user->hamlet}\n";
+            if ($user->province)
+                $addressInfo .= "- Prov. {$user->province}\n";
+            if ($user->regency)
+                $addressInfo .= "- Kab./Kota {$user->regency}\n";
+            if ($user->street)
+                $addressInfo .= "- Jl. {$user->street}\n";
+            if ($user->hamlet)
+                $addressInfo .= "- Dusun/Kp. {$user->hamlet}\n";
             if ($user->address_notes) {
                 $addressInfo .= "*Catatan Alamat:* {$user->address_notes}\n";
             }
@@ -229,46 +228,12 @@ class CartController extends Controller
             }
 
             $subtotal = $cart->quantity * $cart->menu->harga;
-            $itemDiscount = 0;
-
-            // Check for applicable discounts
-            foreach ($activeDiscounts as $discount) {
-                if ($discount->isApplicable($cart->menu->id, $cart->quantity)) {
-                    $itemDiscount = $discount->calculateDiscount($cart->menu->harga, $cart->quantity, $cart->menu->id);
-                    if ($itemDiscount > 0) {
-                        $appliedDiscounts[] = [
-                            'menu' => $cart->menu->nama_menu,
-                            'discount' => $discount->getDiscountDescription(),
-                            'amount' => $itemDiscount
-                        ];
-                        break; // Apply first matching discount only
-                    }
-                }
-            }
-
-            $finalSubtotal = $subtotal - $itemDiscount;
-            $totalPrice += $finalSubtotal;
-            $totalDiscount += $itemDiscount;
+            $totalPrice += $subtotal;
 
             $waMessage .= $index . ". " . $cart->menu->nama_menu . "\n";
             $waMessage .= "   Jumlah: " . $cart->quantity . " x Rp " . number_format($cart->menu->harga, 0, ',', '.') . "\n";
-            if ($itemDiscount > 0) {
-                $waMessage .= "   Subtotal: Rp " . number_format($subtotal, 0, ',', '.') . "\n";
-                $waMessage .= "   Diskon: Rp " . number_format($itemDiscount, 0, ',', '.') . "\n";
-                $waMessage .= "   Total: Rp " . number_format($finalSubtotal, 0, ',', '.') . "\n\n";
-            } else {
-                $waMessage .= "   Subtotal: Rp " . number_format($subtotal, 0, ',', '.') . "\n\n";
-            }
+            $waMessage .= "   Subtotal: Rp " . number_format($subtotal, 0, ',', '.') . "\n\n";
             $index++;
-        }
-
-        // Add discount summary to WhatsApp message
-        if ($totalDiscount > 0) {
-            $waMessage .= "*DISKON YANG DIDAPATKAN:*\n";
-            foreach ($appliedDiscounts as $discount) {
-                $waMessage .= "- {$discount['discount']} pada {$discount['menu']}\n";
-            }
-            $waMessage .= "\n*Total Diskon: Rp " . number_format($totalDiscount, 0, ',', '.') . "*\n\n";
         }
 
         if (!empty($errors)) {
@@ -286,8 +251,8 @@ class CartController extends Controller
             return redirect($waUrl);
         }
 
-        // Process order - decrease stock and save to pesanan with discount details
-        DB::transaction(function () use ($carts, $activeDiscounts) {
+        // Process order - decrease stock and save to pesanan
+        DB::transaction(function () use ($carts) {
             foreach ($carts as $cart) {
                 // Base order data
                 $orderData = [
@@ -299,22 +264,8 @@ class CartController extends Controller
                     'total_harga' => $cart->quantity * $cart->menu->harga,
                     'discount_amount' => 0,
                     'discount_type' => null,
-                    'promo_id' => null,
                     'final_price' => $cart->quantity * $cart->menu->harga,
                 ];
-
-                // Check for applicable discounts
-                foreach ($activeDiscounts as $discount) {
-                    if ($discount->isApplicable($cart->menu->id, $cart->quantity)) {
-                        $itemDiscount = $discount->calculateDiscount($cart->menu->harga, $cart->quantity, $cart->menu->id);
-                        if ($itemDiscount > $orderData['discount_amount']) {
-                            $orderData['discount_amount'] = $itemDiscount;
-                            $orderData['discount_type'] = $discount->discount_type;
-                            $orderData['promo_id'] = $discount->id;
-                            $orderData['final_price'] = $orderData['total_harga'] - $itemDiscount;
-                        }
-                    }
-                }
 
                 \App\Models\Pesanan::create($orderData);
 
@@ -328,16 +279,8 @@ class CartController extends Controller
         });
 
         // Add order summary to WhatsApp message
-        $subTotalMessage = $totalPrice + $totalDiscount;
         $waMessage .= "\n*RINGKASAN PEMBELIAN:*\n";
-        $waMessage .= "Subtotal (sebelum diskon): Rp " . number_format($subTotalMessage, 0, ',', '.') . "\n";
-
-        if ($totalDiscount > 0) {
-            $waMessage .= "Potongan Diskon: -Rp " . number_format($totalDiscount, 0, ',', '.') . "\n";
-            $waMessage .= "*Total Pembayaran: Rp " . number_format($totalPrice, 0, ',', '.') . "*\n\n";
-        } else {
-            $waMessage .= "*Total Pembayaran: Rp " . number_format($totalPrice, 0, ',', '.') . "*\n\n";
-        }
+        $waMessage .= "*Total Pembayaran: Rp " . number_format($totalPrice, 0, ',', '.') . "*\n\n";
 
         // Add user notes if provided
         if (!empty($request->catatan_pesanan)) {
@@ -376,3 +319,4 @@ class CartController extends Controller
         }
     }
 }
+

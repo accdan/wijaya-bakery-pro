@@ -16,19 +16,19 @@ class PesananController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama_pemesan', 'LIKE', '%' . $search . '%')
-                  ->orWhere('no_hp', 'LIKE', '%' . $search . '%')
-                  ->orWhereHas('menu', function($menuQuery) use ($search) {
-                      $menuQuery->where('nama_menu', 'LIKE', '%' . $search . '%');
-                  });
+                    ->orWhere('no_hp', 'LIKE', '%' . $search . '%')
+                    ->orWhereHas('menu', function ($menuQuery) use ($search) {
+                        $menuQuery->where('nama_menu', 'LIKE', '%' . $search . '%');
+                    });
             });
         }
 
         // Date range filter
         if ($request->filled('tanggal_mulai') && $request->filled('tanggal_akhir')) {
             $query->whereDate('created_at', '>=', $request->tanggal_mulai)
-                  ->whereDate('created_at', '<=', $request->tanggal_akhir);
+                ->whereDate('created_at', '<=', $request->tanggal_akhir);
         }
 
         // Sorting
@@ -43,11 +43,97 @@ class PesananController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $pesanans = $query->get()->groupBy(function($item) {
+        $pesanans = $query->get()->groupBy(function ($item) {
             return $item->nama_pemesan . '|' . $item->no_hp . '|' . $item->created_at->format('Y-m-d H:i');
         });
 
         return view('admin.pesanan.index', compact('pesanans'));
+    }
+
+    /**
+     * Export pesanan to CSV
+     */
+    public function exportCsv(Request $request)
+    {
+        $query = Pesanan::with('menu');
+
+        // Apply same filters as index
+        if ($request->filled('tanggal_mulai') && $request->filled('tanggal_akhir')) {
+            $query->whereDate('created_at', '>=', $request->tanggal_mulai)
+                ->whereDate('created_at', '<=', $request->tanggal_akhir);
+        }
+
+        $pesanans = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'pesanan_' . date('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($pesanans) {
+            $file = fopen('php://output', 'w');
+
+            // UTF-8 BOM for Excel
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header
+            fputcsv($file, [
+                'No',
+                'Tanggal',
+                'Nama Pemesan',
+                'No HP',
+                'Menu',
+                'Jumlah',
+                'Harga Satuan',
+                'Total',
+                'Catatan'
+            ]);
+
+            $no = 1;
+            foreach ($pesanans as $pesanan) {
+                fputcsv($file, [
+                    $no++,
+                    $pesanan->created_at->format('d/m/Y H:i'),
+                    $pesanan->nama_pemesan,
+                    $pesanan->no_hp,
+                    $pesanan->menu->nama_menu ?? '-',
+                    $pesanan->jumlah,
+                    $pesanan->harga_satuan,
+                    $pesanan->total_harga,
+                    $pesanan->catatan ?? '-'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export pesanan to printable HTML
+     */
+    public function exportPrint(Request $request)
+    {
+        $query = Pesanan::with('menu');
+
+        if ($request->filled('tanggal_mulai') && $request->filled('tanggal_akhir')) {
+            $query->whereDate('created_at', '>=', $request->tanggal_mulai)
+                ->whereDate('created_at', '<=', $request->tanggal_akhir);
+        }
+
+        $pesanans = $query->orderBy('created_at', 'desc')->get();
+
+        $groupedPesanans = $pesanans->groupBy(function ($item) {
+            return $item->nama_pemesan . '|' . $item->no_hp . '|' . $item->created_at->format('Y-m-d H:i');
+        });
+
+        $totalRevenue = $pesanans->sum('total_harga');
+        $totalOrders = $groupedPesanans->count();
+
+        return view('admin.pesanan.print', compact('groupedPesanans', 'totalRevenue', 'totalOrders', 'request'));
     }
 
     public function create()
@@ -220,3 +306,4 @@ class PesananController extends Controller
         }
     }
 }
+
