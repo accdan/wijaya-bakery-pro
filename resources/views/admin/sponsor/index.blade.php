@@ -82,6 +82,7 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            position: relative;
         }
 
         .sponsor-logo {
@@ -159,6 +160,37 @@
             transform: translateY(-1px);
         }
 
+        .btn-action.toggle-on {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .btn-action.toggle-off {
+            background: #fed7aa;
+            color: #ea580c;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+        }
+
+        .status-badge.inactive {
+            background: rgba(156, 163, 175, 0.9);
+            color: white;
+        }
+
         /* Empty state */
         .empty-state {
             text-align: center;
@@ -222,13 +254,19 @@
                                     <div class="sponsor-card">
                                         <div class="sponsor-logo-container">
                                             @if($sponsor->logo_sponsor)
-                                                <img loading="lazy" src="{{ asset('storage/uploads/sponsor/' . $sponsor->logo_sponsor) }}"
+                                                <img loading="lazy"
+                                                    src="{{ asset('storage/uploads/sponsor/' . $sponsor->logo_sponsor) }}"
                                                     alt="{{ $sponsor->nama_sponsor }}" class="sponsor-logo">
                                             @else
                                                 <div class="sponsor-placeholder">
                                                     <i class="fas fa-building"></i>
                                                 </div>
                                             @endif
+                                            <span class="status-badge {{ ($sponsor->status ?? true) ? 'active' : 'inactive' }}">
+                                                <i
+                                                    class="fas fa-{{ ($sponsor->status ?? true) ? 'check-circle' : 'pause-circle' }} mr-1"></i>
+                                                {{ ($sponsor->status ?? true) ? 'Aktif' : 'Nonaktif' }}
+                                            </span>
                                         </div>
                                         <div class="sponsor-body">
                                             <div class="sponsor-name">{{ $sponsor->nama_sponsor }}</div>
@@ -240,6 +278,16 @@
                                                     class="btn-action edit">
                                                     <i class="fas fa-pen"></i>Edit
                                                 </a>
+                                                <form action="{{ route('admin.sponsor.toggle', $sponsor->id) }}" method="POST"
+                                                    class="d-inline flex-fill">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn-action w-100 {{ ($sponsor->status ?? true) ? 'toggle-off' : 'toggle-on' }}">
+                                                        <i
+                                                            class="fas fa-{{ ($sponsor->status ?? true) ? 'eye-slash' : 'eye' }}"></i>
+                                                        {{ ($sponsor->status ?? true) ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                    </button>
+                                                </form>
                                                 <button class="btn-action delete" data-toggle="modal" data-target="#deleteModal"
                                                     data-id="{{ $sponsor->id }}">
                                                     <i class="fas fa-trash"></i>Hapus
@@ -310,6 +358,3 @@
 </body>
 
 </html>
-
-
-

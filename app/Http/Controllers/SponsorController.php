@@ -32,6 +32,7 @@ class SponsorController extends Controller
         ]);
 
         $data = $request->only(['nama_sponsor', 'deskripsi_sponsor']);
+        $data['status'] = true; // Default aktif
 
         if ($request->hasFile('logo_sponsor')) {
             $file = $request->file('logo_sponsor');
@@ -112,6 +113,16 @@ class SponsorController extends Controller
         $sponsor->deleteSponsor();
 
         return redirect()->route('admin.sponsor.index')->with('success', 'Sponsor berhasil dihapus.');
+    }
+
+    public function toggleStatus($id)
+    {
+        $sponsor = Sponsor::findOrFail($id);
+        $sponsor->status = !$sponsor->status;
+        $sponsor->save();
+
+        $status = $sponsor->status ? 'diaktifkan' : 'dinonaktifkan';
+        return redirect()->route('admin.sponsor.index')->with('success', "Sponsor berhasil {$status}!");
     }
 }
 

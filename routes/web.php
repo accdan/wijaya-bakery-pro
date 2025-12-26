@@ -110,6 +110,7 @@ Route::name('admin.')->middleware('admin')->group(function () {
         Route::get('/{sponsor}/edit', [SponsorController::class, 'edit'])->name('edit');
         Route::patch('/{sponsor}', [SponsorController::class, 'update'])->name('update');
         Route::delete('/{sponsor}', [SponsorController::class, 'destroy'])->name('destroy');
+        Route::post('/{sponsor}/toggle-status', [SponsorController::class, 'toggleStatus'])->name('toggle');
     });
 
     // Kategori Management Routes

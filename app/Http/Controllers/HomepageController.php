@@ -15,7 +15,7 @@ class HomepageController extends Controller
     {
         $menus = Menu::latest()->paginate(15);
         $hero = Hero::where('status', 1)->latest()->first();
-        $sponsors = Sponsor::all();
+        $sponsors = Sponsor::where('status', 1)->get();
         $data = AboutNContact::first();
 
         // Top ordered menus this month

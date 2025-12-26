@@ -19,6 +19,7 @@ class Sponsor extends Model
         'nama_sponsor',
         'deskripsi_sponsor',
         'logo_sponsor',
+        'status',
     ];
 
     protected static function booted()
