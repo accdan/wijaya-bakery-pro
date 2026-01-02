@@ -48,9 +48,27 @@ class KategoriController extends Controller
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $kategori = Kategori::findOrFail($id);
+
+        // Check if category has menus
+        $menuCount = $kategori->menus()->count();
+
+        if ($menuCount > 0) {
+            return redirect()
+                ->route('admin.kategori.index')
+                ->with('error', "Kategori '{$kategori->nama_kategori}' tidak dapat dihapus karena masih memiliki {$menuCount} menu. Hapus atau pindahkan menu terlebih dahulu.");
+        }
+
+        // Validate confirmation text
+        $request->validate([
+            'confirmation' => 'required|in:hapus',
+        ], [
+            'confirmation.required' => 'Konfirmasi penghapusan diperlukan.',
+            'confirmation.in' => 'Anda harus mengetik "hapus" untuk mengkonfirmasi penghapusan.',
+        ]);
+
         $kategori->deleteKategori();
 
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil dihapus.');
