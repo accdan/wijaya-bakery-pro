@@ -24,15 +24,21 @@ Route::get('/all-menu', [MenuController::class, 'allMenuIndex'])->name('all-menu
 Route::middleware(['auth'])->get('/profile/orders/{timestamp}', [UserAuthController::class, 'orderDetail'])->name('user.order.detail');
 Route::post('/pesanan/store', [PesananController::class, 'storeFromUser'])->name('pesanan.store.fromuser');
 
-// User Authentication Routes
+// User Authentication Routes (with Rate Limiting for Security)
 Route::get('/login-user', [UserAuthController::class, 'showLoginForm'])->name('user.login.form');
-Route::post('/login-user', [UserAuthController::class, 'login'])->name('user.login');
+Route::post('/login-user', [UserAuthController::class, 'login'])
+    ->middleware('throttle:5,1')
+    ->name('user.login');
 Route::get('/register-user', [UserAuthController::class, 'showRegisterForm'])->name('user.register.form');
-Route::post('/register-user', [UserAuthController::class, 'register'])->name('user.register');
+Route::post('/register-user', [UserAuthController::class, 'register'])
+    ->middleware('throttle:5,1')
+    ->name('user.register');
 
-// Password Reset Routes (Simplified for Local Development)
+// Password Reset Routes (with stricter rate limiting)
 Route::get('/forgot-password', [UserAuthController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('/forgot-password', [UserAuthController::class, 'resetPasswordSimple'])->name('password.reset.simple');
+Route::post('/forgot-password', [UserAuthController::class, 'resetPasswordSimple'])
+    ->middleware('throttle:3,1')
+    ->name('password.reset.simple');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -40,9 +46,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/auth/google', [UserAuthController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [UserAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
-// Admin Auth Routes
+// Admin Auth Routes (with Rate Limiting)
 Route::get('/login-admin', [AuthController::class, 'showAdminLoginForm'])->name('login-admin');
-Route::post('/login-admin', [AuthController::class, 'adminLogin'])->name('login-admin.post');
+Route::post('/login-admin', [AuthController::class, 'adminLogin'])
+    ->middleware('throttle:5,1')
+    ->name('login-admin.post');
 
 // User Cart Routes (protected by auth middleware in controller)
 Route::middleware(['auth'])->group(function () {

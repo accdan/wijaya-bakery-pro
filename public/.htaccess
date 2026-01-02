@@ -71,8 +71,9 @@
     Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
     Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-TOKEN"
 
-    # HSTS (enable after HTTPS is fully working)
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    # HSTS - Force HTTPS (ENABLED for Production Security)
+    # WARNING: Only enable after HTTPS is fully working and tested
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 </IfModule>
 
 # ================================

@@ -37,18 +37,18 @@ class UserAuthController extends Controller
 
         if (!$user) {
             return back()->with('error', 'Username tidak ditemukan.')
-                        ->withInput($request->only('username'));
+                ->withInput($request->only('username'));
         }
 
         if (!Hash::check($request->password, $user->password)) {
             return back()->with('error', 'Password salah.')
-                        ->withInput($request->only('username'));
+                ->withInput($request->only('username'));
         }
 
         // Check if user role is not admin
         if ($user->isAdmin()) {
             return back()->with('error', 'Gunakan halaman login admin untuk akun admin.')
-                        ->withInput($request->only('username'));
+                ->withInput($request->only('username'));
         }
 
         Auth::login($user);
@@ -64,8 +64,17 @@ class UserAuthController extends Controller
                 'name' => 'required|string|max:255',
                 'username' => 'required|string|max:255|unique:users',
                 'email' => 'required|string|email|max:255|unique:users',
-                'no_telepon' => 'required|string|max:20|unique:users',
+                // Indonesian phone number format validation
+                'no_telepon' => [
+                    'required',
+                    'string',
+                    'max:20',
+                    'unique:users',
+                    'regex:/^(\+62|62|0)[0-9]{9,12}$/' // Indonesian phone format
+                ],
                 'password' => 'required|string|min:8|confirmed',
+            ], [
+                'no_telepon.regex' => 'Format nomor telepon tidak valid. Gunakan format: 08xxxxxxxxxx atau +628xxxxxxxxxx',
             ]);
 
             // Get user role ID - automatically assign as 'pengguna' (customer)
@@ -75,8 +84,8 @@ class UserAuthController extends Controller
             }
 
             $user = User::create([
-                'name' => $request->name,
-                'username' => $request->username,
+                'name' => strip_tags($request->name), // Sanitize HTML
+                'username' => strip_tags($request->username),
                 'email' => $request->email,
                 'no_telepon' => $request->no_telepon,
                 'password' => Hash::make($request->password),
@@ -84,6 +93,9 @@ class UserAuthController extends Controller
             ]);
 
             Auth::login($user);
+
+            // Regenerate session for security
+            $request->session()->regenerate();
 
             return redirect('/')->with('success', 'Registrasi berhasil! Selamat datang di Wijaya Bakery.');
         } catch (\Exception $e) {
@@ -177,7 +189,7 @@ class UserAuthController extends Controller
             ->with('menu')
             ->latest()
             ->get()
-            ->groupBy(function($item) {
+            ->groupBy(function ($item) {
                 // Group by timestamp for each order batch
                 return $item->created_at->format('Y-m-d H:i:s');
             });
@@ -228,7 +240,15 @@ class UserAuthController extends Controller
     public function updatePhone(Request $request)
     {
         $request->validate([
-            'no_telepon' => 'required|string|max:20|unique:users,no_telepon,' . Auth::id(),
+            'no_telepon' => [
+                'required',
+                'string',
+                'max:20',
+                'unique:users,no_telepon,' . Auth::id(),
+                'regex:/^(\+62|62|0)[0-9]{9,12}$/' // Indonesian phone format
+            ],
+        ], [
+            'no_telepon.regex' => 'Format nomor telepon tidak valid. Gunakan format: 08xxxxxxxxxx atau +628xxxxxxxxxx',
         ]);
 
         /** @var User $user */
@@ -289,10 +309,10 @@ class UserAuthController extends Controller
 
         // Calculate totals including discounts
         $subtotal = $orderItems->sum('total_harga');
-        $discountTotal = $orderItems->sum(function($item) {
+        $discountTotal = $orderItems->sum(function ($item) {
             return $item->discount_amount ?? 0;
         });
-        $finalTotal = $orderItems->sum(function($item) {
+        $finalTotal = $orderItems->sum(function ($item) {
             return $item->final_price ?? $item->total_harga;
         });
 
@@ -321,8 +341,8 @@ class UserAuthController extends Controller
 
         // Find user by username or email
         $user = User::where('username', $request->identifier)
-                   ->orWhere('email', $request->identifier)
-                   ->first();
+            ->orWhere('email', $request->identifier)
+            ->first();
 
         if (!$user) {
             return back()->withErrors(['identifier' => 'Username atau email tidak ditemukan']);

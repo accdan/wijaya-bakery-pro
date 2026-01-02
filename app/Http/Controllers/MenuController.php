@@ -6,12 +6,16 @@ use App\Models\Menu;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use App\Helpers\ImageOptimizer;
+use Illuminate\Support\Facades\Cache;
 
 class MenuController extends Controller
 {
     public function index()
     {
-        $menus = Menu::with('kategori')->orderBy('created_at', 'desc')->get();
+        $menus = Menu::with('kategori')
+            ->select('id', 'nama_menu', 'kategori_id', 'harga', 'stok', 'gambar_menu', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('admin.menu.index', compact('menus'));
     }
 
@@ -61,8 +65,10 @@ class MenuController extends Controller
         // Paginate results
         $menus = $query->paginate(12)->withQueryString();
 
-        // Get all categories for filter dropdown
-        $kategoris = Kategori::all();
+        // Cache categories for 12 hours (they rarely change)
+        $kategoris = Cache::remember('all_categories', 43200, function () {
+            return Kategori::select('id', 'nama_kategori')->get();
+        });
 
         return view('menu.index', compact('menus', 'kategoris', 'search', 'kategori', 'sortBy', 'sortDirection'));
     }
@@ -113,15 +119,20 @@ class MenuController extends Controller
         // Paginate results
         $menus = $query->paginate(12)->withQueryString();
 
-        // Get all categories for filter dropdown
-        $kategoris = Kategori::all();
+        // Cache categories for 12 hours
+        $kategoris = Cache::remember('all_categories', 43200, function () {
+            return Kategori::select('id', 'nama_kategori')->get();
+        });
 
         return view('all-menu.index', compact('menus', 'kategoris', 'search', 'kategori', 'sortBy', 'sortDirection'));
     }
 
     public function create()
     {
-        $kategoris = Kategori::all();
+        // Cache categories for admin forms
+        $kategoris = Cache::remember('all_categories', 43200, function () {
+            return Kategori::select('id', 'nama_kategori')->get();
+        });
         return view('admin.menu.create', compact('kategoris'));
     }
 

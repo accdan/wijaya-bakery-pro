@@ -1,92 +1,229 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found - {{ config('app.name') }}</title>
+    <title>404 - Halaman Tidak Ditemukan | Wijaya Bakery</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #495057;
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
         .error-container {
             text-align: center;
-            max-width: 500px;
-            padding: 2rem;
+            padding: 40px 20px;
+            max-width: 600px;
+            animation: fadeIn 0.8s ease-in;
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .error-code {
-            font-size: 6rem;
-            font-weight: 300;
-            color: #6c757d;
-            margin-bottom: 1rem;
+            font-size: 150px;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: bounce 2s infinite;
         }
-        .error-title {
-            font-size: 2rem;
-            font-weight: 500;
-            color: #343a40;
-            margin-bottom: 1rem;
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
-        .error-message {
-            font-size: 1.1rem;
-            color: #6c757d;
-            margin-bottom: 2rem;
+
+        .bakery-icon {
+            font-size: 100px;
+            margin: 20px 0;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 20px 0;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 15px 0;
+            opacity: 0.95;
             line-height: 1.6;
         }
-        .btn-home {
-            display: inline-block;
-            background-color: #8b6f47;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-            margin-right: 10px;
+
+        .btn-container {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
-        .btn-home:hover {
-            background-color: #5d4e37;
-            color: white;
+
+        .btn {
+            padding: 15px 35px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
             text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 16px;
         }
-        .btn-menu {
-            display: inline-block;
-            background-color: #d4b896;
-            color: #5d4e37;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        .btn-menu:hover {
-            background-color: #8b6f47;
-            color: white;
-            text-decoration: none;
+
+        .btn-primary {
+            background: #fff;
+            color: #667eea;
+            border-color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .search-container {
+            margin-top: 30px;
+            position: relative;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: #fff;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 120px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="error-container">
         <div class="error-code">404</div>
-        <h1 class="error-title">Halaman Tidak Ditemukan</h1>
-        <p class="error-message">
-            Maaf, halaman yang Anda cari tidak tersedia atau mungkin telah dipindahkan.
+        <div class="bakery-icon">🍞</div>
+        <h1>Oops! Halaman Tidak Ditemukan</h1>
+        <p>
+            Sepertinya halaman yang kamu cari sudah habis terjual atau tidak pernah ada di etalase kami.
         </p>
-        <div>
-            <a href="{{ url('/') }}" class="btn-home">Kembali ke Beranda</a>
-            <a href="{{ route('all-menu.index') }}" class="btn-menu">Lihat Menu</a>
+        <p style="opacity: 0.8; font-size: 16px;">
+            Jangan khawatir! Masih banyak roti enak lainnya yang bisa kamu pilih.
+        </p>
+
+        <div class="search-container">
+            <form action="/menu" method="GET">
+                <input type="text" name="search" class="search-input" placeholder="Cari menu favorit kamu..." autofocus>
+            </form>
+        </div>
+
+        <div class="btn-container">
+            <a href="/" class="btn btn-primary">🏠 Kembali ke Beranda</a>
+            <a href="/menu" class="btn">🍰 Lihat Menu</a>
+            <a href="javascript:history.back()" class="btn">← Halaman Sebelumnya</a>
         </div>
     </div>
+
+    <script>
+        // Auto focus search input
+        document.querySelector('.search-input').focus();
+
+        // Prevent form submission on empty search
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const searchInput = document.querySelector('.search-input');
+            if (!searchInput.value.trim()) {
+                e.preventDefault();
+                window.location.href = '/menu';
+            }
+        });
+    </script>
 </body>
+
 </html>
-
-
-
-

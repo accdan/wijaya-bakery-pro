@@ -176,7 +176,7 @@ class PesananController extends Controller
 
     public function edit($id)
     {
-        $pesanan = Pesanan::findOrFail($id);
+        $pesanan = Pesanan::with('menu')->findOrFail($id);
         $menus = Menu::all();
         return view('admin.pesanan.edit', compact('pesanan', 'menus'));
     }
